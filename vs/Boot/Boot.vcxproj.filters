@@ -1,0 +1,143 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Quelldateien">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Ressourcendateien">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Quelldateien\gnu-efi">
+      <UniqueIdentifier>{8cb5ac6e-4bf9-4344-93c8-9c58728b7f76}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\Boot\main.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ext\gnu-efi\lib\boxdraw.c">
+      <Filter>Quelldateien\gnu-efi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ext\gnu-efi\lib\cmdline.c">
+      <Filter>Quelldateien\gnu-efi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ext\gnu-efi\lib\console.c">
+      <Filter>Quelldateien\gnu-efi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ext\gnu-efi\lib\crc.c">
+      <Filter>Quelldateien\gnu-efi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ext\gnu-efi\lib\data.c">
+      <Filter>Quelldateien\gnu-efi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ext\gnu-efi\lib\debug.c">
+      <Filter>Quelldateien\gnu-efi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ext\gnu-efi\lib\dpath.c">
+      <Filter>Quelldateien\gnu-efi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ext\gnu-efi\lib\event.c">
+      <Filter>Quelldateien\gnu-efi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ext\gnu-efi\lib\guid.c">
+      <Filter>Quelldateien\gnu-efi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ext\gnu-efi\lib\hand.c">
+      <Filter>Quelldateien\gnu-efi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ext\gnu-efi\lib\hw.c">
+      <Filter>Quelldateien\gnu-efi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ext\gnu-efi\lib\init.c">
+      <Filter>Quelldateien\gnu-efi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ext\gnu-efi\lib\lock.c">
+      <Filter>Quelldateien\gnu-efi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ext\gnu-efi\lib\misc.c">
+      <Filter>Quelldateien\gnu-efi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ext\gnu-efi\lib\print.c">
+      <Filter>Quelldateien\gnu-efi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ext\gnu-efi\lib\smbios.c">
+      <Filter>Quelldateien\gnu-efi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ext\gnu-efi\lib\sread.c">
+      <Filter>Quelldateien\gnu-efi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ext\gnu-efi\lib\str.c">
+      <Filter>Quelldateien\gnu-efi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ext\gnu-efi\lib\runtime\efirtlib.c">
+      <Filter>Quelldateien\gnu-efi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ext\gnu-efi\lib\runtime\rtdata.c">
+      <Filter>Quelldateien\gnu-efi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ext\gnu-efi\lib\runtime\rtlock.c">
+      <Filter>Quelldateien\gnu-efi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ext\gnu-efi\lib\runtime\rtstr.c">
+      <Filter>Quelldateien\gnu-efi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ext\gnu-efi\lib\runtime\vm.c">
+      <Filter>Quelldateien\gnu-efi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ext\gnu-efi\lib\x86_64\initplat.c">
+      <Filter>Quelldateien\gnu-efi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ext\gnu-efi\lib\x86_64\math.c">
+      <Filter>Quelldateien\gnu-efi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Boot\Error.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\RamDrive.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Boot\string.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Boot\output.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\core_crt\stdio.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\core_crt\stdlib.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\core_crt\wchar.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Boot\EfiLoader.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Boot\cpp_mem.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\msvc.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\mem\PageTablesPool.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\mem\PageTables.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\Boot\Error.h">
+      <Filter>Quelldateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Path.h">
+      <Filter>Quelldateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Boot\EfiLoader.h">
+      <Filter>Quelldateien</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

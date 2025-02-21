@@ -1,0 +1,31 @@
+﻿  boxdraw.c
+  cmdline.c
+  console.c
+  crc.c
+  data.c
+  debug.c
+  dpath.c
+  error.c
+  event.c
+  exit.c
+  guid.c
+  hand.c
+  hw.c
+  init.c
+  lock.c
+  misc.c
+  print.c
+  efirtlib.c
+  rtdata.c
+  rtlock.c
+  Code wird generiert...
+  Kompilieren...
+  rtstr.c
+  vm.c
+  smbios.c
+  sread.c
+  str.c
+  initplat.c
+  math.c
+  Code wird generiert...
+  efilib.vcxproj -> C:\repos\64osdev\ext\gnu-efi\x64\Debug\efilib.lib

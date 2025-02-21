@@ -1,0 +1,204 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Quelldateien">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Ressourcendateien">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Quelldateien\core_crt">
+      <UniqueIdentifier>{c3921926-6fab-4f99-8a11-8ca8638d206a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\mem">
+      <UniqueIdentifier>{6a864366-be86-44ec-8d3b-dcb8e70633b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\types">
+      <UniqueIdentifier>{4ebcecb9-bfdf-4130-bb7d-8ca2b7decf17}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\devices">
+      <UniqueIdentifier>{0ecd0538-fd1e-4528-8246-ae181fba6535}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\io">
+      <UniqueIdentifier>{060c4cd9-a174-4b29-9cde-bfa7e3c18a03}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\hal">
+      <UniqueIdentifier>{72aa8d9f-6bbf-4a2a-8b1e-722055f12c3e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\hal\x64">
+      <UniqueIdentifier>{95bd5e83-cc63-4a92-9cea-8b6f97ee2f61}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\gfx">
+      <UniqueIdentifier>{7faa5250-af90-4f49-b669-e184b1b7664b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\kernel\main.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\core_crt\stdio.c">
+      <Filter>Quelldateien\core_crt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\core_crt\stdlib.c">
+      <Filter>Quelldateien\core_crt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\core_crt\string.c">
+      <Filter>Quelldateien\core_crt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\core_crt\wchar.c">
+      <Filter>Quelldateien\core_crt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\msvc.cpp">
+      <Filter>Quelldateien\core_crt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\core_crt\ctype.c">
+      <Filter>Quelldateien\core_crt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\kernel\Kernel.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\kernel\cpp_mem.cpp">
+      <Filter>Quelldateien\mem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\mem\PageTables.cpp">
+      <Filter>Quelldateien\mem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\mem\PageTablesPool.cpp">
+      <Filter>Quelldateien\mem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\kernel\mem\KHeap.cpp">
+      <Filter>Quelldateien\mem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\kernel\mem\PMM.cpp">
+      <Filter>Quelldateien\mem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\kernel\mem\VAS.cpp">
+      <Filter>Quelldateien\mem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\kernel\types\Bitvector.cpp">
+      <Filter>Quelldateien\types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\kernel\mem\MemoryMap.cpp">
+      <Filter>Quelldateien\mem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\kernel\devices\ConfigTables.cpp">
+      <Filter>Quelldateien\devices</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\kernel\mem\VMM.cpp">
+      <Filter>Quelldateien\mem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\kernel\io\LoadingScreen.cpp">
+      <Filter>Quelldateien\io</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\kernel\io\StringPrinter.cpp">
+      <Filter>Quelldateien\io</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\kernel\mem\BootHeap.cpp">
+      <Filter>Quelldateien\mem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\kernel\hal\x64\x64.cpp">
+      <Filter>Quelldateien\hal\x64</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Kernel\hal\HAL_x64.cpp">
+      <Filter>Quelldateien\hal\x64</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\kernel\main.h">
+      <Filter>Quelldateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\panic.h">
+      <Filter>Quelldateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\Kernel.h">
+      <Filter>Quelldateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\mem\KHeap.h">
+      <Filter>Quelldateien\mem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\mem\PMM.h">
+      <Filter>Quelldateien\mem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\mem\VAS.h">
+      <Filter>Quelldateien\mem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mem\pagetables.h">
+      <Filter>Quelldateien\mem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mem\PageTablesPool.h">
+      <Filter>Quelldateien\mem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\types\BitVector.h">
+      <Filter>Quelldateien\types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\mem\MemoryMap.h">
+      <Filter>Quelldateien\mem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\devices\ConfigTables.h">
+      <Filter>Quelldateien\devices</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\mem\VMM.h">
+      <Filter>Quelldateien\mem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\io\LoadingScreen.h">
+      <Filter>Quelldateien\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\io\StringPrinter.h">
+      <Filter>Quelldateien\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\mem\BootHeap.h">
+      <Filter>Quelldateien\mem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Kernel\hal\HAL.h">
+      <Filter>Quelldateien\hal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\hal\x64\x64.h">
+      <Filter>Quelldateien\hal\x64</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\hal\x64\ctrlregs.h">
+      <Filter>Quelldateien\hal\x64</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\gfx\Color.h">
+      <Filter>Quelldateien\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\gfx\Cursor.h">
+      <Filter>Quelldateien\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\gfx\EfiDisplay.h">
+      <Filter>Quelldateien\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\gfx\Font.h">
+      <Filter>Quelldateien\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\gfx\FrameBuffer.h">
+      <Filter>Quelldateien\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\gfx\Types.h">
+      <Filter>Quelldateien\gfx</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\src\kernel\Kernel.def">
+      <Filter>Quelldateien</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <MASM Include="..\..\src\kernel\hal\x64\ArchMain.asm">
+      <Filter>Quelldateien\hal\x64</Filter>
+    </MASM>
+    <MASM Include="..\..\src\kernel\hal\x64\context.asm">
+      <Filter>Quelldateien\hal\x64</Filter>
+    </MASM>
+    <MASM Include="..\..\src\kernel\hal\x64\ctrlregs.asm">
+      <Filter>Quelldateien\hal\x64</Filter>
+    </MASM>
+    <MASM Include="..\..\src\kernel\hal\x64\isr.asm">
+      <Filter>Quelldateien\hal\x64</Filter>
+    </MASM>
+    <MASM Include="..\..\src\kernel\hal\x64\syscall.asm">
+      <Filter>Quelldateien\hal\x64</Filter>
+    </MASM>
+  </ItemGroup>
+</Project>

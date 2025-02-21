@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{2d05e154-c605-4ac8-93a4-af923d932df4}</ProjectGuid>
+    <RootNamespace>Kernel</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <GenerateManifest>false</GenerateManifest>
+    <TargetName>vsoskrnl</TargetName>
+    <OutDir>$(SolutionDir)..\build\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)..\obj\$(MSBuildProjectName)\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)..\build\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)..\obj\$(MSBuildProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <TargetName>bmoskrnl</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>false</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;ACPI_LIBRARY;_CRT_SECURE_NO_WARNINGS;_NO_CRT_STDIO_INLINE;GNU_EFI_SETJMP_H;WIN64;_AMD64_;_HAS_EXCEPTIONS=0;_KERNEL_MODE=1;_ITERATOR_DEBUG_LEVEL=0</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\ext\gnu-efi\inc;$(SolutionDir)..\ext\;$(SolutionDir)..\src\;$(SolutionDir)..\ext\acpica\source\include;$(SolutionDir)..\ext\acpica\source\include\platform;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <SupportJustMyCode>false</SupportJustMyCode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <OmitFramePointers>false</OmitFramePointers>
+    </ClCompile>
+    <Link>
+      <SubSystem>Native</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+      <EnableUAC>false</EnableUAC>
+      <EntryPointSymbol>ArchMain</EntryPointSymbol>
+      <BaseAddress>0xFFFF800001000000</BaseAddress>
+      <ModuleDefinitionFile>$(SolutionDir)..\src\kernel\kernel.def</ModuleDefinitionFile>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+      <Driver>NotSet</Driver>
+      <FixedBaseAddress>true</FixedBaseAddress>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapExports>true</MapExports>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>false</SDLCheck>
+      <PreprocessorDefinitions>_NDEBUG;_CONSOLE;ACPI_LIBRARY;_CRT_SECURE_NO_WARNINGS;_NO_CRT_STDIO_INLINE;GNU_EFI_SETJMP_H;WIN64;_AMD64_;_HAS_EXCEPTIONS=0;_KERNEL_MODE=1;_ITERATOR_DEBUG_LEVEL=0</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\ext\gnu-efi\inc;$(SolutionDir)..\ext\gnu-efi\inc\x86_64;$(SolutionDir)..\ext\;$(SolutionDir)..\src\;$(SolutionDir)..\ext\acpica\source\include;$(SolutionDir)..\ext\acpica\source\include\platform;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <SupportJustMyCode>false</SupportJustMyCode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <OmitFramePointers>false</OmitFramePointers>
+    </ClCompile>
+    <Link>
+      <SubSystem>Native</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+      <EnableUAC>false</EnableUAC>
+      <EntryPointSymbol>ArchMain</EntryPointSymbol>
+      <BaseAddress>0xFFFF800001000000</BaseAddress>
+      <ModuleDefinitionFile>Kernel\Kernel.def</ModuleDefinitionFile>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\core_crt\ctype.c" />
+    <ClCompile Include="..\..\src\core_crt\stdio.c" />
+    <ClCompile Include="..\..\src\core_crt\stdlib.c" />
+    <ClCompile Include="..\..\src\core_crt\string.c" />
+    <ClCompile Include="..\..\src\core_crt\wchar.c" />
+    <ClCompile Include="..\..\src\kernel\cpp_mem.cpp" />
+    <ClCompile Include="..\..\src\kernel\devices\ConfigTables.cpp" />
+    <ClCompile Include="..\..\src\Kernel\hal\HAL_x64.cpp" />
+    <ClCompile Include="..\..\src\kernel\hal\x64\x64.cpp" />
+    <ClCompile Include="..\..\src\kernel\io\LoadingScreen.cpp" />
+    <ClCompile Include="..\..\src\kernel\io\StringPrinter.cpp" />
+    <ClCompile Include="..\..\src\kernel\Kernel.cpp" />
+    <ClCompile Include="..\..\src\kernel\main.cpp" />
+    <ClCompile Include="..\..\src\kernel\mem\BootHeap.cpp" />
+    <ClCompile Include="..\..\src\kernel\mem\KHeap.cpp" />
+    <ClCompile Include="..\..\src\kernel\mem\MemoryMap.cpp" />
+    <ClCompile Include="..\..\src\kernel\mem\PMM.cpp" />
+    <ClCompile Include="..\..\src\kernel\mem\VAS.cpp" />
+    <ClCompile Include="..\..\src\kernel\mem\VMM.cpp" />
+    <ClCompile Include="..\..\src\kernel\types\Bitvector.cpp" />
+    <ClCompile Include="..\..\src\mem\PageTables.cpp" />
+    <ClCompile Include="..\..\src\mem\PageTablesPool.cpp" />
+    <ClCompile Include="..\..\src\msvc.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\gfx\Color.h" />
+    <ClInclude Include="..\..\src\gfx\Cursor.h" />
+    <ClInclude Include="..\..\src\gfx\EfiDisplay.h" />
+    <ClInclude Include="..\..\src\gfx\Font.h" />
+    <ClInclude Include="..\..\src\gfx\FrameBuffer.h" />
+    <ClInclude Include="..\..\src\gfx\Types.h" />
+    <ClInclude Include="..\..\src\kernel\devices\ConfigTables.h" />
+    <ClInclude Include="..\..\src\Kernel\hal\HAL.h" />
+    <ClInclude Include="..\..\src\kernel\hal\x64\ctrlregs.h" />
+    <ClInclude Include="..\..\src\kernel\hal\x64\x64.h" />
+    <ClInclude Include="..\..\src\kernel\io\LoadingScreen.h" />
+    <ClInclude Include="..\..\src\kernel\io\StringPrinter.h" />
+    <ClInclude Include="..\..\src\kernel\Kernel.h" />
+    <ClInclude Include="..\..\src\kernel\main.h" />
+    <ClInclude Include="..\..\src\kernel\mem\BootHeap.h" />
+    <ClInclude Include="..\..\src\kernel\mem\KHeap.h" />
+    <ClInclude Include="..\..\src\kernel\mem\MemoryMap.h" />
+    <ClInclude Include="..\..\src\kernel\mem\PMM.h" />
+    <ClInclude Include="..\..\src\kernel\mem\VAS.h" />
+    <ClInclude Include="..\..\src\kernel\mem\VMM.h" />
+    <ClInclude Include="..\..\src\kernel\panic.h" />
+    <ClInclude Include="..\..\src\kernel\types\BitVector.h" />
+    <ClInclude Include="..\..\src\mem\pagetables.h" />
+    <ClInclude Include="..\..\src\mem\PageTablesPool.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\kernel.acpi\kernel.acpi.vcxproj">
+      <Project>{01b7dc16-583a-4761-9427-1db2ae1febc6}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\src\kernel\Kernel.def" />
+  </ItemGroup>
+  <ItemGroup>
+    <MASM Include="..\..\src\kernel\hal\x64\ArchMain.asm" />
+    <MASM Include="..\..\src\kernel\hal\x64\context.asm" />
+    <MASM Include="..\..\src\kernel\hal\x64\ctrlregs.asm" />
+    <MASM Include="..\..\src\kernel\hal\x64\isr.asm" />
+    <MASM Include="..\..\src\kernel\hal\x64\syscall.asm" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
+  </ImportGroup>
+</Project>

@@ -1,0 +1,11 @@
+# VS
+.vs
+*.user
+
+# VS Code
+.vscode
+
+# build folders
+obj/
+build/
+image/
