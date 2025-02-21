@@ -1,12 +1,13 @@
 #pragma once
 
 #include "x64.h"
+#include "kernel/hal/HAL.h"
 
 #define DefineInterruptHandler(x) void InterruptHandler(x) ## ()
 
 //X64 Architecture structs
 #pragma pack(push, 1)
-struct X64_INTERRUPT_FRAME
+struct X64_INTERRUPT_FRAME : public INTERRUPT_FRAME
 {
 	//Pushed by PUSH_INTERRUPT_FRAME
 	uint64_t RAX;
@@ -78,13 +79,6 @@ enum class X64_INTERRUPT_VECTOR : uint8_t
 	COM2 = 0x83,
 	COM1 = 0x84,
 	HypervisorVmBus = 0x90,
-};
-
-typedef uint32_t (*InterruptHandler)(void* arg);
-struct InterruptContext
-{
-	InterruptHandler Handler;
-	void* Context;
 };
 
 

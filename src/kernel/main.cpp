@@ -96,11 +96,6 @@ LoaderParams BootParams;
 Kernel kernel(BootParams, bootHeap);
 
 
-extern "C" void INTERRUPT_HANDLER(X64_INTERRUPT_VECTOR vector, X64_INTERRUPT_FRAME* frame)
-{
-	kernel.HandleInterrupt(vector, frame);
-}
-
 extern "C" int __cdecl atexit(void(__cdecl*)(void))
 {
 	return 0;

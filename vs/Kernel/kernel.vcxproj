@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
@@ -158,7 +158,9 @@
     <ClInclude Include="..\..\src\gfx\Types.h" />
     <ClInclude Include="..\..\src\kernel\devices\ConfigTables.h" />
     <ClInclude Include="..\..\src\Kernel\hal\HAL.h" />
+    <ClInclude Include="..\..\src\Kernel\hal\Interrupt.h" />
     <ClInclude Include="..\..\src\kernel\hal\x64\ctrlregs.h" />
+    <ClInclude Include="..\..\src\kernel\hal\x64\interrupt.h" />
     <ClInclude Include="..\..\src\kernel\hal\x64\x64.h" />
     <ClInclude Include="..\..\src\kernel\io\LoadingScreen.h" />
     <ClInclude Include="..\..\src\kernel\io\StringPrinter.h" />

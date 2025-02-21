@@ -178,6 +178,12 @@
     <ClInclude Include="..\..\src\gfx\Types.h">
       <Filter>Quelldateien\gfx</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Kernel\hal\Interrupt.h">
+      <Filter>Quelldateien\hal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\hal\x64\interrupt.h">
+      <Filter>Quelldateien\hal\x64</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\kernel\Kernel.def">

@@ -98,6 +98,7 @@ void Kernel::Initialize()
 	m_runtimeSpace.Initialize();
 	m_windowsSpace.Initialize();
 
+
 }
 
 
@@ -118,116 +119,6 @@ void Kernel::Printf(const char* format, va_list args)
 }
 
 
-
-void Kernel::HandleInterrupt(X64_INTERRUPT_VECTOR vector, X64_INTERRUPT_FRAME* frame)
-{
-	if (vector == X64_INTERRUPT_VECTOR::DoubleFault)
-	{
-		//KePauseSystem();
-		Panic("Double Fault!\r\n");
-		__halt();
-	}
-
-	//Break into kernel debugger if not user code
-	//if (m_debugger.Enabled() && vector == X64_INTERRUPT_VECTOR::Breakpoint)
-	{
-		//m_debugger.DebuggerEvent(vector, frame);
-		//return;
-	}
-
-	const auto& it = m_interruptHandlers->find(vector);
-	if (it != m_interruptHandlers->end())
-	{
-		InterruptContext ctx = it->second;
-		ctx.Handler(ctx.Context);
-		HyperV::EOI();
-		return;
-	}
-
-	//Show interrupt context
-	this->Printf("ISR: 0x%x, Code: %x\n", vector, frame->ErrorCode);
-	this->Printf("    RIP: 0x%016x\n", frame->RIP);
-	this->Printf("    RBP: 0x%016x\n", frame->RBP);
-	this->Printf("    RSP: 0x%016x\n", frame->RSP);
-	this->Printf("    RAX: 0x%016x\n", frame->RAX);
-	this->Printf("    RBX: 0x%016x\n", frame->RBX);
-	this->Printf("    RCX: 0x%016x\n", frame->RCX);
-	this->Printf("    RDX: 0x%016x\n", frame->RDX);
-	this->Printf("    CS: 0x%x, SS: 0x%x\n", frame->CS, frame->SS);
-
-	switch (vector)
-	{
-	case X64_INTERRUPT_VECTOR::PageFault:
-		this->Printf("    CR2: 0x%16x\n", __readcr2());
-		if (__readcr2() == 0)
-			this->Printf("        Null pointer\n");
-	}
-
-	//Build context
-	X64_CONTEXT context = {};
-	context.Rip = frame->RIP;
-	context.Rsp = frame->RSP;
-	context.Rbp = frame->RBP;
-
-	#if 0
-	if (IsValidUserPointer((void*)frame->RIP))
-	{
-		//Interrupt is in userspace. Write Stack to stdout, write message, kill process.
-		UserProcess& proc = m_scheduler.GetCurrentProcess();
-		std::shared_ptr<UObject> uObject = proc.GetObject((Handle)StandardHandle::Output);
-		if (uObject)
-		{
-			//Write stack
-			AssertEqual(uObject->Type, UObjectType::Pipe);
-			const UPipe* uPipe = (UPipe*)uObject.get();
-			UserPipe& pipe = *uPipe->Pipe.get();
-
-			//Write exception
-			if (vector == X64_INTERRUPT_VECTOR::DivideError)
-				pipe.Printf("Exception: Divide by zero\n");
-			else if (vector == X64_INTERRUPT_VECTOR::Breakpoint)
-				pipe.Printf("Exception: Breakpoint\n");
-			else if (vector == X64_INTERRUPT_VECTOR::PageFault && __readcr2() == 0)
-				pipe.Printf("Exception: Null pointer dereference\n");
-
-			//Convert to unwind context
-			CONTEXT ctx = { 0 };
-			ctx.Rip = context.Rip;
-			ctx.Rsp = context.Rsp;
-			ctx.Rbp = context.Rbp;
-
-			//Unwind stack, writing to process stdout
-			StackWalk sw(&ctx);
-			while (sw.HasNext())
-			{
-				PdbFunctionLookup lookup = {};
-				Assert(IsValidUserPointer((void*)ctx.Rip));
-				ResolveUserIP(ctx.Rip, lookup);
-
-				Module* module = proc.GetModule(ctx.Rip);
-
-				pipe.Printf("    %s::%s (%d)\n", module->Name, lookup.Name.c_str(), lookup.LineNumber);
-				pipe.Printf("        IP: 0x%016x Base: 0x%016x, RVA: 0x%08x\n", ctx.Rip, lookup.Base, lookup.RVA);
-
-				if (lookup.Base == nullptr)
-					break;
-
-				sw.Next((uintptr_t)lookup.Base);
-			}
-		}
-
-		m_scheduler.KillCurrentProcess();
-		return;
-	}
-	else
-	{
-	#endif
-		//this->ShowStack(&context);
-
-		//Bugcheck
-		Fatal("Unhandled exception");
-	//}
-}
 
 void Kernel::Bugcheck(const char* file, const char* line, const char* format, ...)
 {

@@ -67,12 +67,13 @@ public:
 		this->m_printer->PrintBytes(buffer, length);
 	}
 
-	void HandleInterrupt(X64_INTERRUPT_VECTOR vector, X64_INTERRUPT_FRAME* frame);
 
 	__declspec(noreturn) void Bugcheck(const char* file, const char* line, const char* format, ...);
 	__declspec(noreturn) void Bugcheck(const char* file, const char* line, const char* format, va_list args);
 
 	__declspec(noreturn) void Panic(const char* message);
+
+	HAL* GetHAL() { return &hal; }
 
 
 	void* Allocate(const size_t size);
@@ -108,8 +109,6 @@ private:
 	//Copy to kernel heap
 	ConfigTables m_configTables;
 
-	//Interrupts
-	std::map<X64_INTERRUPT_VECTOR, InterruptContext>* m_interruptHandlers;
 
 
 	VMM m_virtualMemory;
