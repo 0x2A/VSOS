@@ -388,6 +388,9 @@ void x64::SetupDescriptorTables()
 #if _VERBOSE_
 	Printf(__FUNCTION__ ": syscalls enabled\r\n");
 #endif
+
+	//Enable WRGSBASE instruction
+	//__writecr4(__readcr4() | (1 << 16));
 	
 	
 	int regs[4];

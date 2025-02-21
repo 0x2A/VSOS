@@ -307,8 +307,17 @@ EFI_STATUS EfiMain(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable)
 	InitializeLib(ImageHandle, SystemTable);
 #endif
 
+	//Boot Params for kernel
+	LoaderParams params;
+	params.ConfigTables = ST->ConfigurationTable;
+	params.ConfigTablesCount = ST->NumberOfTableEntries;
+	params.Runtime = RT;
+
+
+
+	EFI_STATUS status;
 	// The platform logo may still be displayed -> remove it
-	SystemTable->ConOut->ClearScreen(SystemTable->ConOut);
+	ReturnIfNotSuccess(SystemTable->ConOut->ClearScreen(SystemTable->ConOut));
 
 	/*
 	 * In addition to the standard %-based flags, Print() supports the following:
@@ -321,13 +330,7 @@ EFI_STATUS EfiMain(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable)
 
 	PrintSystemInfo();
 
-	//Boot Params for kernel
-	LoaderParams params;
-	params.ConfigTables = ST->ConfigurationTable;
-	params.ConfigTablesCount = ST->NumberOfTableEntries;
-	params.Runtime = RT;
 
-	EFI_STATUS              status;
 	//Get handle to bootloader.
 	EFI_LOADED_IMAGE* LoadedImage = nullptr;
 	ReturnIfNotSuccess(BS->OpenProtocol(ImageHandle, &LoadedImageProtocol, (void**)&LoadedImage, NULL, NULL, EFI_OPEN_PROTOCOL_GET_PROTOCOL));
@@ -350,7 +353,7 @@ EFI_STATUS EfiMain(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable)
 
 	
 	//We need an initial memory map to know physical address space for PFN DB
-	params.MemoryMap.Size *= 2;//Increase allocation size to leave room for additional allocations
+	params.MemoryMap.Size *= 2;//*params.MemoryMap.DescriptorSize;//Increase allocation size to leave room for additional allocations
 	ReturnIfNotSuccess(BS->AllocatePool(EfiBootServicesData, params.MemoryMap.Size, (void**)&params.MemoryMap.Table));
 	ReturnIfNotSuccess(BS->GetMemoryMap(&params.MemoryMap.Size, params.MemoryMap.Table, &memoryMapKey, &params.MemoryMap.DescriptorSize, &descriptorVersion));
 	DumpMemoryMap(params.MemoryMap);
@@ -473,7 +476,7 @@ EFI_STATUS EfiMain(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable)
 
 	//Retrieve map from UEFI
 	//This could fail on EFI_BUFFER_TOO_SMALL
-	params.MemoryMap.Size *= 2;//2*params.MemoryMap.DescriptorSize;
+	params.MemoryMap.Size *= 2;//*params.MemoryMap.DescriptorSize;
 	uefi_call_wrapper(BS->GetMemoryMap, 5, &params.MemoryMap.Size, params.MemoryMap.Table, &memoryMapKey, &params.MemoryMap.DescriptorSize, &descriptorVersion);
 
 	//Output final map to uart
@@ -488,6 +491,7 @@ EFI_STATUS EfiMain(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable)
 	if (EFI_ERROR(status)) 
 	{
 		//Some UEFIs need the call twise, so if this fails we call getmemoryMap again and try exiting bootservices again
+		params.MemoryMap.Size *= 2;// * params.MemoryMap.DescriptorSize;
 		uefi_call_wrapper(BS->GetMemoryMap, 5, &params.MemoryMap.Size, params.MemoryMap.Table, &memoryMapKey, &params.MemoryMap.DescriptorSize, &descriptorVersion);
 		ReturnIfNotSuccess(BS->ExitBootServices(ImageHandle, memoryMapKey));
 	}

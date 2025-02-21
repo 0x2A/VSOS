@@ -73,7 +73,6 @@
 
 #include <intrin.h>
 #include <cstdint>
-#include <bootboot/bootboot.h>
 #include <LoaderParams.h>
 #include <Assert.h>
 #include <mem\pagetables.h>

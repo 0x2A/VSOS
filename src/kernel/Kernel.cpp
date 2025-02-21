@@ -52,27 +52,19 @@ void Kernel::Initialize()
 	m_loadingScreen.Initialize();
 	m_printer = &m_loadingScreen;
 
-	Printf("Step1\r\n");
-
 	hal.initialize();
-
 
 	//Page tables
 	m_pool.Initialize();
 	PageTables::Pool = &m_pool;
 
-	Printf("Step2\r\n");
-
-
 	//Memory and Heap
-	//m_memoryMap.Display(); //These strings go on boot heap
+	//m_memoryMap.Display();
 	m_physicalMemory.Initialize(m_memoryMap);
 
 	//Copy from UEFI to kernel boot heap
 	m_memoryMap.Reallocate();
 	m_configTables.Reallocate();
-
-	Printf("Step3\r\n");
 
 	//Build new page table with just Kernel space
 	PageTables pageTables;
@@ -85,14 +77,26 @@ void Kernel::Initialize()
 	m_memoryMap.MapRuntime(pageTables);
 	hal.SetupPaging(pageTables.GetRoot());
 
-	Printf("Step4\r\n");
+	Printf("Page table created\r\n");
 
 	//Initialize heap now that paging works
 	m_heap.Initialize();
 
-	Printf("BareMetalOS.Kernel - Base:0x%16x Size: 0x%x\n", m_params.KernelAddress, m_params.KernelImageSize);
+	Printf("VSOS.Kernel  - Base:0x%16x Size: 0x%x\n", m_params.KernelAddress, m_params.KernelImageSize);
 	Printf("  PhysicalAddressSize: 0x%16x\n", m_memoryMap.GetPhysicalAddressSize());
 
+	//Test UEFI runtime access --> BUG: Doesn't work on qemu
+	//EFI_TIME time;
+	//Printf("Runtime 0x%16x\r\n", (uint64_t)m_params.Runtime->GetTime);
+	//m_runtime.GetTime(&time, nullptr);
+	//Printf("  Date: %02d-%02d-%02d %02d:%02d:%02d\n", time.Month, time.Day, time.Year, time.Hour, time.Minute, time.Second);
+	
+	//Initialize address spaces
+	m_librarySpace.Initialize();
+	m_pdbSpace.Initialize();
+	m_stackSpace.Initialize();
+	m_runtimeSpace.Initialize();
+	m_windowsSpace.Initialize();
 
 }
 

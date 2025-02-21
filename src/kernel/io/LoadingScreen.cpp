@@ -1,4 +1,5 @@
 #include "LoadingScreen.h"
+#include <kernel\Kernel.h>
 
 using namespace gfx;
 
@@ -16,7 +17,7 @@ void LoadingScreen::Initialize()
 	m_frameBuffer.FillScreen(Background);
 
 	m_frameBuffer.DrawFrameBorder(Border, 3);
-	m_frameBuffer.DrawText({ 9, 9 }, "VSOS", Foreground);
+	m_frameBuffer.DrawText({ 9, 9 }, "VSOS " KERNEL_VERSION " " KERNEL_DESCR, Foreground);
 	m_frameBuffer.DrawRectangle(Border, { 0, 30, m_frameBuffer.GetWidth(), 3 });
 }
 

@@ -1,5 +1,10 @@
 #pragma once
 
+
+#define KERNEL_VERSION	"0.1"
+#define KERNEL_DESCR	"dev"
+
+
 #include <efi.h>
 #include "gfx/EfiDisplay.h"
 #include "kernel/mem/MemoryMap.h"
