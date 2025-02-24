@@ -8,9 +8,9 @@
 #include "hal\x64\x64.h"
 #include "panic.h"
 #include "pdb/Pdb.h"
-#include "devices/SoftwareDevice.h"
+//#include "devices/SoftwareDevice.h"
 #include "drivers/io/RamDriveDriver.h"
-#include "devices\hv\HyperV_def.h"
+//#include "devices\hv\HyperV_def.h"
 #include "proc\Loader.h"
 #include "types\PortableExecutable.h"
 #include <Path.h>
@@ -102,6 +102,7 @@ void Kernel::Initialize()
 
 	m_HAL.InitDevices();
 
+	Printf("Current CPU id: %d, total: %d CPU(s)\r\n", m_HAL.CurrentCPU(), m_HAL.CPUCount());
 	//m_HAL.SendShutdown();
 
 }
@@ -200,6 +201,11 @@ void Kernel::Panic(const char* message)
 	Assert(false);
 }
 
+void Kernel::OnAPICTimerEvent()
+{
+	
+}
+
 void* Kernel::Allocate(const size_t size)
 {
 	if (m_heap.IsInitialized())
@@ -220,4 +226,9 @@ uint32_t Kernel::PrepareShutdown()
 {
 	//Nothing to do yet
 	return 0;
+}
+
+void* Kernel::VirtualMapRT(const void* address, const std::vector<paddr_t>& addresses)
+{
+	return m_virtualMemory.VirtualMap(address, addresses, m_runtimeSpace);
 }

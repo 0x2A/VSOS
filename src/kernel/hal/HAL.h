@@ -2,7 +2,9 @@
 #include "os.System.h"
 #include <map>
 #include "Interrupt.h"
-#include "kernel/devices/acpi/ACPI.h"
+#include "devices/acpi/ACPI.h"
+#include "devices/apic/APIC.h"
+#include "devices\CPU.h"
 
 #define PLATFORM_X64  defined(__x86_64__) || defined(_M_X64)
 
@@ -41,10 +43,23 @@ public:
 	void AddDevice(Device* device);
 	void SendShutdown();
 
+	uint64_t ReadMSR(uint32_t port);
+
+	ACPI* GetACPI() { return &m_ACPI; }
+
+	void RegisterCPU(uint8_t id);
+
+	uint8_t CurrentCPU();
+	uint8_t CPUCount() { return m_NumCPUs; }
+
 private:
 	void EOI();
 
 	//Interrupts
 	std::map<uint8_t, InterruptContext>* m_interruptHandlers;
 	ACPI m_ACPI;
+	APIC m_APIC;
+
+	CPU* m_CPUS[MAX_CPUS];
+	uint8_t m_NumCPUs;
 };

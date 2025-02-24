@@ -5,7 +5,7 @@
 #include <bitset>
 #include <intrin.h>
 #include <windows/types.h>
-#include "kernel/devices/hv/HyperV_def.h"
+#include "kernel/hal/devices/hv/HyperV_def.h"
 #include "kernel/os/Time.h"
 #include "os.internal.h"
 

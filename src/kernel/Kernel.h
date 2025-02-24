@@ -8,7 +8,7 @@
 #include <efi.h>
 #include "gfx/EfiDisplay.h"
 #include "kernel/mem/MemoryMap.h"
-#include "devices/ConfigTables.h"
+#include "hal/devices/ConfigTables.h"
 extern "C"
 {
 #include <acpi.h>
@@ -18,8 +18,8 @@ extern "C"
 #include <map>
 #include "mem/BootHeap.h"
 //#include "Debugger.h"
-#include "devices/DeviceTree.h"
-#include "kernel/devices/hv/HyperVTimer.h"
+//#include "devices/DeviceTree.h"
+//#include "kernel/devices/hv/HyperVTimer.h"
 //#include "HyperV.h"
 #include "kernel/mem/PMM.h"
 #include "kernel/mem/VAS.h"
@@ -41,10 +41,10 @@ extern "C"
 #include "mem/PageTablesPool.h"
 
 #include <memory>
-#include "drivers\DriverManager.h"
-#include "devices\SMBios.h"
+//#include "drivers\DriverManager.h"
+//#include "devices\SMBios.h"
 //#include "obj\KFile.h"
-#include "devices\LocalAPIC.h"
+//#include "devices\LocalAPIC.h"
 #include "kernel/drivers/HyperV/HyperVPlatform.h"
 #include "hal\x64\interrupt.h"
 #include "hal\HAL.h"
@@ -74,12 +74,17 @@ public:
 
 	HAL* GetHAL() { return &m_HAL; }
 
+	void OnAPICTimerEvent();
 
 	void* Allocate(const size_t size);
 	void Deallocate(void* const address);
 
 
 	uint32_t PrepareShutdown();
+
+
+	//maps phyiscal to virtual address in runtime space
+	void* VirtualMapRT(const void* address, const std::vector<paddr_t>& addresses);
 
 private:
 

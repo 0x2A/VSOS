@@ -1,31 +1,34 @@
 #pragma once
 
-#include "Device.h"
+#include "kernel/hal/devices/Device.h"
 #include <map>
-extern "C"
+
+class HAL;
+class LocalAPIC : public Device
 {
-#include <acpi.h>
-}
-
-
-class LocalAPIC : public Device 
-{
-
 public:
-	LocalAPIC(uint64_t addr);
-
+	LocalAPIC(HAL* hal);
+	void Initialize(void* context) override;
 	void SetProcessorAPIC(uint8_t processorID, uint8_t apicID);
-	void Initialize() override;
 	const void* GetResource(uint32_t type) const override;
 	void DisplayDetails() const override;
+
 	void SignalEOI();
+	void ipi(int vector);
+
+	uint32_t id();
+
 private:
+	void CalibrateTimer();
 
 	uint32_t read(uint32_t reg);
 	void write(uint32_t reg, uint32_t data);
 
-	std::map<uint8_t, uint8_t> m_ProcessorAPICs; //maps processorID->APIC ID
 	uint64_t m_Addr;
+	HAL* m_HAL;
 
-	uint64_t timer_speed_us;
+	uint32_t apicCalibVal;
+
+	uint32_t Freq;
+	bool x2Apic;
 };

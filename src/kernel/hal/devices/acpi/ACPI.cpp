@@ -422,7 +422,7 @@ ACPI_STATUS ACPI::AcpiOsEnterSleep(UINT8 SleepState, UINT32 RegaValue, UINT32 Re
 	return AE_OK;
 }
 
-ACPI_TABLE_DESC* ACPI::GetAcpiTableBySignature(char sig[4])
+ACPI_TABLE_DESC* ACPI::GetAcpiTableBySignature(const char sig[4])
 {
 	for (int i = 0; i < MAX_ACPI_TABLES; i++)
 	{

@@ -6,9 +6,7 @@ Device::Device() :
 	Name(),
 	Description(),
 	Type(DeviceType::Unknown),
-	m_hid(),
-	m_children(),
-	m_driver()
+	m_hid()
 {
 
 }
@@ -22,6 +20,4 @@ void Device::Display() const
 
 	//this->DisplayDetails();
 
-	for (const auto& child : m_children)
-		child->Display();
 }

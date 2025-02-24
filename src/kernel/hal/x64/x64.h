@@ -104,6 +104,8 @@ public:
 	static void InitPIT();
 	static uint64_t ReadTSC();
 
+	static bool SupportsX2APIC();
+
 	static void EnableFSGSBASE();
 
 	//TSC Frequency in mhz

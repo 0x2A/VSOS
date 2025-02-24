@@ -508,6 +508,16 @@ uint64_t x64::ReadTSC()
 	return __rdtsc();
 }
 
+bool x64::SupportsX2APIC()
+{
+	int regs[4];
+	__cpuid(regs, 0x01);
+
+	if(regs[2] & (1 < 21))
+		return true;
+	return false;
+}
+
 void x64::EnableFSGSBASE()
 {
 	//Enable WRGSBASE instruction

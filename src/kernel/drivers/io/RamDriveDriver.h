@@ -1,7 +1,7 @@
 #pragma once
 
 #include "DiskDriver.h"
-#include "kernel/devices/Device.h"
+#include "kernel/hal/devices/Device.h"
 
 #include <memory>
 #include <Ramdrive.h>

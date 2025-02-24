@@ -6,6 +6,7 @@
 #include <intrin.h>
 #include "x64\interrupt.h"
 #include "kernel\kernel.h"
+#include "kernel\hal\devices\apic\APIC.h"
 
 //defined in context.asm
 extern "C" extern void _x64_save_context(void* context);
@@ -13,10 +14,18 @@ extern "C" extern void _x64_init_context(void* context, void* const entry, void*
 extern "C" extern void _x64_load_context(void* context);
 extern "C" extern void _x64_user_thread_start(void* context, void* teb);
 
-HAL::HAL(ConfigTables* configTables)
-: m_ACPI(this, configTables)
-{
 
+uint32_t OnTimer0Interrupt(void* arg)
+{
+	Kernel* kernel = (Kernel*)arg;
+	kernel->OnAPICTimerEvent();
+
+	return 0;
+}
+
+HAL::HAL(ConfigTables* configTables)
+: m_ACPI(this, configTables), m_APIC(this), m_NumCPUs(0)
+{
 }
 
 void HAL::initialize()
@@ -174,6 +183,12 @@ void HAL::HandleInterrupt(uint8_t vector, INTERRUPT_FRAME* frame)
 void HAL::InitDevices()
 {
 	m_ACPI.Init();
+
+	m_APIC.Init();
+
+	RegisterInterrupt((uint8_t)X64_INTERRUPT_VECTOR::Timer0, { OnTimer0Interrupt, &kernel });
+
+
 }
 
 uint32_t HAL::ReadPort(uint32_t port, uint32_t width)
@@ -214,9 +229,26 @@ void HAL::SendShutdown()
 	m_ACPI.PowerOffSystem();
 }
 
+uint64_t HAL::ReadMSR(uint32_t port)
+{
+	return __readmsr(port);
+}
+
+void HAL::RegisterCPU(uint8_t id)
+{
+	CPU* cpu = new CPU(m_APIC.GetLocalAPIC());
+	m_CPUS[id] = cpu;
+	m_NumCPUs++;
+}
+
+uint8_t HAL::CurrentCPU()
+{
+	return m_APIC.GetLocalAPIC()->id();
+}
+
 void HAL::EOI()
 {
-	//TODO
+	m_APIC.EOI();
 }
 
 
@@ -225,6 +257,7 @@ extern "C" void INTERRUPT_HANDLER(X64_INTERRUPT_VECTOR vector, X64_INTERRUPT_FRA
 {
 	kernel.GetHAL()->HandleInterrupt((uint8_t)vector, frame);
 }
+
 
 
 #endif

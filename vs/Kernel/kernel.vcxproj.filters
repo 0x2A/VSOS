@@ -18,9 +18,6 @@
     <Filter Include="Quelldateien\types">
       <UniqueIdentifier>{4ebcecb9-bfdf-4130-bb7d-8ca2b7decf17}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Quelldateien\devices">
-      <UniqueIdentifier>{0ecd0538-fd1e-4528-8246-ae181fba6535}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Quelldateien\io">
       <UniqueIdentifier>{060c4cd9-a174-4b29-9cde-bfa7e3c18a03}</UniqueIdentifier>
     </Filter>
@@ -36,8 +33,14 @@
     <Filter Include="Quelldateien\objects">
       <UniqueIdentifier>{8af33250-fd42-4335-aa98-de66193bdbb8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Quelldateien\devices\acpi">
+    <Filter Include="Quelldateien\hal\devices">
+      <UniqueIdentifier>{0ecd0538-fd1e-4528-8246-ae181fba6535}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\hal\devices\acpi">
       <UniqueIdentifier>{90bafce3-ddbd-4c82-8cd7-76231334ca9e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\hal\devices\apic">
+      <UniqueIdentifier>{2b8f161f-690e-4afd-9179-f710330f3109}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -89,9 +92,6 @@
     <ClCompile Include="..\..\src\kernel\mem\MemoryMap.cpp">
       <Filter>Quelldateien\mem</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\kernel\devices\ConfigTables.cpp">
-      <Filter>Quelldateien\devices</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\kernel\mem\VMM.cpp">
       <Filter>Quelldateien\mem</Filter>
     </ClCompile>
@@ -110,8 +110,26 @@
     <ClCompile Include="..\..\src\Kernel\hal\HAL_x64.cpp">
       <Filter>Quelldateien\hal\x64</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\kernel\devices\acpi\ACPI.cpp">
-      <Filter>Quelldateien\devices\acpi</Filter>
+    <ClCompile Include="..\..\src\kernel\hal\devices\ConfigTables.cpp">
+      <Filter>Quelldateien\hal\devices</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\kernel\hal\devices\acpi\ACPI.cpp">
+      <Filter>Quelldateien\hal\devices\acpi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\kernel\hal\devices\apic\APIC.cpp">
+      <Filter>Quelldateien\hal\devices\apic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\kernel\hal\devices\apic\LocalAPIC.cpp">
+      <Filter>Quelldateien\hal\devices\apic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\kernel\hal\devices\apic\IOAPIC.cpp">
+      <Filter>Quelldateien\hal\devices\apic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\kernel\hal\devices\Device.cpp">
+      <Filter>Quelldateien\hal\devices</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\kernel\hal\devices\CPU.cpp">
+      <Filter>Quelldateien\hal\devices</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -144,9 +162,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\kernel\mem\MemoryMap.h">
       <Filter>Quelldateien\mem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\kernel\devices\ConfigTables.h">
-      <Filter>Quelldateien\devices</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\kernel\mem\VMM.h">
       <Filter>Quelldateien\mem</Filter>
@@ -202,11 +217,26 @@
     <ClInclude Include="..\..\src\kernel\objects\UObject.h">
       <Filter>Quelldateien\objects</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\kernel\devices\acpi\ACPI.h">
-      <Filter>Quelldateien\devices\acpi</Filter>
+    <ClInclude Include="..\..\src\kernel\hal\devices\ConfigTables.h">
+      <Filter>Quelldateien\hal\devices</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\kernel\devices\LocalAPIC.h">
-      <Filter>Quelldateien\devices</Filter>
+    <ClInclude Include="..\..\src\kernel\hal\devices\acpi\ACPI.h">
+      <Filter>Quelldateien\hal\devices\acpi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\hal\devices\apic\APIC.h">
+      <Filter>Quelldateien\hal\devices\apic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\hal\devices\apic\LocalAPIC.h">
+      <Filter>Quelldateien\hal\devices\apic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\hal\devices\apic\IOAPIC.h">
+      <Filter>Quelldateien\hal\devices\apic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\hal\devices\Device.h">
+      <Filter>Quelldateien\hal\devices</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\hal\devices\CPU.h">
+      <Filter>Quelldateien\hal\devices</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

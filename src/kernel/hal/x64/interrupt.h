@@ -74,6 +74,7 @@ enum class X64_INTERRUPT_VECTOR : uint8_t
 	//IRQs
 	IRQ_BASE = 0x20,
 	PITChannel0 = 0x20,
+	IRQ_ERROR = 0x33,
 
 	Timer0 = 0x80,
 	COM2 = 0x83,
