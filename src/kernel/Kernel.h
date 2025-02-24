@@ -31,7 +31,7 @@ extern "C"
 #include "kernel/sched/KThread.h"
 #include "kernel/proc/UProc.h"
 //#include "WindowingSystem.h"
-#include "Kernel/Obj/KEvent.h"
+//#include "Kernel/Obj/KEvent.h"
 #include "os.Arch.h"
 #include "kernel/os/Types.h"
 //#include "user/MetalOS.h"
@@ -41,10 +41,9 @@ extern "C"
 #include "mem/PageTablesPool.h"
 
 #include <memory>
-#include "devices\ACPI_interop.h"
 #include "drivers\DriverManager.h"
 #include "devices\SMBios.h"
-#include "obj\KFile.h"
+//#include "obj\KFile.h"
 #include "devices\LocalAPIC.h"
 #include "kernel/drivers/HyperV/HyperVPlatform.h"
 #include "hal\x64\interrupt.h"
@@ -73,16 +72,18 @@ public:
 
 	__declspec(noreturn) void Panic(const char* message);
 
-	HAL* GetHAL() { return &hal; }
+	HAL* GetHAL() { return &m_HAL; }
 
 
 	void* Allocate(const size_t size);
 	void Deallocate(void* const address);
 
 
+	uint32_t PrepareShutdown();
+
 private:
 
-	HAL hal;
+	HAL m_HAL;
 
 	//Boot params
 	const LoaderParams& m_params;

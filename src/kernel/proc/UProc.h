@@ -4,7 +4,7 @@
 #include <string>
 #include <cstdint>
 #include <set>
-#include "kernel/obj/KSignalObject.h"
+#include "kernel/Objects/KSignalObject.h"
 
 #include <memory>
 #include <map>
@@ -15,7 +15,7 @@
 #include <mem\pagetables.h>
 #include <kernel\mem\BootHeap.h>
 #include "UserRingBuffer.h"
-#include <kernel\obj\UObject.h>
+#include <kernel\objects\UObject.h>
 
 enum class ProcessState
 {

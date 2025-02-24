@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ConfigTables.h"
+#include "kernel/devices/ConfigTables.h"
 #include <vector>
 
 extern "C"
@@ -10,19 +10,16 @@ extern "C"
 
 #define MAX_ACPI_TABLES 16
 
-class ACPI_Interop
+class HAL;
+class ACPI
 {
 
 public:
-	ACPI_Interop(ConfigTables* configTables, EFI_RUNTIME_SERVICES* runtimeServices);
+	ACPI(HAL* hal, ConfigTables* configTables);
 
-	ACPI_STATUS AcpiOsInitialize();
-	ACPI_STATUS AcpiOsTerminate();
 	ACPI_PHYSICAL_ADDRESS AcpiOsGetRootPointer();
-	ACPI_STATUS AcpiOsPredefinedOverride(const ACPI_PREDEFINED_NAMES* PredefinedObject, ACPI_STRING* NewValue);
-	ACPI_STATUS AcpiOsTableOverride(ACPI_TABLE_HEADER* ExistingTable, ACPI_TABLE_HEADER** NewTable);
 	void* AcpiOsMapMemory(ACPI_PHYSICAL_ADDRESS PhysicalAddress, ACPI_SIZE Length);
-	void AcpiOsUnmapMemory(void* where, ACPI_SIZE length);
+	
 	ACPI_STATUS AcpiOsGetPhysicalAddress(void* LogicalAddress, ACPI_PHYSICAL_ADDRESS* PhysicalAddress);
 	void* AcpiOsAllocate(ACPI_SIZE Size);
 	void AcpiOsFree(void* Memory);
@@ -82,5 +79,5 @@ private:
 	EFI_RUNTIME_SERVICES* m_RuntimeServices;
 
 	ACPI_PHYSICAL_ADDRESS acpiRoot;
-
+	HAL* m_HAL;
 };

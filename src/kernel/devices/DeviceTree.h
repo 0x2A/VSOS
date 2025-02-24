@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Device.h"
-#include "AcpiDevice.h"
+#include "acpi/AcpiDevice.h"
 
 class DeviceTree
 {

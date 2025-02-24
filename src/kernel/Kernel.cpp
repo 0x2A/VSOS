@@ -39,7 +39,8 @@ Kernel::Kernel(const LoaderParams& params, BootHeap& bootHeap) :
 	m_pdbSpace(KernelPdbStart, KernelPdbEnd, true),
 	m_stackSpace(KernelStackStart, KernelStackEnd, true),
 	m_runtimeSpace(KernelRuntimeStart, KernelRuntimeEnd, true),
-	m_windowsSpace(KernelWindowsStart, KernelWindowsEnd, true)
+	m_windowsSpace(KernelWindowsStart, KernelWindowsEnd, true),
+	m_HAL(&m_configTables)
 {
 
 }
@@ -52,7 +53,7 @@ void Kernel::Initialize()
 	m_loadingScreen.Initialize();
 	m_printer = &m_loadingScreen;
 
-	hal.initialize();
+	m_HAL.initialize();
 
 	//Page tables
 	m_pool.Initialize();
@@ -75,7 +76,7 @@ void Kernel::Initialize()
 	pageTables.MapPages(KernelPageFrameDBStart, m_params.PageFrameAddr, SizeToPages(m_physicalMemory.GetSize()), true);
 	pageTables.MapPages(KernelKernelPdb, m_params.PdbAddress, SizeToPages(m_params.PdbSize), true);
 	m_memoryMap.MapRuntime(pageTables);
-	hal.SetupPaging(pageTables.GetRoot());
+	m_HAL.SetupPaging(pageTables.GetRoot());
 
 	Printf("Page table created\r\n");
 
@@ -98,6 +99,10 @@ void Kernel::Initialize()
 	m_runtimeSpace.Initialize();
 	m_windowsSpace.Initialize();
 
+
+	m_HAL.InitDevices();
+
+	//m_HAL.SendShutdown();
 
 }
 
@@ -141,7 +146,7 @@ void Kernel::Bugcheck(const char* file, const char* line, const char* format, va
 		this->Printf("\n");
 
 		while (true)
-			hal.Wait();
+			m_HAL.Halt();
 	}
 	inBugcheck = true;
 
@@ -159,7 +164,7 @@ void Kernel::Bugcheck(const char* file, const char* line, const char* format, va
 	}
 	*/
 	X64_CONTEXT context = {};
-	hal.SaveContext(&context);
+	m_HAL.SaveContext(&context);
 	//this->ShowStack(&context);
 
 	//if (m_scheduler.Enabled)
@@ -170,7 +175,7 @@ void Kernel::Bugcheck(const char* file, const char* line, const char* format, va
 
 	//Pause
 	while (true)
-		hal.Wait();
+		m_HAL.Halt();
 }
 
 void Kernel::Panic(const char* message)
@@ -181,7 +186,7 @@ void Kernel::Panic(const char* message)
 	m_display.DrawText({ 10,30 }, message, gfx::Colors::Red);
 
 	X64_CONTEXT context = {};
-	hal.SaveContext(&context);
+	m_HAL.SaveContext(&context);
 
 	m_display.DrawText({ 10,65 }, "CPU Context:", gfx::Colors::Red);
 
@@ -209,4 +214,10 @@ void Kernel::Deallocate(void* const address)
 		m_heap.Deallocate(address);
 	else
 		return m_bootHeap.Deallocate(address);
+}
+
+uint32_t Kernel::PrepareShutdown()
+{
+	//Nothing to do yet
+	return 0;
 }

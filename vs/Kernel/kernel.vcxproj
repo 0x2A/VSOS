@@ -131,6 +131,7 @@
     <ClCompile Include="..\..\src\core_crt\string.c" />
     <ClCompile Include="..\..\src\core_crt\wchar.c" />
     <ClCompile Include="..\..\src\kernel\cpp_mem.cpp" />
+    <ClCompile Include="..\..\src\kernel\devices\acpi\ACPI.cpp" />
     <ClCompile Include="..\..\src\kernel\devices\ConfigTables.cpp" />
     <ClCompile Include="..\..\src\Kernel\hal\HAL_x64.cpp" />
     <ClCompile Include="..\..\src\kernel\hal\x64\x64.cpp" />
@@ -156,7 +157,9 @@
     <ClInclude Include="..\..\src\gfx\Font.h" />
     <ClInclude Include="..\..\src\gfx\FrameBuffer.h" />
     <ClInclude Include="..\..\src\gfx\Types.h" />
+    <ClInclude Include="..\..\src\kernel\devices\acpi\ACPI.h" />
     <ClInclude Include="..\..\src\kernel\devices\ConfigTables.h" />
+    <ClInclude Include="..\..\src\kernel\devices\LocalAPIC.h" />
     <ClInclude Include="..\..\src\Kernel\hal\HAL.h" />
     <ClInclude Include="..\..\src\Kernel\hal\Interrupt.h" />
     <ClInclude Include="..\..\src\kernel\hal\x64\ctrlregs.h" />
@@ -172,6 +175,9 @@
     <ClInclude Include="..\..\src\kernel\mem\PMM.h" />
     <ClInclude Include="..\..\src\kernel\mem\VAS.h" />
     <ClInclude Include="..\..\src\kernel\mem\VMM.h" />
+    <ClInclude Include="..\..\src\kernel\objects\KFile.h" />
+    <ClInclude Include="..\..\src\kernel\objects\KSignalObject.h" />
+    <ClInclude Include="..\..\src\kernel\objects\UObject.h" />
     <ClInclude Include="..\..\src\kernel\panic.h" />
     <ClInclude Include="..\..\src\kernel\types\BitVector.h" />
     <ClInclude Include="..\..\src\mem\pagetables.h" />

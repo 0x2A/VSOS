@@ -13,6 +13,12 @@ extern "C" extern void _x64_init_context(void* context, void* const entry, void*
 extern "C" extern void _x64_load_context(void* context);
 extern "C" extern void _x64_user_thread_start(void* context, void* teb);
 
+HAL::HAL(ConfigTables* configTables)
+: m_ACPI(this, configTables)
+{
+
+}
+
 void HAL::initialize()
 {
 	x64::SetupDescriptorTables();
@@ -29,7 +35,7 @@ void HAL::SetupPaging(paddr_t root)
 }
 
 
-void HAL::Wait()
+void HAL::Halt()
 {
 	__halt();
 }
@@ -47,7 +53,7 @@ void HAL::HandleInterrupt(uint8_t vector, INTERRUPT_FRAME* frame)
 	if (x64Vector == X64_INTERRUPT_VECTOR::DoubleFault)
 	{
 		//KePauseSystem();
-		kernel.Panic("Double Fault!\r\n");
+		kernel.Panic("AAHH PANIC AT THE DISCO: Double Fault!\r\n");
 		__halt();
 	}
 
@@ -155,15 +161,63 @@ void HAL::HandleInterrupt(uint8_t vector, INTERRUPT_FRAME* frame)
 
 	void HAL::RegisterInterrupt(uint8_t vector, InterruptContext context)
 	{
-		if (m_interruptHandlers->find(vector) != m_interruptHandlers->end())
-			m_interruptHandlers->erase(vector);
+		UnRegisterInterrupt(vector);
 		m_interruptHandlers->insert({ vector, context });
 	}
 
-	void HAL::EOI()
+	void HAL::UnRegisterInterrupt(uint8_t vector)
 	{
-		//TODO
+		if (m_interruptHandlers->find(vector) != m_interruptHandlers->end())
+			m_interruptHandlers->erase(vector);
 	}
+
+void HAL::InitDevices()
+{
+	m_ACPI.Init();
+}
+
+uint32_t HAL::ReadPort(uint32_t port, uint32_t width)
+{
+	switch (width)
+	{
+	case 8:
+		return __inbyte(port);
+	case 16:
+		return __inword(port);
+	case 32:
+		return __indword(port);
+	default:
+		return 0;
+	}
+}
+
+void HAL::WritePort(uint32_t port, uint32_t value, uint8_t width)
+{
+	switch (width)
+	{
+	case 8:
+		return __outbyte(port, value);
+	case 16:
+		return __outword(port, value);
+	case 32:
+		return __outdword(port, value);
+	}
+}
+
+void HAL::AddDevice(Device* device)
+{
+	//TODO
+}
+
+void HAL::SendShutdown()
+{
+	m_ACPI.PowerOffSystem();
+}
+
+void HAL::EOI()
+{
+	//TODO
+}
 
 
 

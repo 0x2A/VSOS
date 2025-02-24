@@ -2,7 +2,7 @@
 #include <Assert.h>
 
 #include "kernel/Kernel.h"
-#include <kernel\arch\x64\ctrlregs.h>
+#include <kernel\hal\x64\ctrlregs.h>
 
 // ------------------------------------------------------------------------------------------------
 // Local APIC Registers

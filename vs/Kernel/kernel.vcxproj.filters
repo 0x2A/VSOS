@@ -33,6 +33,12 @@
     <Filter Include="Quelldateien\gfx">
       <UniqueIdentifier>{7faa5250-af90-4f49-b669-e184b1b7664b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Quelldateien\objects">
+      <UniqueIdentifier>{8af33250-fd42-4335-aa98-de66193bdbb8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\devices\acpi">
+      <UniqueIdentifier>{90bafce3-ddbd-4c82-8cd7-76231334ca9e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\kernel\main.cpp">
@@ -103,6 +109,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Kernel\hal\HAL_x64.cpp">
       <Filter>Quelldateien\hal\x64</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\kernel\devices\acpi\ACPI.cpp">
+      <Filter>Quelldateien\devices\acpi</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -183,6 +192,21 @@
     </ClInclude>
     <ClInclude Include="..\..\src\kernel\hal\x64\interrupt.h">
       <Filter>Quelldateien\hal\x64</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\objects\KFile.h">
+      <Filter>Quelldateien\objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\objects\KSignalObject.h">
+      <Filter>Quelldateien\objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\objects\UObject.h">
+      <Filter>Quelldateien\objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\devices\acpi\ACPI.h">
+      <Filter>Quelldateien\devices\acpi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\devices\LocalAPIC.h">
+      <Filter>Quelldateien\devices</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
