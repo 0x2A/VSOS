@@ -131,6 +131,12 @@
     <ClCompile Include="..\..\src\kernel\hal\devices\CPU.cpp">
       <Filter>Quelldateien\hal\devices</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\kernel\hal\devices\SMBios.cpp">
+      <Filter>Quelldateien\hal\devices</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\kernel\hal\devices\PCI.cpp">
+      <Filter>Quelldateien\hal\devices</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\kernel\main.h">
@@ -236,6 +242,12 @@
       <Filter>Quelldateien\hal\devices</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\kernel\hal\devices\CPU.h">
+      <Filter>Quelldateien\hal\devices</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\hal\devices\SMBios.h">
+      <Filter>Quelldateien\hal\devices</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\hal\devices\PCI.h">
       <Filter>Quelldateien\hal\devices</Filter>
     </ClInclude>
   </ItemGroup>

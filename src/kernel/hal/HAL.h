@@ -5,6 +5,8 @@
 #include "devices/acpi/ACPI.h"
 #include "devices/apic/APIC.h"
 #include "devices\CPU.h"
+#include "devices\SMBios.h"
+#include "devices\PCI.h"
 
 #define PLATFORM_X64  defined(__x86_64__) || defined(_M_X64)
 
@@ -62,4 +64,11 @@ private:
 
 	CPU* m_CPUS[MAX_CPUS];
 	uint8_t m_NumCPUs;
+	
+	bool m_HasSMBIOS;
+	SMBios m_SMBios;
+
+	PCIController m_PCI;
+
+	ConfigTables* m_ConfigTables;
 };

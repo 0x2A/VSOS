@@ -138,6 +138,8 @@
     <ClCompile Include="..\..\src\kernel\hal\devices\ConfigTables.cpp" />
     <ClCompile Include="..\..\src\kernel\hal\devices\CPU.cpp" />
     <ClCompile Include="..\..\src\kernel\hal\devices\Device.cpp" />
+    <ClCompile Include="..\..\src\kernel\hal\devices\PCI.cpp" />
+    <ClCompile Include="..\..\src\kernel\hal\devices\SMBios.cpp" />
     <ClCompile Include="..\..\src\Kernel\hal\HAL_x64.cpp" />
     <ClCompile Include="..\..\src\kernel\hal\x64\x64.cpp" />
     <ClCompile Include="..\..\src\kernel\io\LoadingScreen.cpp" />
@@ -169,6 +171,8 @@
     <ClInclude Include="..\..\src\kernel\hal\devices\ConfigTables.h" />
     <ClInclude Include="..\..\src\kernel\hal\devices\CPU.h" />
     <ClInclude Include="..\..\src\kernel\hal\devices\Device.h" />
+    <ClInclude Include="..\..\src\kernel\hal\devices\PCI.h" />
+    <ClInclude Include="..\..\src\kernel\hal\devices\SMBios.h" />
     <ClInclude Include="..\..\src\Kernel\hal\HAL.h" />
     <ClInclude Include="..\..\src\Kernel\hal\Interrupt.h" />
     <ClInclude Include="..\..\src\kernel\hal\x64\ctrlregs.h" />

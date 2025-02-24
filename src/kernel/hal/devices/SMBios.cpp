@@ -11,17 +11,18 @@ SMBios::SMBios()
 bool SMBios::Init(uint64_t ESP)
 {
 	//Handle unaligned addresses
+
+	if(ESP == 0x0)
+		return false;
 	
-	header = (EPS_64*)kernel.MapPhysicalMemory(ESP, sizeof(EPS_64), KernelIoStart);
-	
-	//header = (EPS_64*)kernel.VirtualMap(0x0, { ESP });
+	header = (EPS_64*)kernel.VirtualMapRT(0x0, {ESP});
 	
 	if(memcmp(header->Anchor, "_SM3_", 5) != 0)
 		return false;
 	
-	//Printf("SMBIOS: cs: 0x%x, l: %d, v: %d.%d, addr: 0x%16x\r\n", header->Checksum, header->EntryLength, header->MajorVersion, header->MinorVersion, header->TableAddress);
 	
-	SMBIOSHeader* tbl = (SMBIOSHeader*)kernel.MapPhysicalMemory(header->TableAddress, sizeof(SMBIOSHeader)*512, KernelIoStart);;
+	
+	SMBIOSHeader* tbl = (SMBIOSHeader*)kernel.VirtualMapRT(0x0, {header->TableAddress});
 
 	smBiosVersion = header->MajorVersion * 10 + header->MinorVersion;
 	

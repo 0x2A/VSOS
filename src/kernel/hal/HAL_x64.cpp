@@ -24,7 +24,8 @@ uint32_t OnTimer0Interrupt(void* arg)
 }
 
 HAL::HAL(ConfigTables* configTables)
-: m_ACPI(this, configTables), m_APIC(this), m_NumCPUs(0)
+: m_ACPI(this, configTables), m_APIC(this), m_NumCPUs(0), m_ConfigTables(configTables),
+	m_PCI(this)
 {
 }
 
@@ -189,6 +190,13 @@ void HAL::InitDevices()
 	RegisterInterrupt((uint8_t)X64_INTERRUPT_VECTOR::Timer0, { OnTimer0Interrupt, &kernel });
 
 
+	uint64_t eps = (uint64_t)m_ConfigTables->GetSMBiosTable();
+	if(!(m_HasSMBIOS = m_SMBios.Init(eps)))
+	{
+		Printf("Failed to init SMBIOS\r\n");
+	}
+
+	m_PCI.Initialize(nullptr);
 }
 
 uint32_t HAL::ReadPort(uint32_t port, uint32_t width)

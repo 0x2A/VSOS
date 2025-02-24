@@ -105,6 +105,10 @@ void Kernel::Initialize()
 	Printf("Current CPU id: %d, total: %d CPU(s)\r\n", m_HAL.CurrentCPU(), m_HAL.CPUCount());
 	//m_HAL.SendShutdown();
 
+
+	Printf("Running idle...\r\n");
+	while(true)
+		__halt();
 }
 
 
