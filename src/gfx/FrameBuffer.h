@@ -40,6 +40,7 @@ namespace gfx
 
 		void DrawPoint(const Color color, const Point2D& point)
 		{
+			if(point.X < 0 || point.X >= GetWidth() || point.Y < 0 || point.Y >= GetHeight()) return;
 			Color* dst = GetBuffer() + (point.Y) * GetWidth() + point.X;
 			*dst = color;
 		}
@@ -142,6 +143,7 @@ namespace gfx
 			}
 
 		}
+				
 		Point2D DrawText(const Point2D position, const std::string& text, const Color color, bool scroll = true)
 		{
 			Point2D pos = position;
@@ -150,7 +152,7 @@ namespace gfx
 				if (c == '\n')
 				{
 					pos.Y += m_font.GetFontHeight();
-					pos.X = position.X;
+					pos.X = 0;
 				}
 				else if (c == '\t')
 				{
@@ -160,7 +162,7 @@ namespace gfx
 				{
 					if (pos.X >= GetWidth())
 					{
-						pos.X = position.X;
+						pos.X = 0;
 						pos.Y += m_font.GetFontHeight();
 					}
 

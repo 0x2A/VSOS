@@ -17,6 +17,8 @@ public:
 
 	LocalAPIC* GetLocalAPIC() { return &m_local_apic; } 
 
+	IOAPIC* GetIOAPIC() { return &m_io_apic; }
+
 protected:
 	LocalAPIC m_local_apic;
 	IOAPIC m_io_apic;

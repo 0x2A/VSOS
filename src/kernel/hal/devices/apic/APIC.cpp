@@ -55,6 +55,7 @@ void APIC::Init()
 			ACPI_MADT_LOCAL_APIC* localApic = (ACPI_MADT_LOCAL_APIC*)entry;
 			if (localApic->LapicFlags & ACPI_MADT_ENABLED)
 			{
+				//Printf(__FUNCTION__": Initialising Local APIC\r\n");
 				m_local_apic.SetProcessorAPIC(localApic->ProcessorId, localApic->Id);
 				//Printf("Found local APIC (%d) for CPU (%d)\r\n", localApic->Id, localApic->ProcessorId);
 			}
@@ -63,7 +64,7 @@ void APIC::Init()
 		{
 			ACPI_MADT_IO_APIC* ioApic = (ACPI_MADT_IO_APIC*)entry;
 
-			Printf(__FUNCTION__": Initialising LOCAL APIC\r\n");
+			Printf(__FUNCTION__": Initialising IO APIC\r\n");
 			m_io_apic.Initialize(ioApic);
 		}
 		else if (header->Type == ACPI_MADT_TYPE_INTERRUPT_OVERRIDE)
@@ -87,6 +88,10 @@ void APIC::Init()
 
 	Printf(__FUNCTION__": Disable PIC\r\n");
 	disable_pic();
+
+	//Setting IMCR register to 0x01h, force 8529A interrupt pass signal to I/O APIC
+	m_HAL->WritePort(0x22, 0x70, 8);
+	m_HAL->WritePort(0x23, 0x01, 8);
 }
 
 void APIC::disable_pic()

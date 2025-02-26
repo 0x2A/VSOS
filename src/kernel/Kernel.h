@@ -82,9 +82,13 @@ public:
 
 	uint32_t PrepareShutdown();
 
+	void* MapPhysicalMemory(uint64_t PhysicalAddress, uint64_t Length, KernelAddress mapStartAddr = KernelSharedPageStart);
 
 	//maps phyiscal to virtual address in runtime space
 	void* VirtualMapRT(const void* address, const std::vector<paddr_t>& addresses);
+
+
+	LoadingScreen* GetLoadingScreen() { return &m_loadingScreen; }
 
 private:
 

@@ -4,6 +4,7 @@
 #include <type_traits>
 #include <gfx\Types.h>
 #include <string>
+#include <kernel\drivers\io\KeyboardDriver.h>
 
 typedef void* Handle;
 typedef void* HThread;
@@ -98,17 +99,6 @@ enum class MessageType
 struct MessageHeader
 {
 	MessageType MessageType;
-};
-
-
-typedef uint16_t VirtualKey;
-struct KeyEvent
-{
-	VirtualKey Key;
-	struct
-	{
-		uint16_t Pressed : 1;
-	} Flags;
 };
 
 struct MouseButtonState

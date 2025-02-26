@@ -7,6 +7,7 @@
 #include "devices\CPU.h"
 #include "devices\SMBios.h"
 #include "devices\PCI.h"
+#include <kernel\drivers\DriverManager.h>
 
 #define PLATFORM_X64  defined(__x86_64__) || defined(_M_X64)
 
@@ -54,6 +55,12 @@ public:
 	uint8_t CurrentCPU();
 	uint8_t CPUCount() { return m_NumCPUs; }
 
+	void ActivateDrivers();
+
+	void SetInterruptRedirect(const interrupt_redirect_t* redirectStruct);
+
+	DriverManager* driverManager;
+
 private:
 	void EOI();
 
@@ -71,4 +78,5 @@ private:
 	PCIController m_PCI;
 
 	ConfigTables* m_ConfigTables;
+
 };

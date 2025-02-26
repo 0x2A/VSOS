@@ -12,7 +12,8 @@ public:
 
 	void Initialize();
 	virtual void Write(const std::string& string) override;
-	const gfx::FrameBuffer& GetFramebuffer() const { return m_frameBuffer; }
+	gfx::FrameBuffer* GetFramebuffer() { return &m_frameBuffer; }
+	void RemoveChar();
 
 private:
 	static constexpr gfx::Color Foreground = gfx::Colors::White;

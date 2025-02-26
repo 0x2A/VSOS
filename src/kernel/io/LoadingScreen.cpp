@@ -30,3 +30,9 @@ void LoadingScreen::Write(const std::string& string)
 
 	
 }
+
+void LoadingScreen::RemoveChar()
+{
+	m_frameBuffer.DrawRectangle(gfx::Colors::Black, {xPos-8, yPos, 8, 16 });
+	xPos -= 8;
+}

@@ -131,6 +131,10 @@
     <ClCompile Include="..\..\src\core_crt\string.c" />
     <ClCompile Include="..\..\src\core_crt\wchar.c" />
     <ClCompile Include="..\..\src\kernel\cpp_mem.cpp" />
+    <ClCompile Include="..\..\src\kernel\drivers\Driver.cpp" />
+    <ClCompile Include="..\..\src\kernel\drivers\DriverManager.cpp" />
+    <ClCompile Include="..\..\src\kernel\drivers\io\KeyboardDriver.cpp" />
+    <ClCompile Include="..\..\src\kernel\drivers\io\MouseDriver.cpp" />
     <ClCompile Include="..\..\src\kernel\hal\devices\acpi\ACPI.cpp" />
     <ClCompile Include="..\..\src\kernel\hal\devices\apic\APIC.cpp" />
     <ClCompile Include="..\..\src\kernel\hal\devices\apic\IOAPIC.cpp" />
@@ -164,6 +168,10 @@
     <ClInclude Include="..\..\src\gfx\Font.h" />
     <ClInclude Include="..\..\src\gfx\FrameBuffer.h" />
     <ClInclude Include="..\..\src\gfx\Types.h" />
+    <ClInclude Include="..\..\src\kernel\drivers\Driver.h" />
+    <ClInclude Include="..\..\src\kernel\drivers\DriverManager.h" />
+    <ClInclude Include="..\..\src\kernel\drivers\io\KeyboardDriver.h" />
+    <ClInclude Include="..\..\src\kernel\drivers\io\MouseDriver.h" />
     <ClInclude Include="..\..\src\kernel\hal\devices\acpi\ACPI.h" />
     <ClInclude Include="..\..\src\kernel\hal\devices\apic\APIC.h" />
     <ClInclude Include="..\..\src\kernel\hal\devices\apic\IOAPIC.h" />
@@ -171,6 +179,8 @@
     <ClInclude Include="..\..\src\kernel\hal\devices\ConfigTables.h" />
     <ClInclude Include="..\..\src\kernel\hal\devices\CPU.h" />
     <ClInclude Include="..\..\src\kernel\hal\devices\Device.h" />
+    <ClInclude Include="..\..\src\kernel\hal\devices\io\GenericKeyboard.h" />
+    <ClInclude Include="..\..\src\kernel\hal\devices\io\GenericMouse.h" />
     <ClInclude Include="..\..\src\kernel\hal\devices\PCI.h" />
     <ClInclude Include="..\..\src\kernel\hal\devices\SMBios.h" />
     <ClInclude Include="..\..\src\Kernel\hal\HAL.h" />
@@ -188,6 +198,7 @@
     <ClInclude Include="..\..\src\kernel\mem\PMM.h" />
     <ClInclude Include="..\..\src\kernel\mem\VAS.h" />
     <ClInclude Include="..\..\src\kernel\mem\VMM.h" />
+    <ClInclude Include="..\..\src\kernel\objects\KEvent.h" />
     <ClInclude Include="..\..\src\kernel\objects\KFile.h" />
     <ClInclude Include="..\..\src\kernel\objects\KSignalObject.h" />
     <ClInclude Include="..\..\src\kernel\objects\UObject.h" />

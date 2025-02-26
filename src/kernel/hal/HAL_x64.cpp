@@ -7,6 +7,8 @@
 #include "x64\interrupt.h"
 #include "kernel\kernel.h"
 #include "kernel\hal\devices\apic\APIC.h"
+#include <kernel\drivers\io\KeyboardDriver.h>
+#include <kernel\drivers\io\MouseDriver.h>
 
 //defined in context.asm
 extern "C" extern void _x64_save_context(void* context);
@@ -183,11 +185,13 @@ void HAL::HandleInterrupt(uint8_t vector, INTERRUPT_FRAME* frame)
 
 void HAL::InitDevices()
 {
+	driverManager = new DriverManager();
+
+	RegisterInterrupt((uint8_t)X64_INTERRUPT_VECTOR::Timer0, { OnTimer0Interrupt, &kernel });
+
 	m_ACPI.Init();
 
 	m_APIC.Init();
-
-	RegisterInterrupt((uint8_t)X64_INTERRUPT_VECTOR::Timer0, { OnTimer0Interrupt, &kernel });
 
 
 	uint64_t eps = (uint64_t)m_ConfigTables->GetSMBiosTable();
@@ -197,6 +201,17 @@ void HAL::InitDevices()
 	}
 
 	m_PCI.Initialize(nullptr);
+
+
+	KeyboardDriver* keyboardDriver = new KeyboardDriver(this);
+	driverManager->AddDriver(keyboardDriver);
+	
+	DefaultKeyboardInterpreter* interpreter = new DefaultKeyboardInterpreter();
+	keyboardDriver->SetKeyboardInterpreter(interpreter);
+
+	MouseDriver* mouseDriver = new MouseDriver(this);
+	driverManager->AddDriver(mouseDriver);
+
 }
 
 uint32_t HAL::ReadPort(uint32_t port, uint32_t width)
@@ -252,6 +267,24 @@ void HAL::RegisterCPU(uint8_t id)
 uint8_t HAL::CurrentCPU()
 {
 	return m_APIC.GetLocalAPIC()->id();
+}
+
+void HAL::ActivateDrivers()
+{
+
+
+	for (auto driver : driverManager->Drivers)
+	{
+		driver->Initialize();
+
+		driver->Activate();
+	}
+	
+}
+
+void HAL::SetInterruptRedirect(const interrupt_redirect_t* redirectStruct)
+{
+	m_APIC.GetIOAPIC()->SetRedirection(redirectStruct);
 }
 
 void HAL::EOI()

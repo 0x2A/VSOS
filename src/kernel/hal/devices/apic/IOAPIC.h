@@ -1,6 +1,7 @@
 #pragma once
 
 #include "kernel/hal/devices/Device.h"
+#include "kernel/hal/Interrupt.h"
 
 class HAL;
 class IOAPIC : public Device
@@ -17,6 +18,8 @@ public:
 	};
 	#pragma pack(pop)
 
+
+
 	IOAPIC(HAL* hal);
 
 	void Initialize(void* context) override;
@@ -26,6 +29,8 @@ public:
 
 
 	void DisplayDetails() const override;
+
+	void SetRedirection(const interrupt_redirect_t* redirect);
 
 
 	void RegisterOverrideEntry(uint8_t indx, Override ovr);
@@ -93,5 +98,6 @@ private:
 	uint8_t m_max_redirect_entry;
 	uint8_t m_version;
 
+	uint32_t m_override_array_size;
 	Override m_override_array[0x10];
 };

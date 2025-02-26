@@ -42,6 +42,15 @@
     <Filter Include="Quelldateien\hal\devices\apic">
       <UniqueIdentifier>{2b8f161f-690e-4afd-9179-f710330f3109}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Quelldateien\drivers">
+      <UniqueIdentifier>{ab07efb2-af6f-45db-b79f-62b781befda3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\drivers\io">
+      <UniqueIdentifier>{f9dbf33e-6f47-4d61-872e-f869f4687390}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\hal\devices\io">
+      <UniqueIdentifier>{6632ec68-04e1-4426-a358-2a92a7a11024}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\kernel\main.cpp">
@@ -136,6 +145,18 @@
     </ClCompile>
     <ClCompile Include="..\..\src\kernel\hal\devices\PCI.cpp">
       <Filter>Quelldateien\hal\devices</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\kernel\drivers\Driver.cpp">
+      <Filter>Quelldateien\drivers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\kernel\drivers\DriverManager.cpp">
+      <Filter>Quelldateien\drivers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\kernel\drivers\io\KeyboardDriver.cpp">
+      <Filter>Quelldateien\drivers\io</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\kernel\drivers\io\MouseDriver.cpp">
+      <Filter>Quelldateien\drivers\io</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -249,6 +270,27 @@
     </ClInclude>
     <ClInclude Include="..\..\src\kernel\hal\devices\PCI.h">
       <Filter>Quelldateien\hal\devices</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\drivers\Driver.h">
+      <Filter>Quelldateien\drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\drivers\DriverManager.h">
+      <Filter>Quelldateien\drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\drivers\io\KeyboardDriver.h">
+      <Filter>Quelldateien\drivers\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\objects\KEvent.h">
+      <Filter>Quelldateien\objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\drivers\io\MouseDriver.h">
+      <Filter>Quelldateien\drivers\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\hal\devices\io\GenericMouse.h">
+      <Filter>Quelldateien\hal\devices\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\hal\devices\io\GenericKeyboard.h">
+      <Filter>Quelldateien\hal\devices\io</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

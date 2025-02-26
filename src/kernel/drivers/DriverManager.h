@@ -9,11 +9,14 @@ class DriverManager
 {
 public:
 	DriverManager();
+	~DriverManager();
 
-	void Initialize();
-	Driver* CreateDriverForDevice(Device* device);
+	void AddDriver(Driver* driver);
+	void RemoveDriver(Driver* driver);
+	void OnDriverSelected(Driver*);
+
+	std::list<Driver*> Drivers;
 
 private:
 
-	std::list<Driver*> m_Drivers;
 };

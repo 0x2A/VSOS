@@ -107,10 +107,11 @@ void LocalAPIC::Initialize(void* context)
 	{
 		// Enable x2APIC
 		uint64_t msr_info = __readmsr(0x1B);
+		Printf(__FUNCTION__": 0x%16x\r\n", msr_info);
 		msr_info |= (1 << 10);
 		__writemsr(0x1B, __readmsr(0x1B) | 0xc00);
 		Printf(__FUNCTION__": x2APIC Enabled\r\n");
-		//return;
+		return;
 	}
 	else
 		m_Addr = (uint64_t)kernel.VirtualMapRT(0x0, { m_Addr });
@@ -127,6 +128,9 @@ void LocalAPIC::Initialize(void* context)
 	// Read the APIC version
 	uint32_t version = read(LAPIC_VER);
 	Printf("LAPIC Version: 0x%x\n", version & 0xFF);
+
+	//write(LAPIC_DFR, 0xffffffff); //flat mode
+	//write(LAPIC_LDR, 0x01000000); // All cpus use logical id 1
 
 	// The timer repeatedly counts down at bus frequency
 	// from lapic[TICR] and then issues an interrupt.  
@@ -175,13 +179,14 @@ void LocalAPIC::Initialize(void* context)
 	write(LAPIC_EOI, 0);
 
 	// Send an Init Level De-Assert to synchronize arbitration ID's.
-	write(LAPIC_ICRHI, 0);
-	write(LAPIC_ICRLO, ICR_ALL_INCLUDING_SELF | ICR_INIT | ICR_LEVEL);
-	while (read(LAPIC_ICRLO) & ICR_SEND_PENDING)
-		;
+	//write(LAPIC_ICRHI, 0);
+	//write(LAPIC_ICRLO, ICR_ALL_INCLUDING_SELF | ICR_INIT | ICR_LEVEL);
+	//while (read(LAPIC_ICRLO) & ICR_SEND_PENDING)
+//		;
 
 	// Enable interrupts on the APIC (but not on the processor).
 	write(LAPIC_TPR, 0);
+
 	Printf("LAPIC Initialized\n");
 }
 
