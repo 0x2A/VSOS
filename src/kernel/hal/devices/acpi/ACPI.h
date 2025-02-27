@@ -2,6 +2,8 @@
 
 #include "kernel/hal/devices/ConfigTables.h"
 #include <vector>
+#include "ACPIDevice.h"
+#include "kernel/hal/devices/PCI.h"
 
 extern "C"
 {
@@ -19,13 +21,14 @@ public:
 
 
 	void Init();
-	bool parseMADT();
 
 	uint32_t RemapIRQ(uint32_t irq);
 
 	void PowerOffSystem();
 
 	ACPI_TABLE_DESC* GetAcpiTableBySignature(const char sig[4]);
+
+	void EnumerateDevices();
 
 	ACPI_TABLE_DESC acpi_tables[MAX_ACPI_TABLES];
 	bool HasPMTimer;
@@ -53,6 +56,15 @@ public:
 private:
 
 	ACPI_TABLE_MADT* GetMADTTable();
+	void parseMcfg();
+
+	static ACPI_STATUS
+		EvaluateOneDevice(
+			ACPI_HANDLE                     ObjHandle,
+			UINT32                          NestingLevel,
+			void* Context,
+			void** ReturnValue);
+
 	
 	//bool hasLegacyDevices; // System has LPC or ISA bus devices
 	//bool hasPS2; //System has an 8042 controller on port 60/64 */
@@ -62,4 +74,11 @@ private:
 
 	ACPI_PHYSICAL_ADDRESS acpiRoot;
 	HAL* m_HAL;
+
+	ACPI_HANDLE SysBusHandle;
+
+	std::vector<AcpiDevice*> m_ACPIDevices;
+	std::vector< ACPI_MCFG_ALLOCATION*> m_PciEnhancedSegments;
+
+	PciBusRounting* g_routingTable[PciLimits::Buses];
 };

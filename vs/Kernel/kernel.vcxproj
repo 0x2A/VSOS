@@ -135,7 +135,9 @@
     <ClCompile Include="..\..\src\kernel\drivers\DriverManager.cpp" />
     <ClCompile Include="..\..\src\kernel\drivers\io\KeyboardDriver.cpp" />
     <ClCompile Include="..\..\src\kernel\drivers\io\MouseDriver.cpp" />
+    <ClCompile Include="..\..\src\kernel\drivers\platform\Clock.cpp" />
     <ClCompile Include="..\..\src\kernel\hal\devices\acpi\ACPI.cpp" />
+    <ClCompile Include="..\..\src\kernel\hal\devices\acpi\ACPIDevice.cpp" />
     <ClCompile Include="..\..\src\kernel\hal\devices\apic\APIC.cpp" />
     <ClCompile Include="..\..\src\kernel\hal\devices\apic\IOAPIC.cpp" />
     <ClCompile Include="..\..\src\kernel\hal\devices\apic\LocalAPIC.cpp" />
@@ -172,7 +174,9 @@
     <ClInclude Include="..\..\src\kernel\drivers\DriverManager.h" />
     <ClInclude Include="..\..\src\kernel\drivers\io\KeyboardDriver.h" />
     <ClInclude Include="..\..\src\kernel\drivers\io\MouseDriver.h" />
+    <ClInclude Include="..\..\src\kernel\drivers\platform\Clock.h" />
     <ClInclude Include="..\..\src\kernel\hal\devices\acpi\ACPI.h" />
+    <ClInclude Include="..\..\src\kernel\hal\devices\acpi\ACPIDevice.h" />
     <ClInclude Include="..\..\src\kernel\hal\devices\apic\APIC.h" />
     <ClInclude Include="..\..\src\kernel\hal\devices\apic\IOAPIC.h" />
     <ClInclude Include="..\..\src\kernel\hal\devices\apic\LocalAPIC.h" />
@@ -203,6 +207,7 @@
     <ClInclude Include="..\..\src\kernel\objects\KSignalObject.h" />
     <ClInclude Include="..\..\src\kernel\objects\UObject.h" />
     <ClInclude Include="..\..\src\kernel\panic.h" />
+    <ClInclude Include="..\..\src\kernel\time.h" />
     <ClInclude Include="..\..\src\kernel\types\BitVector.h" />
     <ClInclude Include="..\..\src\mem\pagetables.h" />
     <ClInclude Include="..\..\src\mem\PageTablesPool.h" />

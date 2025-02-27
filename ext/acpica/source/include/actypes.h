@@ -233,9 +233,13 @@
 #ifndef ACPI_USE_SYSTEM_INTTYPES
 
 #if !defined(__cplusplus)
-typedef unsigned char                   BOOLEAN;
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
+typedef _Bool BOOLEAN;
 #else
-typedef bool                   BOOLEAN;
+typedef unsigned char BOOLEAN;
+#endif
+#else
+typedef bool BOOLEAN;
 #endif
 typedef unsigned char                   UINT8;
 typedef unsigned short                  UINT16;

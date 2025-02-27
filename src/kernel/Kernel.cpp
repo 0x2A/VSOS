@@ -175,6 +175,13 @@ void Kernel::Initialize()
 
 
 	Printf("Running idle...\r\n");
+
+	m_HAL.GetClock()->delay(3000);
+	Printf("Hello after 3 sec!\r\n");
+
+	Time time = m_HAL.GetClock()->get_time();
+	Printf("  Date: %02d-%02d-%02d %02d:%02d:%02d UTC\n", time.day, time.month, time.year, time.hour, time.minute, time.second);
+
 	while(true)
 		__halt();
 }
@@ -273,10 +280,6 @@ void Kernel::Panic(const char* message)
 	Assert(false);
 }
 
-void Kernel::OnAPICTimerEvent()
-{
-	//Printf("TICK\r\n");
-}
 
 void* Kernel::Allocate(const size_t size)
 {

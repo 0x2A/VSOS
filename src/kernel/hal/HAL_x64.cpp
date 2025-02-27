@@ -17,17 +17,10 @@ extern "C" extern void _x64_load_context(void* context);
 extern "C" extern void _x64_user_thread_start(void* context, void* teb);
 
 
-uint32_t OnTimer0Interrupt(void* arg)
-{
-	Kernel* kernel = (Kernel*)arg;
-	kernel->OnAPICTimerEvent();
-
-	return 0;
-}
 
 HAL::HAL(ConfigTables* configTables)
 : m_ACPI(this, configTables), m_APIC(this), m_NumCPUs(0), m_ConfigTables(configTables),
-	m_PCI(this)
+	m_PCI(this), m_Clock(this)
 {
 }
 
@@ -74,13 +67,20 @@ void HAL::HandleInterrupt(uint8_t vector, INTERRUPT_FRAME* frame)
 	{
 		//m_debugger.DebuggerEvent(vector, frame);
 		//return;
-	}	
+	}
 
 	const auto& it = m_interruptHandlers->find(vector);
 	if (it != m_interruptHandlers->end())
 	{
 		InterruptContext ctx = it->second;
 		ctx.Handler(ctx.Context);
+		EOI();
+		return;
+	}
+
+	if (x64Vector == X64_INTERRUPT_VECTOR::Timer0)
+	{
+		//If timer0 is not registered yet we just ignore it, since it might be triggering before timer is hooked to the interrupt
 		EOI();
 		return;
 	}
@@ -187,18 +187,17 @@ void HAL::InitDevices()
 {
 	driverManager = new DriverManager();
 
-	RegisterInterrupt((uint8_t)X64_INTERRUPT_VECTOR::Timer0, { OnTimer0Interrupt, &kernel });
-
 	m_ACPI.Init();
 
 	m_APIC.Init();
-
 
 	uint64_t eps = (uint64_t)m_ConfigTables->GetSMBiosTable();
 	if(!(m_HasSMBIOS = m_SMBios.Init(eps)))
 	{
 		Printf("Failed to init SMBIOS\r\n");
 	}
+
+	m_ACPI.EnumerateDevices();
 
 	m_PCI.Initialize(nullptr);
 
@@ -212,6 +211,7 @@ void HAL::InitDevices()
 	MouseDriver* mouseDriver = new MouseDriver(this);
 	driverManager->AddDriver(mouseDriver);
 
+	driverManager->AddDriver(&m_Clock);
 }
 
 uint32_t HAL::ReadPort(uint32_t port, uint32_t width)
@@ -287,12 +287,11 @@ void HAL::SetInterruptRedirect(const interrupt_redirect_t* redirectStruct)
 	m_APIC.GetIOAPIC()->SetRedirection(redirectStruct);
 }
 
+
 void HAL::EOI()
 {
 	m_APIC.EOI();
 }
-
-
 
 extern "C" void INTERRUPT_HANDLER(X64_INTERRUPT_VECTOR vector, X64_INTERRUPT_FRAME* frame)
 {

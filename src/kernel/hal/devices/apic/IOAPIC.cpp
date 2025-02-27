@@ -23,7 +23,7 @@ void IOAPIC::Initialize(void* context)
 
 	m_GlobalIrqBase = ioApic->GlobalIrqBase;
 	m_Addr = (uint64_t)kernel.VirtualMapRT(0x0, {ioApic->Address});
-
+	m_PhysicalAddr = ioApic->Address;
 
 	// Get the IO APIC version and max redirection entry
 	m_version = ReadReg(Version);
@@ -31,8 +31,8 @@ void IOAPIC::Initialize(void* context)
 
 	// Log the IO APIC information
 	Printf("IO APIC Addr: 0x%16x, Version: 0x%x\n", m_Addr, m_version);
-	Printf("IO APIC Max Redirection Entry: 0x%x\n", m_max_redirect_entry);
-	Printf("IO APIC Global IRQ Base: 0x%x\r\n", m_GlobalIrqBase);
+	//Printf("IO APIC Max Redirection Entry: 0x%x\n", m_max_redirect_entry);
+	//Printf("IO APIC Global IRQ Base: 0x%x\r\n", m_GlobalIrqBase);
 
 
 
@@ -86,7 +86,7 @@ void IOAPIC::SetRedirection(const interrupt_redirect_t* redirect)
 		break;
 	}
 
-	Printf("Writing redirect: vec: 0x%x, pin: %d\r\n", entry.InterruptVector, redirect->index);
+	Printf(__FUNCTION__": Writing redirect: vec: 0x%x, pin: %d\r\n", entry.InterruptVector, redirect->index);
 
 	WriteEntry(redirect->index, entry);
 }

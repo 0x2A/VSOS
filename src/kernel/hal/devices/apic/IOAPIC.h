@@ -94,6 +94,7 @@ private:
 
 	HAL* m_HAL;
 	uint64_t m_Addr;
+	uint64_t m_PhysicalAddr;
 	uint32_t m_GlobalIrqBase;
 	uint8_t m_max_redirect_entry;
 	uint8_t m_version;

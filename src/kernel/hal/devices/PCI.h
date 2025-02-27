@@ -2,8 +2,39 @@
 
 #include "kernel/hal/devices/Device.h"
 #include <string>
+#include <vector>
 
 class HAL;
+
+namespace PciLimits
+{
+	enum
+	{
+		Functions = 8,
+		Devices = 32,
+		Buses = 256,
+		Pins = 4
+	};
+}
+
+struct PciAddress
+{
+	unsigned int m_bus;
+	unsigned int m_device;
+	unsigned int m_function;
+};
+
+struct PciBusRounting
+{
+	PciBusRounting(unsigned int parent, unsigned int device)
+		: m_parent(parent)
+		, m_device(device)
+	{
+	}
+	unsigned int m_parent;
+	unsigned int m_device;
+	unsigned int m_irq[PciLimits::Devices][PciLimits::Pins] = {};
+};
 
 /**
          * @class PCIDeviceDescriptor
@@ -108,7 +139,9 @@ public:
 
 	void Initialize(void* context);
 	
-
+	bool RegisterRoutingBus(uint32_t bus, uint32_t parentBus, uint32_t device);
+	bool AddDeviceRouting(uint32_t bus, uint32_t device, uint32_t pin, uint32_t irq);
+	uint32_t getPciDeviceIrq(uint32_t bus, uint32_t device, uint32_t pin);
 private:
 	// I/O
 	uint32_t read(uint16_t bus, uint16_t device, uint16_t function, uint32_t registeroffset);
@@ -119,4 +152,7 @@ private:
 	BaseAddressRegister get_base_address_register(uint16_t bus, uint16_t device, uint16_t function, uint16_t bar);
 
 	HAL* m_HAL;
+
+	PciBusRounting* g_routingTable[PciLimits::Buses];
+	std::vector<PCIDeviceDescriptor> m_DeviceDescriptors;
 };

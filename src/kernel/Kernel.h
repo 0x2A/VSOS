@@ -74,8 +74,6 @@ public:
 
 	HAL* GetHAL() { return &m_HAL; }
 
-	void OnAPICTimerEvent();
-
 	void* Allocate(const size_t size);
 	void Deallocate(void* const address);
 

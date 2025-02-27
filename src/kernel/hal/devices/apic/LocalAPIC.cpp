@@ -81,7 +81,6 @@
 #define PIT_COMMAND	0x43
 
 
-#define APIC_TICKS_PER_SEC	100
 
 LocalAPIC::LocalAPIC(HAL* hal)
 : m_HAL(hal), x2Apic(false), Device(), m_Addr(0)
@@ -102,6 +101,7 @@ void LocalAPIC::Initialize(void* context)
 	
 	
 	m_Addr = (uint64_t)context;
+	m_PhysicalAddr = m_Addr;
 
 	if (x2Apic)
 	{
@@ -114,20 +114,23 @@ void LocalAPIC::Initialize(void* context)
 		return;
 	}
 	else
+	{
 		m_Addr = (uint64_t)kernel.VirtualMapRT(0x0, { m_Addr });
+	}
+		
 	
-	Printf("Local APIC Addr: 0x%16x\r\n", m_Addr);
 	// Get the vector table
 	uint32_t spurious_vector = read(LAPIC_SVR);
-	Printf("APIC Spurious Vector: 0x%x\n", spurious_vector & 0xFF);
+	//Printf("APIC Spurious Vector: 0x%x\n", spurious_vector & 0xFF);
 
 	// Enable the APIC; set spurious interrupt vector.
 	write(LAPIC_SVR, (1 << 8) | 0x100);
-	Printf("LAPIC Enabled\n");
+	//Printf("LAPIC Enabled\n");
 
 	// Read the APIC version
 	uint32_t version = read(LAPIC_VER);
-	Printf("LAPIC Version: 0x%x\n", version & 0xFF);
+	//Printf("LAPIC Version: 0x%x\n", version & 0xFF);
+	Printf("Local APIC Addr: 0x%16x, ver: 0x%x\r\n", m_Addr, version);
 
 	//write(LAPIC_DFR, 0xffffffff); //flat mode
 	//write(LAPIC_LDR, 0x01000000); // All cpus use logical id 1

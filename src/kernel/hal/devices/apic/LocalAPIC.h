@@ -3,6 +3,9 @@
 #include "kernel/hal/devices/Device.h"
 #include <map>
 
+
+#define APIC_TICKS_PER_SEC	100
+
 class HAL;
 class LocalAPIC : public Device
 {
@@ -16,6 +19,9 @@ public:
 	void SignalEOI();
 	void ipi(int vector);
 
+	const uint64_t GetAddr() { return m_Addr; }
+	const uint64_t GetPhysicalAddr() { return m_PhysicalAddr; }
+
 	uint32_t id();
 
 private:
@@ -25,6 +31,7 @@ private:
 	void write(uint32_t reg, uint32_t data);
 
 	uint64_t m_Addr;
+	uint64_t m_PhysicalAddr;
 	HAL* m_HAL;
 
 	uint32_t apicCalibVal;

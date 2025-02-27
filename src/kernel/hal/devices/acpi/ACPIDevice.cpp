@@ -20,7 +20,7 @@ AcpiDevice::AcpiDevice(const ACPI_HANDLE object) :
 
 }
 
-void AcpiDevice::Initialize()
+void AcpiDevice::Initialize(void* context)
 {
 	ACPI_BUFFER result = { ACPI_ALLOCATE_BUFFER, nullptr };
 	ACPI_STATUS status = AcpiGetName(m_acpiObject, ACPI_FULL_PATHNAME, &result);
@@ -40,10 +40,10 @@ void AcpiDevice::Initialize()
 		if(m_objectInfo->HardwareId.Length > 0)
 		{
 			m_hid = m_objectInfo->HardwareId.String;
-			//Printf("HID: %s\r\n", m_hid.c_str());
+			Printf("HID: %s\r\n", m_hid.c_str());
 		}
 
-		//Get description
+		//Get description if available
 		const AH_DEVICE_ID* id = ::AcpiAhMatchHardwareId(m_objectInfo->HardwareId.String);
 		if (id != NULL)
 		{
@@ -76,9 +76,9 @@ void AcpiDevice::Initialize()
 		}
 	
 	*/
-	//DDN
+	//DDN: Object that associates a logical software name (for example, COM1) with a device.
 	result = { ACPI_ALLOCATE_BUFFER, nullptr };
-	status = AcpiEvaluateObjectTyped(m_acpiObject, ACPI_STRING("_DDN"), nullptr, &result, ACPI_TYPE_STRING);
+	status = AcpiEvaluateObjectTyped(m_acpiObject, ACPI_STRING(METHOD_NAME__DDN), nullptr, &result, ACPI_TYPE_STRING);
 	if (ACPI_SUCCESS(status))
 	{
 		ACPI_OBJECT* object = (ACPI_OBJECT*)result.Pointer;
@@ -90,7 +90,18 @@ void AcpiDevice::Initialize()
 
 
 	//Wire up resources
-	AcpiWalkResources(m_acpiObject, ACPI_STRING("_CRS"), AcpiDevice::AttachResource, this);
+	AcpiWalkResources(m_acpiObject, ACPI_STRING(METHOD_NAME__CRS), AcpiDevice::AttachResource, this);
+
+	AcpiWalkResources(m_acpiObject, ACPI_STRING(METHOD_NAME__DMA), AcpiDevice::AttachDMA, this);
+
+	result = { ACPI_ALLOCATE_BUFFER, nullptr };
+	status = AcpiGetIrqRoutingTable(m_acpiObject, &result);
+	if (ACPI_SUCCESS(status))
+	{
+		ACPI_PCI_ROUTING_TABLE* routingTable = ACPI_CAST_PTR(ACPI_PCI_ROUTING_TABLE, result.Pointer);
+		Printf("Routing Table: %x, %x, %x, %x, %x\r\n", routingTable->Address, routingTable->Length, routingTable->Pin, routingTable->Source, routingTable->SourceIndex);
+	}
+
 }
 
 const void* AcpiDevice::GetResource(uint32_t type) const
@@ -221,10 +232,28 @@ ACPI_STATUS AcpiDevice::DisplayResource(const ACPI_RESOURCE& Resource)
 			Resource.Data.FixedMemory32.AddressLength,
 			Resource.Data.FixedMemory32.WriteProtect);
 		break;
+	case ACPI_RESOURCE_TYPE_DMA:
+		Printf("   DMA: BM=%d CC=%d Tr=%d Type=%d Int=",
+			Resource.Data.Dma.BusMaster,
+			Resource.Data.Dma.ChannelCount,
+			Resource.Data.Dma.Transfer,
+			Resource.Data.Dma.Type);
+		for(i = 0; i < Resource.Data.Dma.ChannelCount; i++)
+			Printf("%.02X ", Resource.Data.Dma.Channels[i]);
+		Printf("\n");
 	default:
 		Printf("    Unknown: Type=%d\n", Resource.Type);
 		break;
 
+	}
+	return AE_OK;
+}
+
+ACPI_STATUS AcpiDevice::AttachDMA(ACPI_RESOURCE* Resource, void* Context)
+{
+	if (Resource->Type == ACPI_RESOURCE_TYPE_DMA)
+	{
+		DisplayResource(*Resource);
 	}
 	return AE_OK;
 }

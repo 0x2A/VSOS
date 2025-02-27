@@ -4,10 +4,112 @@
 #include <OS.arch.h>
 #include <kernel\hal\x64\ctrlregs.h>
 
+#include "kernel/hal/devices/PCI.h"
+
 extern "C"
 {
 #include <acpi.h>
+#include <aclocal.h>
+	const AH_DEVICE_ID* AcpiAhMatchHardwareId(char* HardwareId);
 }
+
+
+
+/*
+   The figure below shows an example ACPI namespace.
+
+   +------+
+   | \    |                     Root
+   +------+
+	 |
+	 | +------+
+	 +-| _PR  |                 Scope(_PR): the processor namespace
+	 | +------+
+	 |   |
+	 |   | +------+
+	 |   +-| CPU0 |             Processor(CPU0): the first processor
+	 |     +------+
+	 |
+	 | +------+
+	 +-| _SB  |                 Scope(_SB): the system bus namespace
+	 | +------+
+	 |   |
+	 |   | +------+
+	 |   +-| LID0 |             Device(LID0); the lid device
+	 |   | +------+
+	 |   |   |
+	 |   |   | +------+
+	 |   |   +-| _HID |         Name(_HID, "PNP0C0D"): the hardware ID
+	 |   |   | +------+
+	 |   |   |
+	 |   |   | +------+
+	 |   |   +-| _STA |         Method(_STA): the status control method
+	 |   |     +------+
+	 |   |
+	 |   | +------+
+	 |   +-| PCI0 |             Device(PCI0); the PCI root bridge
+	 |     +------+
+	 |       |
+	 |       | +------+
+	 |       +-| _HID |         Name(_HID, "PNP0A08"): the hardware ID
+	 |       | +------+
+	 |       |
+	 |       | +------+
+	 |       +-| _CID |         Name(_CID, "PNP0A03"): the compatible ID
+	 |       | +------+
+	 |       |
+	 |       | +------+
+	 |       +-| RP03 |         Scope(RP03): the PCI0 power scope
+	 |       | +------+
+	 |       |   |
+	 |       |   | +------+
+	 |       |   +-| PXP3 |     PowerResource(PXP3): the PCI0 power resource
+	 |       |     +------+
+	 |       |
+	 |       | +------+
+	 |       +-| GFX0 |         Device(GFX0): the graphics adapter
+	 |         +------+
+	 |           |
+	 |           | +------+
+	 |           +-| _ADR |     Name(_ADR, 0x00020000): the PCI bus address
+	 |           | +------+
+	 |           |
+	 |           | +------+
+	 |           +-| DD01 |     Device(DD01): the LCD output device
+	 |             +------+
+	 |               |
+	 |               | +------+
+	 |               +-| _BCL | Method(_BCL): the backlight control method
+	 |                 +------+
+	 |
+	 | +------+
+	 +-| _TZ  |                 Scope(_TZ): the thermal zone namespace
+	 | +------+
+	 |   |
+	 |   | +------+
+	 |   +-| FN00 |             PowerResource(FN00): the FAN0 power resource
+	 |   | +------+
+	 |   |
+	 |   | +------+
+	 |   +-| FAN0 |             Device(FAN0): the FAN0 cooling device
+	 |   | +------+
+	 |   |   |
+	 |   |   | +------+
+	 |   |   +-| _HID |         Name(_HID, "PNP0A0B"): the hardware ID
+	 |   |     +------+
+	 |   |
+	 |   | +------+
+	 |   +-| TZ00 |             ThermalZone(TZ00); the FAN thermal zone
+	 |     +------+
+	 |
+	 | +------+
+	 +-| _GPE |                 Scope(_GPE): the GPE namespace ( GPE = General Purpose Event )
+	   +------+
+
+
+*/
+
+
 
 //Acpi is single threaded, just stub these out
 typedef int semaphore_t;
@@ -432,6 +534,7 @@ ACPI_TABLE_DESC* ACPI::GetAcpiTableBySignature(const char sig[4])
 	return nullptr;
 }
 
+
 void ACPI::Init()
 {
 
@@ -509,7 +612,17 @@ void ACPI::Init()
 			HasPMTimer = true;
 	}
 
+	//setIrqApicMode
+	ACPI_OBJECT_LIST param;
+	ACPI_OBJECT arg;
+	arg.Type = ACPI_TYPE_INTEGER;
+	arg.Integer.Value = 1;  // 1 = IOAPIC, 0 = PIC, 2 = IOSAPIC
+	param.Count = 1;
+	param.Pointer = &arg;
+	AcpiEvaluateObject(nullptr, ACPI_STRING("\\_PIC"), &param, nullptr);
 
+
+	parseMcfg();
 
 	//ACPI_TABLE_FADT* fadt_table = (ACPI_TABLE_FADT*)GetAcpiTableBySignature((char*)ACPI_SIG_FADT);
 	//hasLegacyDevices =  (fadt_table->BootFlags & ACPI_FADT_LEGACY_DEVICES);
@@ -554,46 +667,68 @@ ACPI_TABLE_MADT* ACPI::GetMADTTable()
 }
 
 
-bool ACPI::parseMADT()
+
+void ACPI::parseMcfg()
 {
-#if 0
-	ACPI_TABLE_MADT* madt = GetMADTTable();
-	if (!madt)
+	ACPI_TABLE_DESC* descr = GetAcpiTableBySignature((char*)ACPI_SIG_MCFG);
+	if (!descr)
 	{
-		return false;
+		Printf("Unable to retrieve MCFG table from ACPI\r\n");
+		return;
+	}
+	ACPI_TABLE_MCFG* mcfg;
+	if (descr->Flags & ACPI_TABLE_ORIGIN_INTERNAL_PHYSICAL)
+	{
+		mcfg = (ACPI_TABLE_MCFG*)(KernelAcpiStart +  descr->Address);
+	}
+	else
+		mcfg = (ACPI_TABLE_MCFG*)(descr->Address);
+
+	if (!mcfg || mcfg->Header.Signature != ACPI_SIG_MCFG)
+	{
+	
+		Printf("Invalid MCFG table from ACPI\r\n");
+		return;
 	}
 
-	uint64_t madt_end, entry;
-	entry = (uint64_t)madt;
-	uint64_t localApicAddr = madt->Address;
+	uint64_t mcfg_end, entry;
+	entry = (uint64_t)mcfg;
 
-	madt_end = entry + madt->Header.Length;
-	entry += sizeof(ACPI_TABLE_MADT);
+	mcfg_end = entry + mcfg->Header.Length;
+	entry += sizeof(ACPI_TABLE_MCFG);
+	while (entry + sizeof(ACPI_MCFG_ALLOCATION) < mcfg_end)
+	{
+		ACPI_MCFG_ALLOCATION* item = (ACPI_MCFG_ALLOCATION*)entry;
+		Printf("PCI enhanced segment, START_BUS = %d, END_BUS = %d, MMIO = 0x%x \r\n", static_cast<int>(item->StartBusNumber), static_cast<int>(item->EndBusNumber), item->Address);
 
-	Printf("Local APIC Address: 0x%0x16x\r\n", localApicAddr);
-	LocalAPIC* localApicDevice = new LocalAPIC(localApicAddr);
+		m_PciEnhancedSegments.push_back(item);
 
-	while (entry + sizeof(ACPI_SUBTABLE_HEADER) < madt_end) {
-		ACPI_SUBTABLE_HEADER* header =
-			(ACPI_SUBTABLE_HEADER*)entry;
-
-		if (header->Type == ACPI_MADT_TYPE_LOCAL_APIC)
-		{
-			ACPI_MADT_LOCAL_APIC* localApic = (ACPI_MADT_LOCAL_APIC*)entry;
-			if(localApic->LapicFlags & ACPI_MADT_ENABLED)
-			{
-				localApicDevice->SetProcessorAPIC(localApic->ProcessorId, localApic->Id);
-				Printf("Found local APIC (%d) for CPU (%d)\r\n", localApic->Id, localApic->ProcessorId);
-			}
-		}
-
-		entry += header->Length;
+		entry += sizeof(ACPI_MCFG_ALLOCATION);
 	}
-	localApicDevice->Initialize();
-	m_HAL->AddDevice(localApicDevice);
-#endif
-	return true;
 }
+
+bool getPciDeviceAddr(ACPI_HANDLE device, PciAddress& pciAddr, int parentPciBus)
+{
+	ACPI_BUFFER addrBuf;
+	ACPI_OBJECT obj;
+	addrBuf.Length = sizeof(obj);
+	addrBuf.Pointer = &obj;
+
+	if (AcpiEvaluateObject(device, ACPI_STRING(METHOD_NAME__ADR), nullptr, &addrBuf) == AE_OK)
+	{
+		const uint32_t pciDevAndFunc = obj.Integer.Value;
+		if (obj.Type == ACPI_TYPE_INTEGER)
+		{
+			pciAddr.m_bus = parentPciBus;
+			pciAddr.m_device = (pciDevAndFunc >> 16) & 0xFFFF;
+			pciAddr.m_function = pciDevAndFunc & 0xFFFF;
+			return true;
+		}
+	}
+
+	return false;
+}
+
 
 uint32_t ACPI::RemapIRQ(uint32_t irq)
 {
@@ -625,4 +760,129 @@ uint32_t ACPI::RemapIRQ(uint32_t irq)
 		entry += header->Length;
 	}
 	return irq;
+}
+
+struct CrsContext
+{
+	ACPI_PCI_ROUTING_TABLE* m_routingTable;
+	PCIController* pciController;
+	unsigned int m_bus;
+};
+
+ACPI_STATUS processCrs(ACPI_RESOURCE* resource, void* context)
+{
+	CrsContext* crsContext = (CrsContext*)context;
+	ACPI_PCI_ROUTING_TABLE* routingTable = crsContext->m_routingTable;
+	if (resource->Type == ACPI_RESOURCE_TYPE_IRQ)
+	{
+		const ACPI_RESOURCE_IRQ* irq = &resource->Data.Irq;
+		crsContext->pciController->AddDeviceRouting(crsContext->m_bus, (routingTable->Address >> 16), routingTable->Pin + 1, irq->Interrupts[routingTable->SourceIndex]);
+	}
+	else if (resource->Type == ACPI_RESOURCE_TYPE_EXTENDED_IRQ)
+	{
+		const ACPI_RESOURCE_EXTENDED_IRQ* irq = &resource->Data.ExtendedIrq;
+		crsContext->pciController->AddDeviceRouting(crsContext->m_bus, (routingTable->Address >> 16), routingTable->Pin + 1, irq->Interrupts[routingTable->SourceIndex]);
+	}
+	return AE_OK;
+}
+
+ACPI_STATUS acpiProcessSystemBridge(ACPI_HANDLE bridge, UINT32 level, void* context, void**)
+{
+	if (level >= 10)
+	{
+		Printf("ACPI: too long PCI bus depth\r\n");
+		return AE_ERROR;
+	}
+
+	PCIController* controller = (PCIController*)context;
+
+	ACPI_BUFFER addrBuf;
+	ACPI_OBJECT obj;
+	addrBuf.Length = sizeof(obj);
+	addrBuf.Pointer = &obj;
+
+	PciAddress pciAddr;
+	/*if (!getPciDeviceAddr(bridge, pciAddr, 0))
+	{
+
+		ACPI_DEVICE_INFO* info;
+		if (AcpiGetObjectInfo(bridge, &info) != AE_OK)
+		{
+			Printf("Unable to get PCI System bridge addr\r\n");
+			return AE_ERROR;
+		}
+	}*/
+
+	ACPI_BUFFER rtblBuf;
+	rtblBuf.Length = ACPI_ALLOCATE_BUFFER;
+	rtblBuf.Pointer = nullptr;
+	if (AcpiGetIrqRoutingTable(bridge, &rtblBuf) == AE_OK)
+	{
+		uint8_t* tableBytes = static_cast<uint8_t*>(rtblBuf.Pointer);
+		ACPI_PCI_ROUTING_TABLE* routingTable = static_cast<ACPI_PCI_ROUTING_TABLE*>(rtblBuf.Pointer);
+		if(!routingTable) return AE_ERROR;
+		while (routingTable->Length != 0)
+		{
+			if (routingTable->Source[0] == '\0')
+			{
+				controller->AddDeviceRouting(0, (routingTable->Address >> 16), routingTable->Pin + 1, routingTable->SourceIndex);
+			}
+			else
+			{
+				ACPI_HANDLE srcHadle;
+				if (AcpiGetHandle(bridge, routingTable->Source, &srcHadle) == AE_OK)
+				{
+					CrsContext ctx{ routingTable, controller, static_cast<unsigned int>(0) };
+					static char crsObject[] = "_CRS";
+					AcpiWalkResources(srcHadle, ACPI_STRING(METHOD_NAME__CRS), &processCrs, &ctx);
+				}
+			}
+			tableBytes += routingTable->Length;
+			routingTable = reinterpret_cast<ACPI_PCI_ROUTING_TABLE*>(tableBytes);
+		}
+	}
+
+
+	return AE_OK;
+}
+
+ACPI_STATUS ACPI::EvaluateOneDevice(ACPI_HANDLE ObjHandle, UINT32 NestingLevel, void* Context, void** ReturnValue)
+{
+	ACPI_DEVICE_INFO* info;
+	if (AcpiGetObjectInfo(ObjHandle, &info) != AE_OK)
+	{
+		Printf("Unable to get PCI System bridge addr\r\n");
+		return AE_ERROR;
+	}
+
+	if (info->HardwareId.Length > 0)
+	{
+		const AH_DEVICE_ID* id = ::AcpiAhMatchHardwareId(info->HardwareId.String);
+		if(id)
+			Printf("---- HID: %s, %s\r\n", id->Name, id->Description);
+		else
+			Printf("---- HID: %s\r\n", info->HardwareId.String);
+
+	}
+	
+	
+	return AE_OK;
+}
+
+
+
+void ACPI::EnumerateDevices()
+{
+	AcpiGetHandle(NULL, ACPI_STRING("\\_SB"), &SysBusHandle);
+
+	Printf("- Listing ACPI Devices: -\r\n");
+	//Construct ACPI root device
+	ACPI_HANDLE root;
+	ACPI_STATUS status = AcpiGetHandle(NULL, ACPI_STRING(ACPI_NS_ROOT_PATH), &root);
+	Assert(ACPI_SUCCESS(status));
+	
+	
+	AcpiWalkNamespace(ACPI_TYPE_DEVICE, SysBusHandle, INT_MAX, ACPI::EvaluateOneDevice, NULL, this, nullptr);
+
+	Printf("---------------------\r\n");
 }

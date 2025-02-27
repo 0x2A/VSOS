@@ -7,6 +7,7 @@
 #include "devices\CPU.h"
 #include "devices\SMBios.h"
 #include "devices\PCI.h"
+#include "kernel\drivers\platform\Clock.h"
 #include <kernel\drivers\DriverManager.h>
 
 #define PLATFORM_X64  defined(__x86_64__) || defined(_M_X64)
@@ -59,6 +60,10 @@ public:
 
 	void SetInterruptRedirect(const interrupt_redirect_t* redirectStruct);
 
+	Clock* GetClock() { return &m_Clock; }
+
+	PCIController* GetPCIController() { return &m_PCI; }
+
 	DriverManager* driverManager;
 
 private:
@@ -78,5 +83,8 @@ private:
 	PCIController m_PCI;
 
 	ConfigTables* m_ConfigTables;
+
+	//assume we always have a RTC (TODO: add check)
+	Clock m_Clock;
 
 };

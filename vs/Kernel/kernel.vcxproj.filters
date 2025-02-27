@@ -51,6 +51,9 @@
     <Filter Include="Quelldateien\hal\devices\io">
       <UniqueIdentifier>{6632ec68-04e1-4426-a358-2a92a7a11024}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Quelldateien\drivers\Platform">
+      <UniqueIdentifier>{041c3e13-e705-4c85-9db3-a7047ec2be5d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\kernel\main.cpp">
@@ -157,6 +160,12 @@
     </ClCompile>
     <ClCompile Include="..\..\src\kernel\drivers\io\MouseDriver.cpp">
       <Filter>Quelldateien\drivers\io</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\kernel\drivers\platform\Clock.cpp">
+      <Filter>Quelldateien\drivers\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\kernel\hal\devices\acpi\ACPIDevice.cpp">
+      <Filter>Quelldateien\hal\devices\acpi</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -291,6 +300,15 @@
     </ClInclude>
     <ClInclude Include="..\..\src\kernel\hal\devices\io\GenericKeyboard.h">
       <Filter>Quelldateien\hal\devices\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\drivers\platform\Clock.h">
+      <Filter>Quelldateien\drivers\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\time.h">
+      <Filter>Quelldateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\hal\devices\acpi\ACPIDevice.h">
+      <Filter>Quelldateien\hal\devices\acpi</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -13,6 +13,7 @@ PCIController::PCIController(HAL* hal)
 
 void PCIController::Initialize(void* context)
 {	
+	Printf("- Listing all PCI Devices: -\r\n");
 	//Brute force all busses
 	for (int bus = 0; bus < 8; ++bus) {
 		for (int device = 0; device < 32; ++device) {
@@ -32,11 +33,65 @@ void PCIController::Initialize(void* context)
 						deviceDescriptor.port_base = (uint32_t)bar.address;
 				}
 
-				Printf("PCI Device: %s, VID: 0x%x, DEV: 0x%x\r\n", deviceDescriptor.get_type(), deviceDescriptor.vendor_id, deviceDescriptor.device_id);
+				m_DeviceDescriptors.push_back(deviceDescriptor);
+				Printf("----- PCI: %s, VID: 0x%x, DEV: 0x%x\r\n", deviceDescriptor.get_type(), deviceDescriptor.vendor_id, deviceDescriptor.device_id);
 
 			}
 		}
 	}
+
+	Printf("---------------------\r\n");
+}
+
+bool PCIController::RegisterRoutingBus(uint32_t bus, uint32_t parentBus, uint32_t device)
+{
+	if ((bus >= PciLimits::Buses) || (parentBus >= PciLimits::Buses) || (device >= PciLimits::Devices))
+		return false;
+
+	g_routingTable[bus] = new PciBusRounting(parentBus, device);
+	return true;
+}
+
+bool PCIController::AddDeviceRouting(uint32_t bus, uint32_t device, uint32_t pin, uint32_t irq)
+{
+	
+	--pin;
+	if ((pin >= PciLimits::Pins) || (bus >= PciLimits::Buses) || (device >= PciLimits::Devices))
+		return false;
+
+	PciBusRounting* routing = g_routingTable[bus];
+	if (!routing)
+		return false;
+
+	routing->m_irq[device][pin] = irq;
+
+	Printf("PCI: Added device routing on bus %d, dev= %d, pin=%d, irq=%d\r\n", bus, device, pin, irq);
+	return true;
+}
+
+uint32_t PCIController::getPciDeviceIrq(uint32_t bus, uint32_t device, uint32_t pin)
+{
+	--pin;
+	if ((pin >= PciLimits::Pins) || (bus >= PciLimits::Buses) || (device >= PciLimits::Devices))
+		return 0;
+
+	const PciBusRounting* routing = g_routingTable[bus];
+	if (!routing)
+		return 0;
+
+	unsigned int irq = routing->m_irq[device][pin];
+	unsigned int offset = device + pin;
+	while (irq == 0)
+	{
+		const unsigned int paretBus = g_routingTable[bus]->m_parent;
+		if (bus == paretBus)
+			break;
+
+		offset += g_routingTable[bus]->m_device;
+		bus = paretBus;
+		irq = g_routingTable[bus]->m_irq[0][offset % PciLimits::Pins];
+	}
+	return irq;
 }
 
 uint32_t PCIController::read(uint16_t bus, uint16_t device, uint16_t function, uint32_t registeroffset)
