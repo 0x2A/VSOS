@@ -30,6 +30,11 @@ public:
 		return m_hid;
 	}
 
+	virtual void RegisterDriver(Driver* driver)
+	{
+		m_Driver = driver;
+	}
+
 	void Display() const;
 
 	std::string Name;
@@ -39,5 +44,6 @@ public:
 
 protected:
 	std::string m_hid;
+	Driver* m_Driver;
 	
 };

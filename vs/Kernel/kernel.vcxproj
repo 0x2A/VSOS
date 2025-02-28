@@ -133,6 +133,7 @@
     <ClCompile Include="..\..\src\kernel\cpp_mem.cpp" />
     <ClCompile Include="..\..\src\kernel\drivers\Driver.cpp" />
     <ClCompile Include="..\..\src\kernel\drivers\DriverManager.cpp" />
+    <ClCompile Include="..\..\src\kernel\drivers\io\AHCI.cpp" />
     <ClCompile Include="..\..\src\kernel\drivers\io\KeyboardDriver.cpp" />
     <ClCompile Include="..\..\src\kernel\drivers\io\MouseDriver.cpp" />
     <ClCompile Include="..\..\src\kernel\drivers\platform\Clock.cpp" />
@@ -144,7 +145,9 @@
     <ClCompile Include="..\..\src\kernel\hal\devices\ConfigTables.cpp" />
     <ClCompile Include="..\..\src\kernel\hal\devices\CPU.cpp" />
     <ClCompile Include="..\..\src\kernel\hal\devices\Device.cpp" />
-    <ClCompile Include="..\..\src\kernel\hal\devices\PCI.cpp" />
+    <ClCompile Include="..\..\src\kernel\hal\devices\DeviceTree.cpp" />
+    <ClCompile Include="..\..\src\kernel\hal\devices\pci\PCIBus.cpp" />
+    <ClCompile Include="..\..\src\kernel\hal\devices\pci\PCIDevice.cpp" />
     <ClCompile Include="..\..\src\kernel\hal\devices\SMBios.cpp" />
     <ClCompile Include="..\..\src\Kernel\hal\HAL_x64.cpp" />
     <ClCompile Include="..\..\src\kernel\hal\x64\x64.cpp" />
@@ -172,6 +175,7 @@
     <ClInclude Include="..\..\src\gfx\Types.h" />
     <ClInclude Include="..\..\src\kernel\drivers\Driver.h" />
     <ClInclude Include="..\..\src\kernel\drivers\DriverManager.h" />
+    <ClInclude Include="..\..\src\kernel\drivers\io\AHCI.h" />
     <ClInclude Include="..\..\src\kernel\drivers\io\KeyboardDriver.h" />
     <ClInclude Include="..\..\src\kernel\drivers\io\MouseDriver.h" />
     <ClInclude Include="..\..\src\kernel\drivers\platform\Clock.h" />
@@ -183,9 +187,11 @@
     <ClInclude Include="..\..\src\kernel\hal\devices\ConfigTables.h" />
     <ClInclude Include="..\..\src\kernel\hal\devices\CPU.h" />
     <ClInclude Include="..\..\src\kernel\hal\devices\Device.h" />
+    <ClInclude Include="..\..\src\kernel\hal\devices\DeviceTree.h" />
     <ClInclude Include="..\..\src\kernel\hal\devices\io\GenericKeyboard.h" />
     <ClInclude Include="..\..\src\kernel\hal\devices\io\GenericMouse.h" />
-    <ClInclude Include="..\..\src\kernel\hal\devices\PCI.h" />
+    <ClInclude Include="..\..\src\kernel\hal\devices\pci\PCIBus.h" />
+    <ClInclude Include="..\..\src\kernel\hal\devices\pci\PCIDevice.h" />
     <ClInclude Include="..\..\src\kernel\hal\devices\SMBios.h" />
     <ClInclude Include="..\..\src\Kernel\hal\HAL.h" />
     <ClInclude Include="..\..\src\Kernel\hal\Interrupt.h" />

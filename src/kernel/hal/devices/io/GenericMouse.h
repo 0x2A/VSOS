@@ -11,7 +11,7 @@ public:
 	GenericMouse()
 	{
 		Name = "Mouse";
-		Path = "HID\GEN_MOUSE";
+		Path = "HID\\GEN_MOUSE";
 		Description = "Generic Mouse";
 		Type = DeviceType::Mouse;
 	}

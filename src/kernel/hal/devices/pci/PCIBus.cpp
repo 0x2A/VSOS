@@ -1,17 +1,20 @@
-#include "PCI.h"
+#include "PCIBus.h"
 #include "kernel/hal/HAL.h"
 #include <Assert.h>
+#include "PCIDevice.h"
+#include <kernel\hal\devices\DeviceTree.h>
+#include <kernel\drivers\io\AHCI.h>
 
 #define PCI_PORT_COMMAND	0xCF8
 #define PCI_PORT_DATA		0xCFC
 
-PCIController::PCIController(HAL* hal)
+PCIBus::PCIBus(HAL* hal)
 	: m_HAL(hal)
 {
 
 }
 
-void PCIController::Initialize(void* context)
+void PCIBus::Initialize(void* context)
 {	
 	Printf("- Listing all PCI Devices: -\r\n");
 	//Brute force all busses
@@ -29,21 +32,31 @@ void PCIController::Initialize(void* context)
 				// Get port number
 				for (int barNum = 5; barNum >= 0; barNum--) {
 					BaseAddressRegister bar = get_base_address_register(bus, device, function, barNum);
+					
 					if (bar.address && (bar.type == InputOutput))
+					{
 						deviceDescriptor.port_base = (uint32_t)bar.address;
+						deviceDescriptor.has_port_base = true;
+					}
+
+					deviceDescriptor.bars[barNum] = bar;
 				}
 
 				m_DeviceDescriptors.push_back(deviceDescriptor);
-				Printf("----- PCI: %s, VID: 0x%x, DEV: 0x%x\r\n", deviceDescriptor.get_type(), deviceDescriptor.vendor_id, deviceDescriptor.device_id);
+				//Printf("----- PCI: %s, VID: 0x%x, DEV: 0x%x\r\n", deviceDescriptor.GetType(), deviceDescriptor.vendor_id, deviceDescriptor.device_id);
+				PCIDevice* device = new PCIDevice(this, deviceDescriptor);
+				device->Initialize(this);
 
+				DeviceTree::AddPCIDevice(device);
 			}
 		}
 	}
+	FindDeviceDrivers();
 
 	Printf("---------------------\r\n");
 }
 
-bool PCIController::RegisterRoutingBus(uint32_t bus, uint32_t parentBus, uint32_t device)
+bool PCIBus::RegisterRoutingBus(uint32_t bus, uint32_t parentBus, uint32_t device)
 {
 	if ((bus >= PciLimits::Buses) || (parentBus >= PciLimits::Buses) || (device >= PciLimits::Devices))
 		return false;
@@ -52,7 +65,7 @@ bool PCIController::RegisterRoutingBus(uint32_t bus, uint32_t parentBus, uint32_
 	return true;
 }
 
-bool PCIController::AddDeviceRouting(uint32_t bus, uint32_t device, uint32_t pin, uint32_t irq)
+bool PCIBus::AddDeviceRouting(uint32_t bus, uint32_t device, uint32_t pin, uint32_t irq)
 {
 	
 	--pin;
@@ -69,7 +82,7 @@ bool PCIController::AddDeviceRouting(uint32_t bus, uint32_t device, uint32_t pin
 	return true;
 }
 
-uint32_t PCIController::getPciDeviceIrq(uint32_t bus, uint32_t device, uint32_t pin)
+uint32_t PCIBus::getPciDeviceIrq(uint32_t bus, uint32_t device, uint32_t pin)
 {
 	--pin;
 	if ((pin >= PciLimits::Pins) || (bus >= PciLimits::Buses) || (device >= PciLimits::Devices))
@@ -94,7 +107,30 @@ uint32_t PCIController::getPciDeviceIrq(uint32_t bus, uint32_t device, uint32_t 
 	return irq;
 }
 
-uint32_t PCIController::read(uint16_t bus, uint16_t device, uint16_t function, uint32_t registeroffset)
+void PCIBus::FindDeviceDrivers()
+{
+	for (auto dev : DeviceTree::m_PCIDevices)
+	{
+		auto descr = dev->GetDeviceDescriptor();
+
+		switch (descr.vendor_id)
+		{
+			case PCI_VEN_ID_INTEL:
+			switch(descr.device_id)
+			{
+				case PCI_DEVICE_ID_INTEL_82801IR:
+					AHCIDriver* ahciDriver = new AHCIDriver(dev);
+					m_HAL->driverManager->OnDriverSelected(ahciDriver);
+					Printf("PCIBUS: Driver registered for VID=%x DEV=%x BUS=%x DEV=%x\r\n", descr.vendor_id, descr.device_id, descr.bus, descr.device);
+				break;
+				
+			}
+			break;
+		}
+	}
+}
+
+uint32_t PCIBus::read(uint16_t bus, uint16_t device, uint16_t function, uint32_t registeroffset)
 {
 	// Calculate the id
 	uint32_t id = 0x1 << 31
@@ -109,7 +145,7 @@ uint32_t PCIController::read(uint16_t bus, uint16_t device, uint16_t function, u
 	return result >> (8 * (registeroffset % 4));
 }
 
-void PCIController::write(uint16_t bus, uint16_t device, uint16_t function, uint32_t registeroffset, uint32_t value)
+void PCIBus::write(uint16_t bus, uint16_t device, uint16_t function, uint32_t registeroffset, uint32_t value)
 {
 	// Calculate the id
 	uint32_t id = 0x1 << 31
@@ -123,12 +159,13 @@ void PCIController::write(uint16_t bus, uint16_t device, uint16_t function, uint
 	m_HAL->WritePort(PCI_PORT_DATA, value, 32);
 }
 
-bool PCIController::device_has_functions(uint16_t bus, uint16_t device)
+
+bool PCIBus::device_has_functions(uint16_t bus, uint16_t device)
 {
 	return read(bus, device, 0, 0x0E) & (1 << 7);
 }
 
-PCIDeviceDescriptor PCIController::get_device_descriptor(uint16_t bus, uint16_t device, uint16_t function)
+PCIDeviceDescriptor PCIBus::get_device_descriptor(uint16_t bus, uint16_t device, uint16_t function)
 {
 	PCIDeviceDescriptor result;
 	result.bus = bus;
@@ -148,7 +185,7 @@ PCIDeviceDescriptor PCIController::get_device_descriptor(uint16_t bus, uint16_t 
 	return result;
 }
 
-BaseAddressRegister PCIController::get_base_address_register(uint16_t bus, uint16_t device, uint16_t function, uint16_t bar)
+BaseAddressRegister PCIBus::get_base_address_register(uint16_t bus, uint16_t device, uint16_t function, uint16_t bar)
 {
 	BaseAddressRegister result;
 

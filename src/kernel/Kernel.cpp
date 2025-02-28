@@ -15,6 +15,7 @@
 #include "types\PortableExecutable.h"
 #include <Path.h>
 #include "drivers\io\MouseDriver.h"
+#include "drivers\io\AHCI.h"
 
 
 class MouseDummyDrawer : public MouseEventHandler
@@ -67,6 +68,10 @@ public:
 				Printf("%c", event.key_code);
 		}
 
+		if (event.key_code == KeyCode::f8)
+		{
+			kernel.GetHAL()->SendShutdown();
+		}
 	}
 
 };
@@ -181,6 +186,31 @@ void Kernel::Initialize()
 
 	Time time = m_HAL.GetClock()->get_time();
 	Printf("  Date: %02d-%02d-%02d %02d:%02d:%02d UTC\n", time.day, time.month, time.year, time.hour, time.minute, time.second);
+
+
+	for (auto driver : m_HAL.driverManager->Drivers)
+	{
+		Printf("%d\r\n", driver->get_device_type());
+		if(driver->get_device_type() == DeviceType::Harddrive)
+		{
+			AHCIDriver* ahci = (AHCIDriver*)(driver);
+			if(ahci->get_port_count() <= 0) continue;
+
+			Printf("IdentPort 0\r\n");
+			ahci->identify(0);
+			uint8_t* buffer = ahci->get_buffer(0);
+			for (size_t i = 0; i < 8; i++)
+				Printf("0x%x ", buffer[i]);
+			Printf("\r\n");
+			Printf("reading port 0\r\n");
+			if(!ahci->read_port(0, 0, 1))
+				Printf("failed to read port\r\n");
+			buffer = ahci->get_buffer(0);
+			for(size_t i = 0; i < 8; i++)
+				Printf("0x%x ", buffer[i]);
+			Printf("\r\n");
+		}
+	}
 
 	while(true)
 		__halt();

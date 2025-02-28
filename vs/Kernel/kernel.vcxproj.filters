@@ -54,6 +54,9 @@
     <Filter Include="Quelldateien\drivers\Platform">
       <UniqueIdentifier>{041c3e13-e705-4c85-9db3-a7047ec2be5d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Quelldateien\hal\devices\pci">
+      <UniqueIdentifier>{a9e290e2-153d-421f-b768-1b5aa72b4f5f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\kernel\main.cpp">
@@ -146,9 +149,6 @@
     <ClCompile Include="..\..\src\kernel\hal\devices\SMBios.cpp">
       <Filter>Quelldateien\hal\devices</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\kernel\hal\devices\PCI.cpp">
-      <Filter>Quelldateien\hal\devices</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\kernel\drivers\Driver.cpp">
       <Filter>Quelldateien\drivers</Filter>
     </ClCompile>
@@ -166,6 +166,18 @@
     </ClCompile>
     <ClCompile Include="..\..\src\kernel\hal\devices\acpi\ACPIDevice.cpp">
       <Filter>Quelldateien\hal\devices\acpi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\kernel\hal\devices\DeviceTree.cpp">
+      <Filter>Quelldateien\hal\devices</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\kernel\hal\devices\pci\PCIBus.cpp">
+      <Filter>Quelldateien\hal\devices\pci</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\kernel\hal\devices\pci\PCIDevice.cpp">
+      <Filter>Quelldateien\hal\devices\pci</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\kernel\drivers\io\AHCI.cpp">
+      <Filter>Quelldateien\drivers\io</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -277,9 +289,6 @@
     <ClInclude Include="..\..\src\kernel\hal\devices\SMBios.h">
       <Filter>Quelldateien\hal\devices</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\kernel\hal\devices\PCI.h">
-      <Filter>Quelldateien\hal\devices</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\kernel\drivers\Driver.h">
       <Filter>Quelldateien\drivers</Filter>
     </ClInclude>
@@ -309,6 +318,18 @@
     </ClInclude>
     <ClInclude Include="..\..\src\kernel\hal\devices\acpi\ACPIDevice.h">
       <Filter>Quelldateien\hal\devices\acpi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\hal\devices\DeviceTree.h">
+      <Filter>Quelldateien\hal\devices</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\hal\devices\pci\PCIBus.h">
+      <Filter>Quelldateien\hal\devices\pci</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\hal\devices\pci\PCIDevice.h">
+      <Filter>Quelldateien\hal\devices\pci</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\drivers\io\AHCI.h">
+      <Filter>Quelldateien\drivers\io</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

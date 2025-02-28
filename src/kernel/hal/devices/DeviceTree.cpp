@@ -7,255 +7,81 @@
 #include "kernel/drivers/DriverManager.h"
 #include "kernel/Kernel.h"
 
-#include "kernel/drivers/io/IOApicDriver.h"
-#include <kernel\drivers\io\RamDriveDriver.h>
-#include "kernel/drivers/platform/AcpiProcessor.h"
-#include "kernel/drivers/HyperV/VmBusDriver.h"
-#include "kernel/drivers/HyperV/HyperVMouseDriver.h"
-#include "kernel/drivers/io/UartDriver.h"
-
 DeviceTree::DeviceTree() 
-	: m_root()
 {
 
 }
 
-void DeviceTree::Populate()
-{
-	//Discover
-	Assert(ACPI_SUCCESS(PopulateAcpi()));
 
+void DeviceTree::AddPCIDevice(PCIDevice* device)
+{
+	m_PCIDevices.push_back(device);
 }
 
-void DeviceTree::EnumerateChildren()
+
+Device* DeviceTree::GetDeviceByHid(const std::string& hid)
 {
-	//Attach drivers breadth first so enumerated children will get a driver
-	std::queue<Device*> queue;
-	queue.push(m_root);
-	while (!queue.empty())
+	for (auto pciDevice : m_PCIDevices)
 	{
-		Device* current = queue.front();
-		queue.pop();
-
-		
-		//TODO: this is gross
-		if (current->GetDriver() == nullptr)
-		{
-			AttachDriver(current);
-			Driver* driver = current->GetDriver();
-			if (driver != nullptr)
-			{
-				driver->Initialize();
-			}
-		}
-
-		{
-			Driver* driver = current->GetDriver();
-			if (driver != nullptr)
-				driver->EnumerateChildren();
-		}
-
-		for (auto& child : current->GetChildren())
-			queue.push(child);
+		if(pciDevice->GetHid() == hid)
+			return pciDevice;
 	}
-}
-
-void DeviceTree::AddRootDevice(Device& device)
-{
-	//Update path - TODO: make Device::AddChild that does this?
-	char buffer[64] = { 0 };
-	sprintf(buffer, "%s%s", m_root->Path.c_str(), device.GetHid().c_str());
-	device.Path = buffer;
-
-	m_root->GetChildren().push_back(&device);
-}
-
-void DeviceTree::Display() const
-{
-	Assert(this->m_root);
-	this->m_root->Display();
-}
-
-Device* DeviceTree::GetDeviceByHid(const std::string& hid) const
-{
-	std::stack<Device*> stack;
-	stack.push(m_root);
-
-	while (!stack.empty())
+	for (auto acpiDevice : m_ACPIDevices)
 	{
-		Device* current = stack.top();
-		stack.pop();
-
-		if (current->GetHid() == hid)
-			return current;
-
-		for (auto& child : current->GetChildren())
-			stack.push(child);
+		if(acpiDevice->GetHid() == hid)
+			return acpiDevice;
 	}
-
 	return nullptr;
 }
 
-Device* DeviceTree::GetDeviceByName(const std::string& name) const
+Device* DeviceTree::GetDeviceByName(const std::string& name)
 {
-	std::stack<Device*> stack;
-	stack.push(m_root);
-
-	while (!stack.empty())
+	for (auto pciDevice : m_PCIDevices)
 	{
-		Device* current = stack.top();
-		stack.pop();
-
-		if (current->Name == name)
-			return current;
-
-		for (auto& child : current->GetChildren())
-			stack.push(child);
+		if (pciDevice->Name == name)
+			return pciDevice;
 	}
-
+	for (auto acpiDevice : m_ACPIDevices)
+	{
+		if (acpiDevice->Name == name)
+			return acpiDevice;
+	}
 	return nullptr;
 }
 
-Device* DeviceTree::GetDeviceByType(const DeviceType type) const
+Device* DeviceTree::GetDeviceByType(const DeviceType type)
 {
-	std::stack<Device*> stack;
-	stack.push(m_root);
-
-	while (!stack.empty())
+	for (auto pciDevice : m_PCIDevices)
 	{
-		Device* current = stack.top();
-		stack.pop();
-
-		if (current->Type == type)
-			return current;
-
-		for (auto& child : current->GetChildren())
-			stack.push(child);
+		if (pciDevice->Type == type)
+			return pciDevice;
 	}
-
+	for (auto acpiDevice : m_ACPIDevices)
+	{
+		if (acpiDevice->Type == type)
+			return acpiDevice;
+	}
 	return nullptr;
 }
 
 //This could be smarter and split the path to search. For now just DFS
-Device* DeviceTree::GetDevice(const std::string& path) const
+Device* DeviceTree::GetDeviceByPath(const std::string& path)
 {
-	std::stack<Device*> stack;
-	stack.push(m_root);
-
-	while (!stack.empty())
+	for (auto pciDevice : m_PCIDevices)
 	{
-		Device* current = stack.top();
-		stack.pop();
-
-		if (current->Path == path)
-			return current;
-
-		for (auto& child : current->GetChildren())
-			stack.push(child);
+		if (pciDevice->Path == path)
+			return pciDevice;
 	}
-
+	for (auto acpiDevice : m_ACPIDevices)
+	{
+		if (acpiDevice->Path == path)
+			return acpiDevice;
+	}
+	return nullptr;
 	return nullptr;
 }
 
-ACPI_STATUS DeviceTree::AddAcpiDevice(ACPI_HANDLE Object, UINT32 NestingLevel, void* Context, void** ReturnValue)
-{
-	std::map<ACPI_HANDLE, AcpiDevice*>* pDevices = (std::map<ACPI_HANDLE, AcpiDevice*>*)Context;
+std::vector<AcpiDevice*> DeviceTree::m_ACPIDevices;
 
-	//Construct device object
-	AcpiDevice* device = new AcpiDevice(Object);
-	device->Initialize();
-	
-	AttachDriver(device);
-	Driver* driver = device->GetDriver();
-	if (driver != nullptr)
-	{
-		driver->Initialize();
-	}
+std::vector<PCIDevice*> DeviceTree::m_PCIDevices;
 
-	//Add new device to map
-	pDevices->insert({ Object, device });
-
-	//Add to parent's children if available
-	ACPI_HANDLE parent;
-	ACPI_STATUS status = AcpiGetParent(Object, &parent);
-	if (status == AE_NULL_ENTRY)
-		return AE_OK;
-	else if (!ACPI_SUCCESS(status))
-		return status;
-
-	const auto it = pDevices->find(parent);
-	if (it == pDevices->end())
-		return AE_NOT_FOUND;
-
-	it->second->GetChildren().push_back(device);
-	return AE_OK;
-}
-
-void DeviceTree::AttachDriver(Device* device)
-{
-	//Attach driver
-		//TODO: proper pnp/driver manager?
-
-	/*Driver* driver = kernel.GetDriverManager()->CreateDriverForDevice(device);
-	if(driver)
-	{
-		Printf("Driver found for device %s\r\n", device->Name);
-		device->SetDriver(driver);
-	}*/
-	
-	/*if (device.GetHid() == "PNP0501")
-		device.SetDriver(new UartDriver(device));
-	else if (device.GetHid() == "VMBUS")
-		device.SetDriver(new VmBusDriver(device));
-	else if (device.GetHid() == "{F912AD6D-2B17-48EA-BD65-F927A61C7684}")
-		device.SetDriver(new HyperVKeyboardDriver(device));
-	//else if (device.GetHid() == "{BA6163D9-04A1-4D29-B605-72E2FFB1DC7F}")
-		//device.SetDriver(new HyperVScsiDriver(device));
-	else if (device.GetHid() == RamDriveHid)
-		device.SetDriver(new RamDriveDriver(device));
-	else if (device.GetHid() == "PNP0003")
-		device.SetDriver(new IoApicDriver(device));
-	else if (device.GetHid() == "{CFA8B69E-5B4A-4CC0-B98B-8BA1A1F3F95A}")
-		device.SetDriver(new HyperVMouseDriver(device));*/
-
-	if (device->GetHid() == "PNP0003")
-		device->SetDriver(new IOApicDriver(*device));
-	else if (device->GetHid() == "PNP0501")
-		device->SetDriver(new UartDriver(*device));
-	else if (device->GetHid() == RamDriveHid)
-		device->SetDriver(new RamDriveDriver(*device));
-	else if(device->GetHid() == "ACPI0007")
-		device->SetDriver(new AcpiProcessor(*device));
-	else if (device->GetHid() == "VMBUS")
-		device->SetDriver(new VmBusDriver(*device));
-	else if (device->GetHid() == "{CFA8B69E-5B4A-4CC0-B98B-8BA1A1F3F95A}")
-		device->SetDriver(new HyperVMouseDriver(*device));
-}
-
-//Rely on ACPI to discover root
-ACPI_STATUS DeviceTree::PopulateAcpi()
-{
-	//Map of discovered devices
-	std::map<ACPI_HANDLE, AcpiDevice*> devices;
-
-	//Construct ACPI root device
-	ACPI_HANDLE root;
-	ACPI_STATUS status = AcpiGetHandle(NULL, ACPI_STRING(ACPI_NS_ROOT_PATH), &root);
-	Assert(ACPI_SUCCESS(status));
-
-	AcpiDevice* rootDevice = new AcpiDevice(root);
-	rootDevice->Initialize();
-	this->m_root = rootDevice;
-
-	devices.insert({ root, rootDevice });
-	
-	//Walk namespace
-	status = AcpiGetDevices(NULL, DeviceTree::AddAcpiDevice, &devices, NULL);
-	if (ACPI_FAILURE(status))
-	{
-		Printf("Could not AcpiGetDevices: %s(%d)\n", AcpiFormatException(status), status);
-		Assert(false);
-	}
-
-	return AE_OK;
-}

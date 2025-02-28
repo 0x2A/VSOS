@@ -10,7 +10,7 @@ public:
 	GenericKeyboard()
 	{
 		Name = "Keyboard";
-		Path = "HID\GEN_KEY";
+		Path = "HID\\GEN_KEY";
 		Description = "Generic Keyboard";
 		Type = DeviceType::Keyboard;
 	}

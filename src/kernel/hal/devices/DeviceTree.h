@@ -1,29 +1,27 @@
 #pragma once
 
 #include "Device.h"
-#include "acpi/AcpiDevice.h"
+#include "acpi/ACPIDevice.h"
+#include "pci/PCIDevice.h"
+#include "kernel/drivers/DriverManager.h"
+#include <vector>
 
 class DeviceTree
 {
 public:
 	DeviceTree();
 
-	void Populate();
-	void EnumerateChildren();
-	void AddRootDevice(Device& device);
 
-	void Display() const;
+	static void AddPCIDevice(PCIDevice* device);
 
-	Device* GetDeviceByHid(const std::string& hid) const;
-	Device* GetDeviceByName(const std::string& name) const;
-	Device* GetDeviceByType(const DeviceType type) const;
-	Device* GetDevice(const std::string& path) const;
+	static void Display();
 
-private:
-	static ACPI_STATUS AddAcpiDevice(ACPI_HANDLE Object, UINT32 NestingLevel, void* Context, void** ReturnValue);
-	static void AttachDriver(Device* device);
+	static Device* GetDeviceByHid(const std::string& hid);
+	static Device* GetDeviceByName(const std::string& name);
+	static Device* GetDeviceByType(const DeviceType type);
+	static Device* GetDeviceByPath(const std::string& path);
 
-	ACPI_STATUS PopulateAcpi();
-
-	Device* m_root;
+	
+	static std::vector<AcpiDevice*> m_ACPIDevices;
+	static std::vector<PCIDevice*> m_PCIDevices;
 };

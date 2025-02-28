@@ -237,7 +237,11 @@ EFI_STATUS InitializeGraphics(EFI_GRAPHICS_DEVICE& device)
 
 	//Get current mode
 	EFI_GRAPHICS_OUTPUT_PROTOCOL* gop = nullptr;
-	ReturnIfNotSuccess(BS->HandleProtocol(ST->ConsoleOutHandle, &GraphicsOutputProtocol, (void**)&gop));
+	status = BS->HandleProtocol(ST->ConsoleOutHandle, &GraphicsOutputProtocol, (void**)&gop);
+	if (EFI_ERROR(status))
+	{
+		ReturnIfNotSuccess(BS->LocateProtocol(&gEfiGraphicsOutputProtocolGuid, NULL, (void **)&gop));
+	}
 
 	//Allocate space for full graphics info
 	EFI_GRAPHICS_OUTPUT_MODE_INFORMATION* info = nullptr;

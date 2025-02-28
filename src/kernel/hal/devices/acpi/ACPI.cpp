@@ -4,7 +4,7 @@
 #include <OS.arch.h>
 #include <kernel\hal\x64\ctrlregs.h>
 
-#include "kernel/hal/devices/PCI.h"
+#include "kernel/hal/devices/pci/PCIBus.h"
 
 extern "C"
 {
@@ -634,9 +634,10 @@ void ACPI::Init()
 
 void ACPI::PowerOffSystem()
 {
-	AcpiEnterSleepStatePrep(5);
+	AcpiEnterSleepStatePrep(ACPI_STATE_S5);
 	_cli(); //disable interrupts
-	AcpiEnterSleepState(5);
+	AcpiEnterSleepState(ACPI_STATE_S5);
+	
 	kernel.Panic("power off"); // in case it didn't work!
 }
 
@@ -765,7 +766,7 @@ uint32_t ACPI::RemapIRQ(uint32_t irq)
 struct CrsContext
 {
 	ACPI_PCI_ROUTING_TABLE* m_routingTable;
-	PCIController* pciController;
+	PCIBus* pciController;
 	unsigned int m_bus;
 };
 
@@ -794,7 +795,7 @@ ACPI_STATUS acpiProcessSystemBridge(ACPI_HANDLE bridge, UINT32 level, void* cont
 		return AE_ERROR;
 	}
 
-	PCIController* controller = (PCIController*)context;
+	PCIBus* controller = (PCIBus*)context;
 
 	ACPI_BUFFER addrBuf;
 	ACPI_OBJECT obj;

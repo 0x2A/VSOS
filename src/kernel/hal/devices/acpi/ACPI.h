@@ -3,7 +3,7 @@
 #include "kernel/hal/devices/ConfigTables.h"
 #include <vector>
 #include "ACPIDevice.h"
-#include "kernel/hal/devices/PCI.h"
+#include "kernel/hal/devices/PCI/PCIBus.h"
 
 extern "C"
 {

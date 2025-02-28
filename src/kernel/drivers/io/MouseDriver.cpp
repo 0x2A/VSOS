@@ -53,7 +53,8 @@ DriverResult MouseDriver::Deactivate()
 
 DriverResult MouseDriver::Initialize()
 {
-	return DriverResult::NotImplemented;
+	if (m_device) m_device->Initialize(this);
+	return DriverResult::Success;
 }
 
 DriverResult MouseDriver::Reset()

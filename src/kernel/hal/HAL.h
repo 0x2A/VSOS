@@ -6,7 +6,7 @@
 #include "devices/apic/APIC.h"
 #include "devices\CPU.h"
 #include "devices\SMBios.h"
-#include "devices\PCI.h"
+#include "devices\pci\PCIBus.h"
 #include "kernel\drivers\platform\Clock.h"
 #include <kernel\drivers\DriverManager.h>
 
@@ -62,7 +62,7 @@ public:
 
 	Clock* GetClock() { return &m_Clock; }
 
-	PCIController* GetPCIController() { return &m_PCI; }
+	PCIBus* GetPCIController() { return &m_PCI; }
 
 	DriverManager* driverManager;
 
@@ -80,7 +80,7 @@ private:
 	bool m_HasSMBIOS;
 	SMBios m_SMBios;
 
-	PCIController m_PCI;
+	PCIBus m_PCI;
 
 	ConfigTables* m_ConfigTables;
 

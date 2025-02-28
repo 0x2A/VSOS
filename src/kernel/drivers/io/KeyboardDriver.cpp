@@ -68,7 +68,8 @@ DriverResult KeyboardDriver::Deactivate()
 
 DriverResult KeyboardDriver::Initialize()
 {
-	return DriverResult::NotImplemented;
+	if(m_device) m_device->Initialize(this);
+	return DriverResult::Success;
 }
 
 DriverResult KeyboardDriver::Reset()

@@ -17,6 +17,7 @@ namespace PciLimits
 	};
 }
 
+
 struct PciAddress
 {
 	unsigned int m_bus;
@@ -36,12 +37,32 @@ struct PciBusRounting
 	unsigned int m_irq[PciLimits::Devices][PciLimits::Pins] = {};
 };
 
+enum BaseAddressRegisterType
+{        //Used for the last bit of the address register
+	MemoryMapping = 0,
+	InputOutput = 1
+};
+
+/**
+ * @class BaseAddressRegister
+ * @brief Used to store the base address register
+ */
+struct BaseAddressRegister {
+	bool pre_fetchable;
+	uint8_t* address;
+	uint32_t size;
+	BaseAddressRegisterType type;
+
+};
+
+
 /**
          * @class PCIDeviceDescriptor
          * @brief Stores information about a PCI device
          */
-struct PCIDeviceDescriptor
+class PCIDeviceDescriptor
 {
+public:
     bool has_port_base;
     uint32_t port_base;  //Port used for communication
 
@@ -63,7 +84,9 @@ struct PCIDeviceDescriptor
 
     uint8_t revision;
 
-	std::string get_type() 
+	BaseAddressRegister bars[6];
+
+	const char* GetType() const
 	{
 		switch (class_id)
 		{
@@ -112,37 +135,25 @@ struct PCIDeviceDescriptor
 	}
 } ;
 
-enum BaseAddressRegisterType 
-{        //Used for the last bit of the address register
-	MemoryMapping = 0,
-	InputOutput = 1
-};
 
-/**
- * @class BaseAddressRegister
- * @brief Used to store the base address register
- */
-struct BaseAddressRegister {
-	bool pre_fetchable;
-	uint8_t* address;
-	uint32_t size;
-	BaseAddressRegisterType type;
-
-} ;
-
-
-class PCIController
+class PCIBus
 {
+friend class PCIDevice;
 
 public:
-	PCIController(HAL* hal);
+	PCIBus(HAL* hal);
 
 	void Initialize(void* context);
 	
 	bool RegisterRoutingBus(uint32_t bus, uint32_t parentBus, uint32_t device);
 	bool AddDeviceRouting(uint32_t bus, uint32_t device, uint32_t pin, uint32_t irq);
 	uint32_t getPciDeviceIrq(uint32_t bus, uint32_t device, uint32_t pin);
-private:
+
+	void FindDeviceDrivers();
+protected:
+
+
+
 	// I/O
 	uint32_t read(uint16_t bus, uint16_t device, uint16_t function, uint32_t registeroffset);
 	void write(uint16_t bus, uint16_t device, uint16_t function, uint32_t registeroffset, uint32_t value);
