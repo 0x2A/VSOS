@@ -170,6 +170,9 @@ struct ahci_port {
 	enum port_type port_type;
 	uint8_t* buffer;
 	uint8_t port_number;
+	uint64_t bufferPhysicalAddr;
+	hba_command_header* command_header; //used to save virtual address of command headers
+	hba_command_table* command_table[32];
 };
 
 #pragma push(pop)

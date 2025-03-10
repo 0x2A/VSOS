@@ -74,19 +74,45 @@ public:
 
 	HAL* GetHAL() { return &m_HAL; }
 
-	void* Allocate(const size_t size);
-	void Deallocate(void* const address);
-
-
 	uint32_t PrepareShutdown();
 
-	void* MapPhysicalMemory(uint64_t PhysicalAddress, uint64_t Length, KernelAddress mapStartAddr = KernelSharedPageStart);
+#pragma region Heap Interface
+	void* Allocate(const size_t size);
+	void Deallocate(void* const address);
+#pragma endregion
 
+#pragma region Virtual Memory Interface
+
+	paddr_t AllocatePhysical(const size_t count);
+
+	void* MapPhysicalMemory(uint64_t PhysicalAddress, uint64_t Length, KernelAddress mapStartAddr = KernelSharedPageStart);
 	//maps phyiscal to virtual address in runtime space
 	void* VirtualMapRT(const void* address, const std::vector<paddr_t>& addresses);
 
 
+	//This method only works because the loader ensures we are physically contiguous
+	/*paddr_t VirtualToPhysical(uintptr_t virtualAddress)
+	{
+		//TODO: assert
+		uint64_t rva = virtualAddress - KernelBaseAddress;
+		return m_params.KernelAddress + rva;
+	}
+
+	paddr_t PhysicalToVirtual(paddr_t physicalAddr)
+	{
+		uint64_t p = physicalAddr - m_params.KernelAddress;
+		return p + KernelBaseAddress;
+	}*/
+#pragma endregion
+	
+#pragma region Driver Interface
+	void* DriverMapPages(paddr_t address, size_t count);
+#pragma endregion
+
+
 	LoadingScreen* GetLoadingScreen() { return &m_loadingScreen; }
+
+	void HexDump(uint8_t* buffer, size_t size, size_t lineLength = 16);
 
 private:
 

@@ -57,6 +57,9 @@
     <Filter Include="Quelldateien\hal\devices\pci">
       <UniqueIdentifier>{a9e290e2-153d-421f-b768-1b5aa72b4f5f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Quelldateien\os">
+      <UniqueIdentifier>{ce4f269c-2221-45a4-b648-6f85ed8f4c4e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\kernel\main.cpp">
@@ -330,6 +333,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\kernel\drivers\io\AHCI.h">
       <Filter>Quelldateien\drivers\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\os.internal.h">
+      <Filter>Quelldateien\os</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

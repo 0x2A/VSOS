@@ -217,6 +217,7 @@
     <ClInclude Include="..\..\src\kernel\types\BitVector.h" />
     <ClInclude Include="..\..\src\mem\pagetables.h" />
     <ClInclude Include="..\..\src\mem\PageTablesPool.h" />
+    <ClInclude Include="..\..\src\os.internal.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kernel.acpi\kernel.acpi.vcxproj">

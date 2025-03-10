@@ -144,7 +144,7 @@ void Kernel::Initialize()
 	m_heap.Initialize();
 
 	Printf("VSOS.Kernel  - Base:0x%16x Size: 0x%x\n", m_params.KernelAddress, m_params.KernelImageSize);
-	Printf("  PhysicalAddressSize: 0x%16x\n", m_memoryMap.GetPhysicalAddressSize());
+	Printf("  PhysicalAddressSize: 0x%016x\n", m_memoryMap.GetPhysicalAddressSize());
 
 	//Test UEFI runtime access --> BUG: Doesn't work on qemu
 	//EFI_TIME time;
@@ -181,6 +181,7 @@ void Kernel::Initialize()
 
 	Printf("Running idle...\r\n");
 
+
 	m_HAL.GetClock()->delay(3000);
 	Printf("Hello after 3 sec!\r\n");
 
@@ -190,27 +191,23 @@ void Kernel::Initialize()
 
 	for (auto driver : m_HAL.driverManager->Drivers)
 	{
-		Printf("%d\r\n", driver->get_device_type());
 		if(driver->get_device_type() == DeviceType::Harddrive)
 		{
 			AHCIDriver* ahci = (AHCIDriver*)(driver);
 			if(ahci->get_port_count() <= 0) continue;
 
-			Printf("IdentPort 0\r\n");
-			ahci->identify(0);
-			uint8_t* buffer = ahci->get_buffer(0);
-			for (size_t i = 0; i < 8; i++)
-				Printf("0x%x ", buffer[i]);
-			Printf("\r\n");
-			Printf("reading port 0\r\n");
+			Printf("reading first 512 byte of SATA port 0:\r\n");
 			if(!ahci->read_port(0, 0, 1))
-				Printf("failed to read port\r\n");
-			buffer = ahci->get_buffer(0);
-			for(size_t i = 0; i < 8; i++)
-				Printf("0x%x ", buffer[i]);
+				Printf("failed to read SATA port\r\n");
+			uint8_t* buffer = ahci->get_buffer(0);
+			HexDump(buffer, 512);
+
 			Printf("\r\n");
+
+			break;
 		}
 	}
+
 
 	while(true)
 		__halt();
@@ -327,6 +324,13 @@ void Kernel::Deallocate(void* const address)
 		return m_bootHeap.Deallocate(address);
 }
 
+paddr_t Kernel::AllocatePhysical(const size_t count)
+{
+	paddr_t address;
+	Assert(m_physicalMemory.AllocateContiguous(address, count));
+	return address;
+}
+
 uint32_t Kernel::PrepareShutdown()
 {
 	//Nothing to do yet
@@ -350,4 +354,32 @@ void* Kernel::MapPhysicalMemory(uint64_t PhysicalAddress, uint64_t Length, Kerne
 void* Kernel::VirtualMapRT(const void* address, const std::vector<paddr_t>& addresses)
 {
 	return m_virtualMemory.VirtualMap(address, addresses, m_runtimeSpace);
+}
+
+void* Kernel::DriverMapPages(paddr_t address, size_t count)
+{
+	Assert(count > 0);
+
+	const uintptr_t virtualAddress = KernelIoStart + address;
+
+	PageTables tables;
+	tables.OpenCurrent();
+	Assert(tables.MapPages(virtualAddress, address, count, true));
+	return (void*)virtualAddress;
+}
+
+void Kernel::HexDump(uint8_t* buffer, size_t size, size_t lineLength /*= 16*/)
+{
+	for (int j = 0; j < size / lineLength; j++)
+	{
+		Printf("0x%08x: ", j*lineLength);
+		for (size_t i = 0; i < lineLength; i++)
+			Printf("0x%02x ", buffer[(j * lineLength) + i]);
+
+		Printf("    ");
+		for (size_t i = 0; i < 16; i++)
+			Printf("%c", buffer[(j * lineLength) + i] <= 0x1 ? '.' : buffer[(j * lineLength) + i]);
+
+		Printf("\r\n");
+	}
 }
