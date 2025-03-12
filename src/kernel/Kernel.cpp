@@ -34,7 +34,7 @@ public:
 				#include "gfx/mono_arrow.h"
 			};
 			vd->DefineCursor(data, 16, 18);
-			vd->GetFramebuffer()->FillScreen(gfx::Colors::Black);
+			vd->GetFramebuffer()->FillScreen({ 0x82, 0x75, 0x12, 0x00 });
 			vd->UpdateRect({0,0, vd->GetScreenWidth(), vd->GetScreenHeight()});
 		}
 	}
