@@ -9,6 +9,7 @@
 #include "devices\pci\PCIBus.h"
 #include "kernel\drivers\platform\Clock.h"
 #include <kernel\drivers\DriverManager.h>
+#include <kernel\drivers\video\VideoDevice.h>
 
 #define PLATFORM_X64  defined(__x86_64__) || defined(_M_X64)
 
@@ -56,6 +57,9 @@ public:
 	uint8_t CurrentCPU();
 	uint8_t CPUCount() { return m_NumCPUs; }
 
+	void RegisterVideoDevice(VideoDevice* dev);
+	VideoDevice* GetVideoDevice();
+
 	void ActivateDrivers();
 
 	void SetInterruptRedirect(const interrupt_redirect_t* redirectStruct);
@@ -86,5 +90,5 @@ private:
 
 	//assume we always have a RTC (TODO: add check)
 	Clock m_Clock;
-
+	VideoDevice* m_VideoDevice;
 };

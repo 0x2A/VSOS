@@ -66,6 +66,7 @@
 #define PCI_DEVICE_ID_VIRTIO_VSOCK       0x1012
 
 
+
 class PCIDevice : public Device
 {
 
@@ -76,7 +77,21 @@ public:
 	const void* GetResource(uint32_t type) const override;
 	void DisplayDetails() const override;
 
+	// I/O
+	//uint32_t read(uint32_t registeroffset);
+	//void write(uint32_t registeroffset, uint32_t value);
+
 	const PCIDeviceDescriptor& GetDeviceDescriptor() const { return m_Descriptor; }
+	const BaseAddressRegister& GetBAR(uint8_t id);
+
+	/*
+	 * SetMemEnable --
+	 *
+	 *    Enable or disable a device's memory and IO space. This must be
+	 *    called to enable a device's resources after setting all
+	 *    applicable BARs. Also enables/disables bus mastering.
+	 */
+	void SetMemEnabled(bool enabled);
 
 private:
 	PCIBus* m_PCIBus;

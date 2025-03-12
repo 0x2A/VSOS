@@ -11,6 +11,7 @@ enum class DeviceType
 	Harddrive,
 	Serial,
 	System,
+	Video,
 	Other,
 };
 

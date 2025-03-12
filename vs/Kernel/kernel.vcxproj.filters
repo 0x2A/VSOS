@@ -60,6 +60,9 @@
     <Filter Include="Quelldateien\os">
       <UniqueIdentifier>{ce4f269c-2221-45a4-b648-6f85ed8f4c4e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Quelldateien\drivers\video">
+      <UniqueIdentifier>{03b6c8e3-1a14-4bfb-9c66-5be61409d063}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\kernel\main.cpp">
@@ -182,6 +185,9 @@
     <ClCompile Include="..\..\src\kernel\drivers\io\AHCI.cpp">
       <Filter>Quelldateien\drivers\io</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\kernel\drivers\video\vmware_svga2.cpp">
+      <Filter>Quelldateien\drivers\video</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\kernel\main.h">
@@ -241,7 +247,7 @@
     <ClInclude Include="..\..\src\gfx\Cursor.h">
       <Filter>Quelldateien\gfx</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\gfx\EfiDisplay.h">
+    <ClInclude Include="..\..\src\gfx\LinearFrameBuffer.h">
       <Filter>Quelldateien\gfx</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\gfx\Font.h">
@@ -336,6 +342,15 @@
     </ClInclude>
     <ClInclude Include="..\..\src\os.internal.h">
       <Filter>Quelldateien\os</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\drivers\video\vmware_svga2.h">
+      <Filter>Quelldateien\drivers\video</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\drivers\video\VideoDevice.h">
+      <Filter>Quelldateien\drivers\video</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\gfx\mono_arrow.h">
+      <Filter>Quelldateien\gfx</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -57,9 +57,19 @@ struct BaseAddressRegister {
 
 
 /**
-         * @class PCIDeviceDescriptor
-         * @brief Stores information about a PCI device
-         */
+* @class PCIDeviceDescriptor
+* @brief Stores information about a PCI device
+*/
+
+#define PCI_DESCR_OFFSET_VEN_ID		0x00
+#define PCI_DESCR_OFFSET_DEV_ID		0x02
+#define PCI_DESCR_OFFSET_COMMAND	0x04
+#define PCI_DESCR_OFFSET_STATUS		0x06
+#define PCI_DESCR_OFFSET_REV		0x08
+#define PCI_DESCR_OFFSET_INTF_ID	0x09
+#define PCI_DESCR_OFFSET_HEAD_TYPE	0x0E
+#define PCI_DESCR_OFFSET_BAR0		0x10
+
 class PCIDeviceDescriptor
 {
 public:
@@ -69,11 +79,15 @@ public:
     bool has_memory_base;
     uint32_t memory_base;  //Mem address used for communication
 
-    uint32_t interrupt; //The interrupt
+    uint8_t interruptLine; //The interrupt
+	uint8_t interruptPin;
 
     uint16_t bus;
     uint16_t device;
     uint16_t function;
+	
+	uint16_t command;
+	uint16_t status;
 
     uint16_t vendor_id;
     uint16_t device_id;
@@ -83,6 +97,10 @@ public:
     uint8_t interface_id;
 
     uint8_t revision;
+
+	uint8_t cacheLineSize;
+	uint8_t  latTimer;
+	uint8_t  BIST;
 
 	BaseAddressRegister bars[6];
 

@@ -137,6 +137,7 @@
     <ClCompile Include="..\..\src\kernel\drivers\io\KeyboardDriver.cpp" />
     <ClCompile Include="..\..\src\kernel\drivers\io\MouseDriver.cpp" />
     <ClCompile Include="..\..\src\kernel\drivers\platform\Clock.cpp" />
+    <ClCompile Include="..\..\src\kernel\drivers\video\vmware_svga2.cpp" />
     <ClCompile Include="..\..\src\kernel\hal\devices\acpi\ACPI.cpp" />
     <ClCompile Include="..\..\src\kernel\hal\devices\acpi\ACPIDevice.cpp" />
     <ClCompile Include="..\..\src\kernel\hal\devices\apic\APIC.cpp" />
@@ -169,9 +170,10 @@
   <ItemGroup>
     <ClInclude Include="..\..\src\gfx\Color.h" />
     <ClInclude Include="..\..\src\gfx\Cursor.h" />
-    <ClInclude Include="..\..\src\gfx\EfiDisplay.h" />
+    <ClInclude Include="..\..\src\gfx\LinearFrameBuffer.h" />
     <ClInclude Include="..\..\src\gfx\Font.h" />
     <ClInclude Include="..\..\src\gfx\FrameBuffer.h" />
+    <ClInclude Include="..\..\src\gfx\mono_arrow.h" />
     <ClInclude Include="..\..\src\gfx\Types.h" />
     <ClInclude Include="..\..\src\kernel\drivers\Driver.h" />
     <ClInclude Include="..\..\src\kernel\drivers\DriverManager.h" />
@@ -179,6 +181,8 @@
     <ClInclude Include="..\..\src\kernel\drivers\io\KeyboardDriver.h" />
     <ClInclude Include="..\..\src\kernel\drivers\io\MouseDriver.h" />
     <ClInclude Include="..\..\src\kernel\drivers\platform\Clock.h" />
+    <ClInclude Include="..\..\src\kernel\drivers\video\VideoDevice.h" />
+    <ClInclude Include="..\..\src\kernel\drivers\video\vmware_svga2.h" />
     <ClInclude Include="..\..\src\kernel\hal\devices\acpi\ACPI.h" />
     <ClInclude Include="..\..\src\kernel\hal\devices\acpi\ACPIDevice.h" />
     <ClInclude Include="..\..\src\kernel\hal\devices\apic\APIC.h" />

@@ -4,6 +4,7 @@
 #include "PCIDevice.h"
 #include <kernel\hal\devices\DeviceTree.h>
 #include <kernel\drivers\io\AHCI.h>
+#include <kernel\drivers\video\vmware_svga2.h>
 
 #define PCI_PORT_COMMAND	0xCF8
 #define PCI_PORT_DATA		0xCFC
@@ -121,9 +122,21 @@ void PCIBus::FindDeviceDrivers()
 				case PCI_DEVICE_ID_INTEL_82801IR:
 					AHCIDriver* ahciDriver = new AHCIDriver(dev);
 					m_HAL->driverManager->OnDriverSelected(ahciDriver);
-					Printf("PCIBUS: Driver registered for VID=%x DEV=%x BUS=%x DEV=%x\r\n", descr.vendor_id, descr.device_id, descr.bus, descr.device);
+					Printf("PCIBUS: Driver registered for VID=%x DEV=%0x BUS=%x DEV=%x\r\n", descr.vendor_id, descr.device_id, descr.bus, descr.device);
 				break;
 				
+			}
+			break;
+			case PCI_VENDOR_ID_VMWARE:
+			{
+				switch (descr.device_id)
+				{
+					case PCI_DEVICE_ID_VMWARE_SVGA2:
+						VMware_SVGA2* svga = new VMware_SVGA2(dev, m_HAL);
+						m_HAL->driverManager->OnDriverSelected(svga);
+						Printf("PCIBUS: Driver registered for VID=%x DEV=%0x BUS=%x DEV=%x\r\n", descr.vendor_id, descr.device_id, descr.bus, descr.device);
+					break;
+				}
 			}
 			break;
 		}
@@ -172,15 +185,20 @@ PCIDeviceDescriptor PCIBus::get_device_descriptor(uint16_t bus, uint16_t device,
 	result.device = device;
 	result.function = function;
 
-	result.vendor_id = read(bus, device, function, 0x00);
-	result.device_id = read(bus, device, function, 0x02);
-
-	result.class_id = read(bus, device, function, 0x0B);
-	result.subclass_id = read(bus, device, function, 0x0A);
-	result.interface_id = read(bus, device, function, 0x09);
-
+	result.vendor_id = read(bus, device, function, PCI_DESCR_OFFSET_VEN_ID);
+	result.device_id = read(bus, device, function, PCI_DESCR_OFFSET_DEV_ID);
+	result.command = read(bus, device, function, PCI_DESCR_OFFSET_COMMAND);
+	result.status = read(bus, device, function, 0x06);
 	result.revision = read(bus, device, function, 0x8);
-	result.interrupt = read(bus, device, function, 0x3C);
+	result.interface_id = read(bus, device, function, 0x09);
+	result.subclass_id = read(bus, device, function, 0x0A);
+	result.class_id = read(bus, device, function, 0x0B);
+	result.cacheLineSize = read(bus, device, function, 0x0C);
+	result.latTimer = read(bus, device, function, 0x0D);
+	result.BIST = read(bus, device, function, 0x0F);
+	
+	result.interruptLine = read(bus, device, function, 0x3C);
+	result.interruptPin = read(bus, device, function, 0x3D);
 
 	return result;
 }
@@ -190,22 +208,22 @@ BaseAddressRegister PCIBus::get_base_address_register(uint16_t bus, uint16_t dev
 	BaseAddressRegister result;
 
 	// only types 0x00 (normal devices) and 0x01 (PCI-to-PCI bridges) are supported:
-	uint32_t headerType = read(bus, device, function, 0x0E);
+	uint32_t headerType = read(bus, device, function, PCI_DESCR_OFFSET_HEAD_TYPE);
 	if (headerType & 0x3F)
 		return result;
 
 	// read the base address register
-	uint32_t bar_value = read(bus, device, function, 0x10 + 4 * bar);
+	uint32_t bar_value = read(bus, device, function, PCI_DESCR_OFFSET_BAR0 + 4 * bar);
 	result.type = (bar_value & 0x1) ? InputOutput : MemoryMapping;
 	result.address = (uint8_t*)(bar_value & ~0xF);
 
 	// read the size of the base address register
-	write(bus, device, function, 0x10 + 4 * bar, 0xFFFFFFF0 | result.type);
-	result.size = read(bus, device, function, 0x10 + 4 * bar);
+	write(bus, device, function, PCI_DESCR_OFFSET_BAR0 + 4 * bar, 0xFFFFFFF0 | result.type);
+	result.size = read(bus, device, function, PCI_DESCR_OFFSET_BAR0 + 4 * bar);
 	result.size = (~result.size | 0xF) + 1;
 
 	// Restore the original value of the base address register
-	write(bus, device, function, 0x10 + 4 * bar, bar_value);
+	write(bus, device, function, PCI_DESCR_OFFSET_BAR0 + 4 * bar, bar_value);
 
 	return result;
 }

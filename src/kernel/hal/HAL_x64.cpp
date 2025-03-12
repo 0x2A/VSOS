@@ -20,7 +20,7 @@ extern "C" extern void _x64_user_thread_start(void* context, void* teb);
 
 HAL::HAL(ConfigTables* configTables)
 : m_ACPI(this, configTables), m_APIC(this), m_NumCPUs(0), m_ConfigTables(configTables),
-	m_PCI(this), m_Clock(this)
+	m_PCI(this), m_Clock(this), m_VideoDevice(nullptr)
 {
 }
 
@@ -267,6 +267,16 @@ void HAL::RegisterCPU(uint8_t id)
 uint8_t HAL::CurrentCPU()
 {
 	return m_APIC.GetLocalAPIC()->id();
+}
+
+void HAL::RegisterVideoDevice(VideoDevice* dev)
+{
+	m_VideoDevice = dev;	
+}
+
+VideoDevice* HAL::GetVideoDevice()
+{
+	return m_VideoDevice;
 }
 
 void HAL::ActivateDrivers()

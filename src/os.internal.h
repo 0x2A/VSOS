@@ -85,6 +85,9 @@ static constexpr size_t RamDriveSize = KernelHardwareEnd - KernelRamDrive;
 #define QWordHigh(x) (((uint64_t)x) >> 32)
 #define QWordLow(x) ((uint32_t)((uint64_t)x))
 
+#define MIN(a, b)   ((a) < (b) ? (a) : (b))
+#define MAX(a, b)   ((a) > (b) ? (a) : (b))
+
 //Kernel defines
 typedef size_t cpu_flags_t;
 

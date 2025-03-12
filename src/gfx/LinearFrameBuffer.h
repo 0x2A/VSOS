@@ -6,10 +6,10 @@
 namespace gfx
 {
 	//This class is just a Preallocated framebuffer.
-	class EfiDisplay : public FrameBuffer
+	class LinearFrameBuffer : public FrameBuffer
 	{
 	public:
-		EfiDisplay(void* const address, const size_t height, const size_t width) :
+		LinearFrameBuffer(void* const address, const size_t height, const size_t width) :
 			FrameBuffer(),
 			m_buffer(reinterpret_cast<Color*>(address)),
 			m_height(height),
@@ -34,6 +34,6 @@ namespace gfx
 		const size_t m_height;
 		const size_t m_width;
 
-		NO_COPY_OR_ASSIGN(EfiDisplay);
+		NO_COPY_OR_ASSIGN(LinearFrameBuffer);
 	};
 }

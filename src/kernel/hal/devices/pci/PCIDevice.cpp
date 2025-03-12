@@ -9,13 +9,15 @@ PCIDevice::PCIDevice(PCIBus* pciBus, PCIDeviceDescriptor descr)
 {
 	Name = "Unknown";
 	Description = "Unknown PCI Device";
-	this->Path = "\\_SB\\PCI";
+	
+	char buffer[1024];
+	sprintf(buffer, "\\_SB\\PCI(%d)\\DEV(%d)\\FUNC(%d)", m_Descriptor.bus, m_Descriptor.device, m_Descriptor.function);	
+	this->Path = buffer;
 	this->Type = DeviceType::Unknown;
 }
 
 void PCIDevice::Initialize(void* context)
 {
-	
 	DisplayDetails();
 }
 
@@ -30,5 +32,33 @@ void PCIDevice::DisplayDetails() const
 	Printf("   Bus=%d, Device=0x%4x, Func=0x%x\r\n", m_Descriptor.bus,m_Descriptor.device,m_Descriptor.function);
 	Printf("   Ven=0x%x, DevID=0x%x\r\n", m_Descriptor.vendor_id, m_Descriptor.device_id);
 	Printf("   Class=0x%x, SubClass=0x%x, IF=0x%x\r\n", m_Descriptor.class_id, m_Descriptor.vendor_id, m_Descriptor.interface_id);
-	Printf("   Rev=0x%x, INT=0x%x\r\n", m_Descriptor.revision, m_Descriptor.interrupt);
+	Printf("   Rev=0x%x, INT=0x%x\r\n", m_Descriptor.revision, m_Descriptor.interruptLine);
+}
+/*
+uint32_t PCIDevice::read(uint32_t registeroffset)
+{
+	return m_PCIBus->read(m_Descriptor.bus, m_Descriptor.device, m_Descriptor.function, registeroffset);
+}
+
+void PCIDevice::write(uint32_t registeroffset, uint32_t value)
+{
+	m_PCIBus->write(m_Descriptor.bus, m_Descriptor.device, m_Descriptor.function, registeroffset, value);
+}
+*/
+const BaseAddressRegister& PCIDevice::GetBAR(uint8_t id)
+{
+	Assert(id < 6);
+	return m_Descriptor.bars[id];
+}
+
+void PCIDevice::SetMemEnabled(bool enabled)
+{
+	/* Mem space enable, IO space enable, bus mastering. */
+	const uint16_t flags = 0x0007;
+	if(enabled)
+		m_Descriptor.command |= flags;
+	else
+		m_Descriptor.command &= ~flags;
+
+	m_PCIBus->write(m_Descriptor.bus, m_Descriptor.device, m_Descriptor.function, PCI_DESCR_OFFSET_COMMAND, m_Descriptor.command);
 }

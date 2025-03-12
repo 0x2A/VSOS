@@ -27,25 +27,42 @@ public:
 	MouseDummyDrawer()
 	{	
 		x = y = 0;
+		VideoDevice* vd = kernel.GetHAL()->GetVideoDevice();
+		if(vd)
+		{
+			static uint8_t data[] = {
+				#include "gfx/mono_arrow.h"
+			};
+			vd->DefineCursor(data, 16, 18);
+			vd->GetFramebuffer()->FillScreen(gfx::Colors::Black);
+			vd->UpdateRect({0,0, vd->GetScreenWidth(), vd->GetScreenHeight()});
+		}
 	}
 
 	void OnMouseButtonEvent(MouseButtonEvent buttonEvent) override
 	{
 		//Nothing
 		//if(!buttonEvent.button_up) Printf("Mouse Button %d\r\n", buttonEvent.button);
+		if(!buttonEvent.button_up)
+		{
+			VideoDevice* vd = kernel.GetHAL()->GetVideoDevice();
+			vd->GetFramebuffer()->DrawPoint(gfx::Colors::White, {(uint64_t)x ,(uint64_t)y});
+			vd->UpdateRect({(uint64_t)x, (uint64_t)y, 1, 1});
+		}
 	}
 
 
 	void OnMouseMoveEvent(MouseMoveEvent buttonEvent) override
 	{
-		gfx::FrameBuffer* fb = kernel.GetLoadingScreen()->GetFramebuffer();
+		VideoDevice* vd = kernel.GetHAL()->GetVideoDevice();
+		if(!vd) return;
 		x += buttonEvent.x;
 		y += buttonEvent.y;
 		if(x < 0) x = 0;
 		if(y < 0) y = 0;
-		if(x > fb->GetWidth()) x = fb->GetWidth()-1;
-		if(y > fb->GetHeight()) y = fb->GetHeight()-1;
-		fb->DrawCursor({(unsigned)x,(unsigned)y}, gfx::Colors::White);
+		if(x > vd->GetScreenWidth()) x = vd->GetScreenWidth()-1;
+		if(y > vd->GetScreenHeight()) y = vd->GetScreenHeight()-1;
+		vd->MoveCursor(true, x, y, 0);
 	}
 
 };
@@ -84,7 +101,7 @@ Kernel::Kernel(const LoaderParams& params, BootHeap& bootHeap) :
 	m_bootHeap(bootHeap),
 
 	m_display((void*)KernelGraphicsDevice, params.Display.VerticalResolution, params.Display.HorizontalResolution),
-	m_loadingScreen(m_display),
+	m_loadingScreen(&m_display),
 	//Page tables
 	m_pool((void*)KernelPageTablesPool, params.PageTablesPoolAddress, params.PageTablesPoolPageCount),
 	m_memoryMap(params.MemoryMap.Table, params.MemoryMap.Size, params.MemoryMap.DescriptorSize),
@@ -178,9 +195,13 @@ void Kernel::Initialize()
 			((KeyboardDriver*)driver)->AddKeyEventHandler(keys);
 	}
 
+	//Hack to get some text output until we have a proper window manager
+	if(m_HAL.GetVideoDevice())
+		m_loadingScreen.SetFramebuffer(m_HAL.GetVideoDevice()->GetFramebuffer());
 
 	Printf("Running idle...\r\n");
-
+	Printf("\r\n\r\n ===== For now you should see a black screen with some text. This means we have a SVGA-II display in 1440x900 resolution with mouse and keyboard support!\r\n\r\n");
+	m_HAL.GetVideoDevice()->UpdateRect({ 0,0,m_HAL.GetVideoDevice()->GetScreenWidth(), m_HAL.GetVideoDevice()->GetScreenHeight() });
 
 	m_HAL.GetClock()->delay(3000);
 	Printf("Hello after 3 sec!\r\n");
@@ -188,7 +209,8 @@ void Kernel::Initialize()
 	Time time = m_HAL.GetClock()->get_time();
 	Printf("  Date: %02d-%02d-%02d %02d:%02d:%02d UTC\n", time.day, time.month, time.year, time.hour, time.minute, time.second);
 
-
+	m_HAL.GetVideoDevice()->UpdateRect({0,0,m_HAL.GetVideoDevice()->GetScreenWidth(), m_HAL.GetVideoDevice()->GetScreenHeight()});
+#if 0
 	for (auto driver : m_HAL.driverManager->Drivers)
 	{
 		if(driver->get_device_type() == DeviceType::Harddrive)
@@ -207,6 +229,7 @@ void Kernel::Initialize()
 			break;
 		}
 	}
+#endif
 
 
 	while(true)
@@ -228,6 +251,12 @@ void Kernel::Printf(const char* format, va_list args)
 	//if ((m_debugger != nullptr) && m_debugger->IsBrokenIn())
 		//m_debugger->KdpDprintf(format, args);
 	m_printer->Printf(format, args);
+
+	//Hack to get some text output until we have a proper window manager
+	if (m_HAL.GetVideoDevice())
+	{
+		m_HAL.GetVideoDevice()->UpdateRect({0,0,m_HAL.GetVideoDevice()->GetScreenWidth(), m_HAL.GetVideoDevice()->GetScreenHeight()});
+	}
 }
 
 
@@ -244,6 +273,9 @@ void Kernel::Bugcheck(const char* file, const char* line, const char* format, va
 {
 	static bool inBugcheck = false;
 	//this->KePauseSystem();
+
+	if(m_HAL.GetVideoDevice())
+		((Driver*)m_HAL.GetVideoDevice())->Deactivate();
 
 	if (inBugcheck)
 	{
@@ -287,6 +319,10 @@ void Kernel::Bugcheck(const char* file, const char* line, const char* format, va
 
 void Kernel::Panic(const char* message)
 {
+
+	if (m_HAL.GetVideoDevice())
+		((Driver*)m_HAL.GetVideoDevice())->Deactivate();
+
 	m_display.FillScreen(gfx::Colors::DarkRed);
 	m_display.DrawPrintf({ 10,10 }, gfx::Colors::Red, " === KERNEL PANIC === \r\n\r\n");
 	m_display.WriteFrame({ m_display.GetWidth() - 200, 50, 150, 150 }, gfx_panic);
@@ -303,8 +339,8 @@ void Kernel::Panic(const char* message)
 	m_display.DrawPrintf({ 10,65 + 64 }, gfx::Colors::Red, "  R12: 0x%016x, R13: 0x%016x\r\n", context.R12, context.R13);
 	m_display.DrawPrintf({ 10,65 + 80 }, gfx::Colors::Red, "  R14: 0x%016x, R15: 0x%016x\r\n", context.R14, context.R15);
 
-	__halt();
-	Assert(false);
+	while(true) __halt();
+	//Assert(false);
 }
 
 

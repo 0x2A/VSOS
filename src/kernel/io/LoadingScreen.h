@@ -8,11 +8,12 @@
 class LoadingScreen : public StringPrinter
 {
 public:
-	LoadingScreen(gfx::FrameBuffer& frameBuffer);
+	LoadingScreen(gfx::FrameBuffer* frameBuffer);
 
 	void Initialize();
 	virtual void Write(const std::string& string) override;
-	gfx::FrameBuffer* GetFramebuffer() { return &m_frameBuffer; }
+	gfx::FrameBuffer* GetFramebuffer() { return m_frameBuffer; }
+	void SetFramebuffer(gfx::FrameBuffer* fb);
 	void RemoveChar();
 
 private:
@@ -20,7 +21,7 @@ private:
 	static constexpr gfx::Color Background = gfx::Colors::Black;
 	static constexpr gfx::Color Border = gfx::Colors::Blue;
 
-	gfx::FrameBuffer& m_frameBuffer;
+	gfx::FrameBuffer* m_frameBuffer;
 	size_t yPos;
 	size_t xPos;
 	size_t xOffset;

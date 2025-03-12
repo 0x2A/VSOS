@@ -6,7 +6,7 @@
 
 
 #include <efi.h>
-#include "gfx/EfiDisplay.h"
+#include "gfx/LinearFrameBuffer.h"
 #include "kernel/mem/MemoryMap.h"
 #include "hal/devices/ConfigTables.h"
 extern "C"
@@ -125,7 +125,7 @@ private:
 
 	//Basic output drivers
 
-	gfx::EfiDisplay m_display;
+	gfx::LinearFrameBuffer m_display;
 	LoadingScreen m_loadingScreen;
 
 	//EarlyUart m_uart;
