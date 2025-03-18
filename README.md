@@ -14,9 +14,23 @@ See also: [Loader Params](src/LoaderParams.h)
 ### Kernel
 Monolithic preemptive kernel. 
 
-Quick Notes:
-* UEFI Runtime is mapped into Kernel address space, allowing runtime services to be called
+Implemented:
+   * ACPI
+   * APIC/IOAPIC
+   * PCI (rudimentary)
+   * AHCI (rudimentary)
+   * PS/2 Keyboard/Mouse
+   * very basic VMWare SVGAII support
 
+
+## How to Compile
+
+Open up vs/VSOS.sln in Visual studio 2019+ and run compile solution
+
+## How to run
+
+### Windows
+  Install qemu in "C:\Program Files\qemu\" and run `runqemu.cmd`
 
 ## Info
-heavily based on https://github.com/toddsharpe/MetalOS
+heavily based on https://github.com/toddsharpe/MetalOS, https://github.com/TretornESP/bloodmoon and https://github.com/maxtyson123/MaxOS
