@@ -5,6 +5,7 @@
 #include "os.System.h"
 #include "os.internal.h"
 #include <cstdint>
+#include "kernel/hal/HAL.h"
 
 
 #define InterruptHandler(x) x64_interrupt_handler_ ## x
@@ -84,6 +85,14 @@ enum CPU_FEATURE
 	EDX_PBE = 1 << 31
 };
 
+#define SIMD_CONTEXT_SIZE 512
+
+#define CR0_MONITOR_COPROC (1 << 1)
+#define CR0_EM (1 << 2)
+#define CR0_NUMERIC_ERROR (1 << 5)
+#define CR4_FXSR (1 << 9)
+#define CR4_SIMD_EXCEPTION (1 << 10)
+
 class x64
 {
 public:
@@ -107,6 +116,9 @@ public:
 	static bool SupportsX2APIC();
 
 	static void EnableFSGSBASE();
+	static void InitSIMD();
+	static void SIMD_SaveContext(void* ctx);
+	static void SIMD_RestoreContext(void* ctx);
 
 	//TSC Frequency in mhz
 	static uint32_t TSCFreq;
@@ -413,7 +425,7 @@ private:
 
 //X64 Architecture structs
 #pragma pack(push, 1)
-struct X64_CONTEXT
+struct X64_CONTEXT : public CPU_CONTEXT
 {
 	uint64_t R12;
 	uint64_t R13;

@@ -149,7 +149,7 @@ void main()
 // 	kernel.KeCreateProcess(std::string("init.exe"));
 // 
 // 	//Exit init thread
-// 	kernel.KeExitThread();
+ 	kernel.KeExitThread();
 
 	//Assert(false);
 	Assert(false);

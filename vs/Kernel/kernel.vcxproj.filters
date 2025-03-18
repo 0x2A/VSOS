@@ -63,6 +63,12 @@
     <Filter Include="Quelldateien\drivers\video">
       <UniqueIdentifier>{03b6c8e3-1a14-4bfb-9c66-5be61409d063}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Quelldateien\proc">
+      <UniqueIdentifier>{0deaee1a-b356-4739-94be-aa62db4df028}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\sched">
+      <UniqueIdentifier>{663188cc-7d28-430e-85e3-2b80b011eb90}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\kernel\main.cpp">
@@ -187,6 +193,18 @@
     </ClCompile>
     <ClCompile Include="..\..\src\kernel\drivers\video\vmware_svga2.cpp">
       <Filter>Quelldateien\drivers\video</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\kernel\proc\UProc.cpp">
+      <Filter>Quelldateien\proc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\kernel\sched\KThread.cpp">
+      <Filter>Quelldateien\sched</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\kernel\sched\UThread.cpp">
+      <Filter>Quelldateien\sched</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\kernel\sched\Scheduler.cpp">
+      <Filter>Quelldateien\sched</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -352,10 +370,31 @@
     <ClInclude Include="..\..\src\gfx\mono_arrow.h">
       <Filter>Quelldateien\gfx</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\kernel\os\types.h">
+      <Filter>Quelldateien\os</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\proc\UserRingBuffer.h">
+      <Filter>Quelldateien\proc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\proc\UProc.h">
+      <Filter>Quelldateien\proc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\sched\KThread.h">
+      <Filter>Quelldateien\sched</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\sched\UThread.h">
+      <Filter>Quelldateien\sched</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\sched\Scheduler.h">
+      <Filter>Quelldateien\sched</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\kernel\Kernel.def">
       <Filter>Quelldateien</Filter>
+    </None>
+    <None Include="..\..\src\kernel\hal\x64\x64.s">
+      <Filter>Quelldateien\hal\x64</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

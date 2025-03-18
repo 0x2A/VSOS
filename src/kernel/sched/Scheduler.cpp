@@ -4,6 +4,10 @@
 #include <intrin.h>
 #include <OS.arch.h>
 #include "kernel/drivers/HyperV/HyperVPlatform.h"
+#include <kernel\Kernel.h>
+
+
+const uint32_t msPerTick = 1000 / APIC_TICKS_PER_SEC;
 
 KThread* Scheduler::GetThread()
 {
@@ -13,9 +17,9 @@ KThread* Scheduler::GetThread()
 	return ctx->Thread;
 }
 
-Scheduler::Scheduler() :
+Scheduler::Scheduler(HAL* hal) :
 	Enabled(),
-	m_hyperv(),
+	m_HAL(hal),
 	m_cpu(),
 	m_threadIndex(),
 	m_threads()
@@ -31,8 +35,9 @@ void Scheduler::Init()
 	boot->m_state = ThreadState::Running;
 	m_threads.push_back(boot);
 
+	
 	//Write to CPU state
-	ArchSetUserCpuContext(&m_cpu);
+	m_HAL->SetUserCpuContext(&m_cpu);
 }
 
 void Scheduler::Schedule()
@@ -41,7 +46,7 @@ void Scheduler::Schedule()
 
 	//Printf("Scheduling...\r\n");
 
-	const uint64_t tsc = m_hyperv.ReadTsc();
+	const uint64_t tsc = m_HAL->GetClock()->GetTicks();
 	//TODO:
 	//const uint64_t tsc = HyperV::ReadTsc();
 	//Printf("TSC: %d\r\n", tsc);
@@ -141,14 +146,15 @@ void Scheduler::Schedule()
 	Printf("Scheduler: %d (%s) -> %d (%s)\n", current.Id, current.Name.c_str(), next.Id, next.Name.c_str());
 
 	//Save current context
-	Printf("Old Ctx: 0x%016x (0x%016x), New Ctx: 0x%016x (0x%016x)\n", current.Context, current.Context->Rsp, next.Context, next.Context->Rsp);
+	X64_CONTEXT* ctx = (X64_CONTEXT*)current.Context;
+	Printf("Old Ctx: 0x%016x (0x%016x), New Ctx: 0x%016x (0x%016x)\n", current.Context, ctx->Rsp, next.Context, ctx->Rsp);
 	if (current.UserThread)
 		Printf("    Old User Stack: 0x%016x\n", current.UserThread->Stack);
 	if (next.UserThread)
 		Printf("    New User Stack: 0x%016x\n", next.UserThread->Stack);
 #endif
 
-	if (ArchSaveContext(current.Context) == 0)
+	if (m_HAL->SaveContext(current.Context) == 0)
 	{
 		//Printf("context saved\r\n");
 		//Switch cr3 if changing processes
@@ -158,7 +164,7 @@ void Scheduler::Schedule()
 			//Printf("Userthread: id:%d\r\n", userThread->Id);
 			const uintptr_t cr3 = userThread->Process.GetCR3();
 			//Printf("CR3: 0x%16x\r\n", cr3);
-			ArchSetPagingRoot(cr3);
+			m_HAL->SetupPaging(cr3);
 			//Printf("SetPaginRoot done\r\n");
 		}
 
@@ -171,11 +177,11 @@ void Scheduler::Schedule()
 		//TODO(tsharpe): Syscall and interrupt handlers have different stack depths. RSP here is effectively reset,
 		//determine if this is right.
 		//ArchSetInterruptStack((void*)next.Context->Rsp);
-		ArchSetInterruptStack((void*)next.m_stackPointer);
+		m_HAL->SetInterruptStack((void*)next.m_stackPointer);
 		//Printf("Set interrupt stack\r\n");
 
 		//Load new context
-		ArchLoadContext(next.Context);
+		m_HAL->LoadContext(next.Context);
 
 		//Printf("context loaded\r\n");
 	}
@@ -260,9 +266,12 @@ WaitStatus Scheduler::ObjectWait(KSignalObject& object, const milli_t timeout /*
 	//const uint64_t tscStart = x64::ReadTSC();
 	//const uint64_t deadline = tscStart + (x64::TSCFreq * timeout * 1000 * 1000); // ToNano(timeout) / 100;
 	//Calculate deadline
-	const nano100_t tscStart = m_hyperv.ReadTsc();
-	const nano100_t deadline = tscStart + ToNano(timeout) / 100;
+	const uint64_t tscStart = m_HAL->GetClock()->GetTicks();
+	//const nano100_t deadline = tscStart + ToNano(timeout) / 100;
+	// Round the number of milliseconds to the nearest MS_PER_TICK
+	uint64_t rounded_ticks = ((timeout + (msPerTick - 1)) / msPerTick);
 
+	const uint64_t deadline = tscStart + rounded_ticks;
 
 	//Set signal
 	current.m_state = ThreadState::SignalWait;
@@ -281,5 +290,15 @@ void Scheduler::Display() const
 	for (size_t i = 0; i < m_threads.size(); i++)
 	{
 		m_threads[i]->Display();
+	}
+}
+
+void Scheduler::onTimerTick(uint64_t totalTicks)
+{
+	if(this->Enabled)
+	{
+		if(m_HAL->EOIPending())
+			m_HAL->EOI();	//Signal EOI before scheduling since we might switch context and then EOI might never get called!
+		this->Schedule();
 	}
 }

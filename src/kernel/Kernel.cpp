@@ -15,6 +15,7 @@
 #include "types\PortableExecutable.h"
 #include <Path.h>
 #include "drivers\io\MouseDriver.h"
+#include "drivers\io\KeyboardDriver.h"
 #include "drivers\io\AHCI.h"
 
 
@@ -32,6 +33,7 @@ public:
 		{
 			static uint8_t data[] = {
 				#include "gfx/mono_arrow.h"
+#include "drivers\io\KeyboardDriver.h"
 			};
 			vd->DefineCursor(data, 16, 18);
 			vd->GetFramebuffer()->FillScreen({ 0x82, 0x75, 0x12, 0x00 });
@@ -117,7 +119,8 @@ Kernel::Kernel(const LoaderParams& params, BootHeap& bootHeap) :
 	m_stackSpace(KernelStackStart, KernelStackEnd, true),
 	m_runtimeSpace(KernelRuntimeStart, KernelRuntimeEnd, true),
 	m_windowsSpace(KernelWindowsStart, KernelWindowsEnd, true),
-	m_HAL(&m_configTables)
+	m_HAL(&m_configTables),
+	m_scheduler(&m_HAL)
 {
 
 }
@@ -184,6 +187,13 @@ void Kernel::Initialize()
 
 	m_HAL.ActivateDrivers();
 
+
+	//Process and thread containers
+	m_scheduler.Init();
+	kernel.KeCreateThread(&Kernel::IdleThread, this, "Idle");
+	m_HAL.GetClock()->RegisterTickHandler(&m_scheduler);
+
+
 	MouseDummyDrawer* drawer = new MouseDummyDrawer();
 	DummyKeyboardOutput* keys = new DummyKeyboardOutput();
 
@@ -199,9 +209,12 @@ void Kernel::Initialize()
 	if(m_HAL.GetVideoDevice())
 		m_loadingScreen.SetFramebuffer(m_HAL.GetVideoDevice()->GetFramebuffer());
 
-	Printf("Running idle...\r\n");
+
+	m_scheduler.Enabled = true;
+	
 	Printf("\r\n\r\n ===== For now you should see a black screen with some text. This means we have a SVGA-II display in 1440x900 resolution with mouse and keyboard support!\r\n\r\n");
 	m_HAL.GetVideoDevice()->UpdateRect({ 0,0,m_HAL.GetVideoDevice()->GetScreenWidth(), m_HAL.GetVideoDevice()->GetScreenHeight() });
+
 
 	m_HAL.GetClock()->delay(3000);
 	Printf("Hello after 3 sec!\r\n");
@@ -231,9 +244,10 @@ void Kernel::Initialize()
 	}
 #endif
 
+	//m_scheduler.Display();
 
-	while(true)
-		__halt();
+	//while(true)
+//		__halt();
 }
 
 
@@ -285,7 +299,7 @@ void Kernel::Bugcheck(const char* file, const char* line, const char* format, va
 		this->Printf("\n");
 
 		while (true)
-			m_HAL.Halt();
+			m_HAL.Wait();
 	}
 	inBugcheck = true;
 
@@ -306,15 +320,15 @@ void Kernel::Bugcheck(const char* file, const char* line, const char* format, va
 	m_HAL.SaveContext(&context);
 	//this->ShowStack(&context);
 
-	//if (m_scheduler.Enabled)
+	if (m_scheduler.Enabled)
 	{
-		//KThread& thread = m_scheduler.GetCurrentThread();
-		//thread.Display();
+		KThread& thread = m_scheduler.GetCurrentThread();
+		thread.Display();
 	}
 
 	//Pause
 	while (true)
-		m_HAL.Halt();
+		m_HAL.Wait();
 }
 
 void Kernel::Panic(const char* message)
@@ -367,6 +381,11 @@ paddr_t Kernel::AllocatePhysical(const size_t count)
 	return address;
 }
 
+void* Kernel::AllocateStack(const size_t count)
+{
+	return m_virtualMemory.Allocate(0, count, m_stackSpace);
+}
+
 uint32_t Kernel::PrepareShutdown()
 {
 	//Nothing to do yet
@@ -404,6 +423,40 @@ void* Kernel::DriverMapPages(paddr_t address, size_t count)
 	return (void*)virtualAddress;
 }
 
+void Kernel::KernelThreadInitThunk()
+{
+	kernel.Printf("Kernel::KernelThreadInitThunk\n");
+
+	KThread& current = kernel.m_scheduler.GetCurrentThread();
+	//current.Display();
+
+	//Run thread
+	current.Run();
+	kernel.Printf("Thread exit: %d\n", current.Id);
+
+	//Exit thread
+	kernel.KeExitThread();
+}
+
+std::shared_ptr<KThread> Kernel::KeCreateThread(const ThreadStart start, void* const arg, const std::string& name /*= ""*/)
+{
+	//Add kernel thread
+	std::shared_ptr<KThread> thread = std::make_shared<KThread>(start, arg);
+	thread->Init(&Kernel::KernelThreadInitThunk);
+	thread->Name = name;
+	Printf("    Name: %s\n", name.c_str());
+	m_scheduler.AddReady(thread);
+
+	return thread;
+}
+
+void Kernel::KeExitThread()
+{
+	this->Printf("Kernel::KeThreadExit\n");
+
+	m_scheduler.KillCurrentThread();
+}
+
 void Kernel::HexDump(uint8_t* buffer, size_t size, size_t lineLength /*= 16*/)
 {
 	for (int j = 0; j < size / lineLength; j++)
@@ -417,5 +470,13 @@ void Kernel::HexDump(uint8_t* buffer, size_t size, size_t lineLength /*= 16*/)
 			Printf("%c", buffer[(j * lineLength) + i] <= 0x1 ? '.' : buffer[(j * lineLength) + i]);
 
 		Printf("\r\n");
+	}
+}
+
+size_t Kernel::IdleThread(void* unused)
+{
+	while (true)
+	{
+		kernel.m_HAL.Wait();
 	}
 }

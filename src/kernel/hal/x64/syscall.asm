@@ -1,6 +1,6 @@
 INCLUDE x64.s
 
-; Hooks into BareMetalOS
+; Hooks into VSOS
 EXTERN SYSTEMCALL_HANDLER: proc
 
 .CODE

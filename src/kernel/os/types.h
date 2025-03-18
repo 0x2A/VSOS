@@ -4,7 +4,6 @@
 #include <type_traits>
 #include <gfx\Types.h>
 #include <string>
-#include <kernel\drivers\io\KeyboardDriver.h>
 
 typedef void* Handle;
 typedef void* HThread;
@@ -91,9 +90,10 @@ struct ThreadEnvironmentBlock
 
 enum class MessageType
 {
-	KeyEvent,
-	MouseEvent,
-	PaintEvent,
+	KeyEvent_Type,
+	MouseMoveEvent_Type,
+	MouseButtonEvent_Type,
+	PaintEvent_Type,
 };
 
 struct MessageHeader
@@ -101,32 +101,242 @@ struct MessageHeader
 	MessageType MessageType;
 };
 
-struct MouseButtonState
-{
-	uint8_t LeftPressed : 1;
-	uint8_t RightPressed : 1;
-};
-
-struct MouseEvent
-{
-	MouseButtonState Buttons;
-	uint16_t XPosition;
-	uint16_t YPosition;
-};
-
 struct PaintEvent
 {
 	gfx::Rectangle Region;
 };
+
+
+/**
+			 * @class KeyboardState
+			 * @brief Holds the state of the keyboard
+			 */
+struct KeyboardState {
+public:
+
+	// Left and Right
+	bool left_shift{ false };
+	bool right_shift{ false };
+	bool left_control{ false };
+	bool right_control{ false };
+	bool left_alt{ false };
+	bool right_alt{ false };
+
+	// Other Stuff
+	bool caps_lock{ false };
+	bool number_pad_lock{ false };
+	bool scroll_lock{ false };
+};
+
+
+enum KeyCode : uint16_t {
+
+	// Alphabet
+	A = 'A', a = 'a',
+	B = 'B', b = 'b',
+	C = 'C', c = 'c',
+	D = 'D', d = 'd',
+	E = 'E', e = 'e',
+	F = 'F', f = 'f',
+	G = 'G', g = 'g',
+	H = 'H', h = 'h',
+	I = 'I', i = 'i',
+	J = 'J', j = 'j',
+	K = 'K', k = 'k',
+	L = 'L', l = 'l',
+	M = 'M', m = 'm',
+	N = 'N', n = 'n',
+	O = 'O', o = 'o',
+	P = 'P', p = 'p',
+	Q = 'Q', q = 'q',
+	R = 'R', r = 'r',
+	S = 'S', s = 's',
+	T = 'T', t = 't',
+	U = 'U', u = 'u',
+	V = 'V', v = 'v',
+	W = 'W', w = 'w',
+	X = 'X', x = 'x',
+	Y = 'Y', y = 'y',
+	Z = 'Z', z = 'z',
+
+	// Numbers
+	zero = '0',
+	one = '1',
+	two = '2',
+	three = '3',
+	four = '4',
+	five = '5',
+	six = '6',
+	seven = '7',
+	eight = '8',
+	nine = '9',
+
+	// Symbols
+	comma = ',',
+	fullStop = '.',
+	exclamationMark = '!',
+	questionMark = '?',
+	quotationMark = '\"',
+	semicolon = ';',
+	colon = ':',
+	apostrophe = '\'',
+	slantedApostrophe = '`',
+
+	// Signs
+	powerSign = '^',
+	dollarSign = '$',
+	percentSign = '%',
+	andSign = '&',
+	atSign = '@',
+
+	// Special Characters
+	underscore = '_',
+	lineThing = '|',
+	hash = '#',
+	backslash = '\\',
+	forwardSlash = '/',
+	squigglyLine = '~',
+
+	// Math Symbols
+	plus = '+',
+	minus = '-',
+	equals = '=',
+	multiply = '*',
+	lessThan = '<',
+	greaterThan = '>',
+
+	// Brackets
+	openBracket = '(',
+	closeBracket = ')',
+	openSquareBracket = '[',
+	closeSquareBracket = ']',
+	openCurlyBracket = '{',
+	closeCurlyBracket = '}',
+
+	// Writing
+	space = ' ',
+	tab = '\t',
+	enter = '\n',
+	backspace = '\b',
+
+	/// OTHER CODES THAT ARE NOT CHARACTERS ///
+
+	// Functions
+	f1 = 1000,      //force it to start at 1000 so it doesn't conflict with ascii
+	f2,
+	f3,
+	f4,
+	f5,
+	f6,
+	f7,
+	f8,
+	f9,
+	f10,
+	f11,
+	f12,
+
+	// Top Row
+	escape,
+	printScreen,
+	scrollLock,
+	pauseBreak,
+
+	// Arrow s
+	upArrow,
+	downArrow,
+	leftArrow,
+	rightArrow,
+
+	// Keys Above Arrows
+	insert,
+	home,
+	pageUp,
+	deleteKey,
+	end,
+	pageDown,
+
+	// Left Side
+	capsLock,
+	leftShift,
+	leftControl,
+	leftOS,                 //weird ass windows key or command on mac
+	leftAlt,
+
+	// Right Side
+	rightAlt,
+	functionKey,
+	rightControl,
+	rightShift,
+
+	// Number Pad
+	numberPadLock,
+	numberPadForwardSlash,
+	numberPadMultiply,
+	numberPadMinus,
+	numberPadPlus,
+	numberPadEnter,
+	numberPadZero,
+	numberPadOne,
+	numberPadTwo,
+	numberPadThree,
+	numberPadFour,
+	numberPadFive,
+	numberPadSix,
+	numberPadSeven,
+	numberPadEight,
+	numberPadNine,
+	numberPadFullStop,
+
+	// Numper Pad (Non Number Lock)
+	numberPadHome,
+	numberPadPageDown,
+	numberPadPageUp,
+	numberPadEnd,
+	numberPadInsert,
+	numberPadUpArrow,
+	numberPadDownArrow,
+	numberPadLeftArrow,
+	numberPadRightArrow,
+
+
+	Invalid
+};
+
+/**
+* @class KeyDownEvent
+* @brief Event that is triggered when a key is pressed
+*/
+class KeyEvent {
+public:
+	KeyEvent(bool keyUp, KeyboardState KeyState, KeyCode keyCode) : key_code(keyCode), keyboard_state(KeyState), key_up(keyUp) {}
+	KeyEvent() {}
+
+	KeyCode key_code;
+	KeyboardState keyboard_state;
+	bool key_up; //true if key up event
+};
+
+struct MouseMoveEvent {
+	int8_t x;
+	int8_t y;
+};
+
+struct MouseButtonEvent
+{
+	uint8_t button;
+	bool button_up;
+};
+
 
 struct Message
 {
 	MessageHeader Header;
 	union
 	{
-		KeyEvent KeyEvent;
-		MouseEvent MouseEvent;
-		PaintEvent PaintEvent;
+		KeyEvent keyEvent;
+		MouseMoveEvent mouseMoveEvent;
+		MouseButtonEvent mouseButtonEvent;
+		PaintEvent paintEvent;
 	};
 };
 

@@ -29,7 +29,7 @@ public:
 
 	const uint32_t Id;
 
-	X64_CONTEXT* Context;
+	CPU_CONTEXT* Context;
 	UserThread* UserThread;
 	std::string Name;
 
@@ -45,7 +45,7 @@ private:
 	//Scheduler
 	ThreadState m_state;
 	WaitStatus m_waitStatus;
-	nano100_t m_timeout;
+	nano_t m_timeout;
 	KSignalObject* m_signal;
 
 	::NO_COPY_OR_ASSIGN(KThread);

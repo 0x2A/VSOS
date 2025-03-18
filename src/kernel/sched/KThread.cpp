@@ -44,10 +44,10 @@ void KThread::Init(void* const entry)
 	//Printf("KThread::Init offsets: 0x%x 0x%x\n", s1, s2);
 
 	m_stack = kernel.AllocateStack(KThread::StackPages);
-	m_stackPointer = MakePointer<void*>(m_stack, (KThread::StackPages << PageShift) - ArchStackReserve());
+	m_stackPointer = MakePointer<void*>(m_stack, (KThread::StackPages << PageShift) - kernel.GetHAL()->StackReserve());
 
 	//Printf("KThread::InitContext Id %d Start: 0x%016x, End: 0x%016x\n", Id, m_stack, m_stackPointer);
-	ArchInitContext(Context, entry, m_stackPointer);
+	kernel.GetHAL()->InitContext(Context, entry, m_stackPointer);
 	//Printf("Context saved: 0x%16x\r\n", Context->Rip);
 }
 
@@ -72,8 +72,11 @@ void KThread::Display() const
 		m_signal->Display();
 
 	//Display context
-	Printf("  Rbp: 0x%016x Rsp: 0x%016x Rip: 0x%016x\n", Context->Rbp, Context->Rsp, Context->Rip);
 
+#if defined(PLATFORM_X64)
+	X64_CONTEXT* ctx = (X64_CONTEXT*)Context;
+	Printf("  Rbp: 0x%016x Rsp: 0x%016x Rip: 0x%016x\n", ctx->Rbp, ctx->Rsp, ctx->Rip);
+#endif
 	if (UserThread != nullptr)
 		UserThread->Display();
 }

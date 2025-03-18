@@ -4,13 +4,13 @@
 #include <map>
 #include <vector>
 #include "KThread.h"
-#include "kernel/drivers/HyperV/HyperVPlatform.h"
+#include "kernel/hal/HAL.h"
 
-class Scheduler
+class Scheduler : public TickEventHandler
 {
 public:
 	static KThread* GetThread();
-	Scheduler();
+	Scheduler(HAL* hal);
 
 	void Init();
 	void Schedule();
@@ -31,9 +31,13 @@ public:
 	//NOTE(tsharpe): Signals were removed in favor of a simplied scheduler. This may or may not have been smart.
 	WaitStatus ObjectWait(KSignalObject& object, const milli_t timeout = std::numeric_limits<milli_t>::max());
 	
+
 	void Display() const;
 
 	bool Enabled;
+
+
+	void onTimerTick(uint64_t totalTicks) override;
 
 private:
 	struct CpuContext
@@ -47,7 +51,7 @@ private:
 		KThread* Thread;
 	};
 	//Reference to clock
-	HyperV m_hyperv;
+	HAL* m_HAL;
 
 	//Cpu context
 	CpuContext m_cpu;

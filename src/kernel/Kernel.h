@@ -84,11 +84,15 @@ public:
 #pragma region Virtual Memory Interface
 
 	paddr_t AllocatePhysical(const size_t count);
+	void* AllocateStack(const size_t count);
 
 	void* MapPhysicalMemory(uint64_t PhysicalAddress, uint64_t Length, KernelAddress mapStartAddr = KernelSharedPageStart);
 	//maps phyiscal to virtual address in runtime space
 	void* VirtualMapRT(const void* address, const std::vector<paddr_t>& addresses);
 
+	//User process address space
+	void* VirtualAlloc(UserProcess& process, const void* address, const size_t size);
+	void* VirtualMap(UserProcess& process, const void* address, const std::vector<paddr_t>& addresses);
 
 	//This method only works because the loader ensures we are physically contiguous
 	/*paddr_t VirtualToPhysical(uintptr_t virtualAddress)
@@ -109,12 +113,27 @@ public:
 	void* DriverMapPages(paddr_t address, size_t count);
 #pragma endregion
 
+#pragma region ThreadStarts
+	__declspec(noreturn) static void KernelThreadInitThunk();
+	__declspec(noreturn) static size_t UserThreadInitThunk(void* unused);
+#pragma endregion
+
+#pragma region Internal Interface
+
+	//Threads
+	std::shared_ptr<KThread> KeCreateThread(const ThreadStart start, void* const arg, const std::string& name = "");
+	void KeExitThread();
+#pragma endregion
+
 
 	LoadingScreen* GetLoadingScreen() { return &m_loadingScreen; }
 
 	void HexDump(uint8_t* buffer, size_t size, size_t lineLength = 16);
 
+	static size_t IdleThread(void* unused);
 private:
+
+	
 
 	HAL m_HAL;
 
@@ -156,7 +175,10 @@ private:
 	VirtualAddressSpace m_runtimeSpace;
 	VirtualAddressSpace m_windowsSpace;
 
-
+	//Process and Thread management
+	Scheduler m_scheduler;
+	std::map<std::string, UserRingBuffer*>* m_objectsRingBuffers;
+	std::list<std::shared_ptr<UserProcess>>* m_processes;
 
 	//Debugger m_debugger;
 #if 0
@@ -170,5 +192,5 @@ private:
 	::NO_COPY_OR_ASSIGN(Kernel);
 };
 
-
+//TODO: find a better way to access kernel object from any class!
 extern Kernel kernel;

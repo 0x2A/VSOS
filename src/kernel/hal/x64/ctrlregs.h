@@ -6,6 +6,7 @@ extern "C"
 	void _ltr(uint16_t entry);
 	void _sti();
 	void _cli();
+	void _finit();
 
 	cpu_flags_t DisableInterrupts();
 	void RestoreFlags(cpu_flags_t flags);

@@ -35,6 +35,8 @@ public:
 
 	void RegisterTickHandler(TickEventHandler* handler);
 
+	const uint64_t GetTicks() const { return m_ticks; }
+
 private:
 
 	uint8_t ReadRTC(uint8_t addr);

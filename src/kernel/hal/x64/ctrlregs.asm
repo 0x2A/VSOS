@@ -20,6 +20,10 @@ _cli proc
 	ret
 _cli endp
 
+_finit proc
+	finit
+_finit endp
+
 ArchEnableInterrupts PROC
 	sti
 	ret

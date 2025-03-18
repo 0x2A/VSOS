@@ -545,14 +545,14 @@ void ACPI::Init()
 	if (ACPI_FAILURE(Status))
 	{
 		Printf("Could not AcpiInitializeSubsystem: %d\n", Status);
-		m_HAL->Halt();
+		m_HAL->Wait();
 	}
 
 	Status = AcpiInitializeTables(acpi_tables, 16, FALSE);
 	if (ACPI_FAILURE(Status))
 	{
 		Printf("Could not AcpiInitializeTables: %d\n", Status);
-		m_HAL->Halt();
+		m_HAL->Wait();
 	}
 
 	/* Install the default address space handlers. */
@@ -560,28 +560,28 @@ void ACPI::Init()
 	if (ACPI_FAILURE(Status))
 	{
 		Printf("Could not initialise SystemMemory handler, %s!", AcpiFormatException(Status));
-		m_HAL->Halt();
+		m_HAL->Wait();
 	}
 
 	Status = AcpiInstallAddressSpaceHandler(ACPI_ROOT_OBJECT, ACPI_ADR_SPACE_SYSTEM_IO, ACPI_DEFAULT_HANDLER, NULL, NULL);
 	if (ACPI_FAILURE(Status))
 	{
 		Printf("Could not initialise SystemIO handler, %s!", AcpiFormatException(Status));
-		m_HAL->Halt();
+		m_HAL->Wait();
 	}
 
 	Status = AcpiInstallAddressSpaceHandler(ACPI_ROOT_OBJECT, ACPI_ADR_SPACE_PCI_CONFIG, ACPI_DEFAULT_HANDLER, NULL, NULL);
 	if (ACPI_FAILURE(Status))
 	{
 		Printf("Could not initialise PciConfig handler, %s!", AcpiFormatException(Status));
-		m_HAL->Halt();
+		m_HAL->Wait();
 	}
 
 	Status = AcpiLoadTables();
 	if (ACPI_FAILURE(Status))
 	{
 		Printf("Could not AcpiLoadTables: %d\n", Status);
-		m_HAL->Halt();
+		m_HAL->Wait();
 	}
 
 	//Local handlers should be installed here
@@ -590,14 +590,14 @@ void ACPI::Init()
 	if (ACPI_FAILURE(Status))
 	{
 		Printf("Could not AcpiEnableSubsystem: %d\n", Status);
-		m_HAL->Halt();
+		m_HAL->Wait();
 	}
 
 	Status = AcpiInitializeObjects(ACPI_FULL_INITIALIZATION);
 	if (ACPI_FAILURE(Status))
 	{
 		Printf("Could not AcpiInitializeObjects: %d\n", Status);
-		m_HAL->Halt();
+		m_HAL->Wait();
 	}
 
 	ACPI_TABLE_FADT* fadt = (ACPI_TABLE_FADT*)GetAcpiTableBySignature((char*)ACPI_SIG_FADT);

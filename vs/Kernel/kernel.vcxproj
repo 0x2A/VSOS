@@ -162,6 +162,10 @@
     <ClCompile Include="..\..\src\kernel\mem\PMM.cpp" />
     <ClCompile Include="..\..\src\kernel\mem\VAS.cpp" />
     <ClCompile Include="..\..\src\kernel\mem\VMM.cpp" />
+    <ClCompile Include="..\..\src\kernel\proc\UProc.cpp" />
+    <ClCompile Include="..\..\src\kernel\sched\KThread.cpp" />
+    <ClCompile Include="..\..\src\kernel\sched\Scheduler.cpp" />
+    <ClCompile Include="..\..\src\kernel\sched\UThread.cpp" />
     <ClCompile Include="..\..\src\kernel\types\Bitvector.cpp" />
     <ClCompile Include="..\..\src\mem\PageTables.cpp" />
     <ClCompile Include="..\..\src\mem\PageTablesPool.cpp" />
@@ -216,7 +220,13 @@
     <ClInclude Include="..\..\src\kernel\objects\KFile.h" />
     <ClInclude Include="..\..\src\kernel\objects\KSignalObject.h" />
     <ClInclude Include="..\..\src\kernel\objects\UObject.h" />
+    <ClInclude Include="..\..\src\kernel\os\types.h" />
     <ClInclude Include="..\..\src\kernel\panic.h" />
+    <ClInclude Include="..\..\src\kernel\proc\UProc.h" />
+    <ClInclude Include="..\..\src\kernel\proc\UserRingBuffer.h" />
+    <ClInclude Include="..\..\src\kernel\sched\KThread.h" />
+    <ClInclude Include="..\..\src\kernel\sched\Scheduler.h" />
+    <ClInclude Include="..\..\src\kernel\sched\UThread.h" />
     <ClInclude Include="..\..\src\kernel\time.h" />
     <ClInclude Include="..\..\src\kernel\types\BitVector.h" />
     <ClInclude Include="..\..\src\mem\pagetables.h" />
@@ -229,6 +239,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\src\kernel\hal\x64\x64.s" />
     <None Include="..\..\src\kernel\Kernel.def" />
   </ItemGroup>
   <ItemGroup>

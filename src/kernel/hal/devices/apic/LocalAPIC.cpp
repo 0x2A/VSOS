@@ -203,7 +203,16 @@ const void* LocalAPIC::GetResource(uint32_t type) const
 
 void LocalAPIC::SignalEOI()
 {
+	eoi_required = false;
 	write(LAPIC_EOI, 0);
+}
+
+int LocalAPIC::EOIPending()
+{
+	if(eoi_required)
+		return last_interrupt;
+	else
+		return 0;
 }
 
 void LocalAPIC::ipi(int vector)
@@ -232,6 +241,12 @@ void LocalAPIC::DisplayDetails() const
 	Printf("LocalAPIC: Addr: 0x%016x\r\n", m_Addr);
 }
 
+
+void LocalAPIC::NotifyEOIRequired(int vector)
+{
+	eoi_required = true;
+	last_interrupt = vector;
+}
 
 void LocalAPIC::CalibrateTimer()
 {

@@ -119,6 +119,7 @@ void APIC::disable_pic()
 
 void APIC::EOI()
 {
-	m_local_apic.SignalEOI();
+	if(m_local_apic.EOIPending())
+		m_local_apic.SignalEOI();
 }
 

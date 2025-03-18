@@ -16,12 +16,16 @@
 
 #define TIMER0_INT		0x80
 
-// empty struct for polymorphism
+// empty structs for polymorphism
 #pragma pack(push, 1)
 struct INTERRUPT_FRAME
 {
 };
+
+struct CPU_CONTEXT
+{ };
 #pragma pack(pop)
+
 
 class Device;
 class HAL
@@ -32,13 +36,14 @@ public:
 	void initialize();
 
 	void SetupPaging(paddr_t root);
-	void Halt();
-	void SaveContext(void* context);
+	void Wait();
 
 	void HandleInterrupt(uint8_t vector, INTERRUPT_FRAME* frame);
 
 	void RegisterInterrupt(uint8_t vector, InterruptContext context);
 	void UnRegisterInterrupt(uint8_t vector);
+
+	void SetInterruptStack(void* stack);
 
 	void InitDevices();
 
@@ -68,10 +73,21 @@ public:
 
 	PCIBus* GetPCIController() { return &m_PCI; }
 
+	size_t StackReserve();
+
+	int EOIPending();
+	void EOI();
+	// Context handling
+
+	void InitContext(void* context, void* const entry, void* const stack);
+	bool SaveContext(void* context);
+	bool LoadContext(void* context);
+	void SetUserCpuContext(void* teb);
+
 	DriverManager* driverManager;
 
 private:
-	void EOI();
+	
 
 	//Interrupts
 	std::map<uint8_t, InterruptContext>* m_interruptHandlers;

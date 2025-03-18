@@ -390,7 +390,7 @@ void x64::SetupDescriptorTables()
 #endif
 
 	//Enable WRGSBASE instruction
-	//__writecr4(__readcr4() | (1 << 16));
+	__writecr4(__readcr4() | (1 << 16));
 	
 	
 	int regs[4];
@@ -522,6 +522,31 @@ void x64::EnableFSGSBASE()
 {
 	//Enable WRGSBASE instruction
 	__writecr4(__readcr4() | (1 << 16));
+}
+
+void x64::InitSIMD()
+{
+	uint64_t cr0 = __readcr0();
+	cr0 &= ~((uint64_t)CR0_EM);
+	cr0 |= CR0_MONITOR_COPROC;
+	cr0 |= CR0_NUMERIC_ERROR;
+	__writecr0(cr0);
+
+	uint64_t cr4 = __readcr4();
+	cr4 |= CR4_FXSR;
+	cr4 |= CR4_SIMD_EXCEPTION;
+	__writecr4(cr4);
+	_finit();
+}
+
+void x64::SIMD_SaveContext(void* ctx)
+{
+	_fxsave(ctx);
+}
+
+void x64::SIMD_RestoreContext(void* ctx)
+{
+	_fxrstor(ctx);
 }
 
 void x64::InitPIC()

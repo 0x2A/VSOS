@@ -11,10 +11,10 @@
 #include <kernel\drivers\io\MouseDriver.h>
 
 //defined in context.asm
-extern "C" extern void _x64_save_context(void* context);
+extern "C" extern bool _x64_save_context(void* context);
 extern "C" extern void _x64_init_context(void* context, void* const entry, void* const stack);
-extern "C" extern void _x64_load_context(void* context);
-extern "C" extern void _x64_user_thread_start(void* context, void* teb);
+extern "C" extern __declspec(noreturn) bool _x64_load_context(void* context);
+extern "C" extern __declspec(noreturn) void _x64_user_thread_start(void* context, void* teb);
 
 
 
@@ -26,6 +26,7 @@ HAL::HAL(ConfigTables* configTables)
 
 void HAL::initialize()
 {
+	x64::InitSIMD();
 	x64::SetupDescriptorTables();
 
 	m_interruptHandlers = new std::map<uint8_t, InterruptContext>();
@@ -40,50 +41,52 @@ void HAL::SetupPaging(paddr_t root)
 }
 
 
-void HAL::Halt()
+void HAL::Wait()
 {
 	__halt();
 }
 
-void HAL::SaveContext(void* context)
+bool HAL::SaveContext(void* context)
 {
-	_x64_save_context(context);
+	return _x64_save_context(context);
 }
 
-void HAL::HandleInterrupt(uint8_t vector, INTERRUPT_FRAME* frame)
+bool HAL::LoadContext(void* context)
 {
-	X64_INTERRUPT_FRAME* x64Frame = (X64_INTERRUPT_FRAME*)frame;
-	X64_INTERRUPT_VECTOR x64Vector = (X64_INTERRUPT_VECTOR)vector;
+	return _x64_load_context(context);
+}
 
-	if (x64Vector == X64_INTERRUPT_VECTOR::DoubleFault)
+void OnUnhandledInterrupt(X64_INTERRUPT_FRAME* x64Frame, const X64_INTERRUPT_VECTOR& x64Vector)
+{
+	if((int)x64Vector < 32)
 	{
-		//KePauseSystem();
-		kernel.Panic("AAHH PANIC AT THE DISCO: Double Fault!\r\n");
-		__halt();
-	}
 
-	//Break into kernel debugger if not user code
-	//if (m_debugger.Enabled() && vector == X64_INTERRUPT_VECTOR::Breakpoint)
-	{
-		//m_debugger.DebuggerEvent(vector, frame);
-		//return;
+		switch (x64Vector)
+		{
+		case X64_INTERRUPT_VECTOR::DivideError:
+			kernel.Panic("Divion by zero\r\n");
+		break;
+		case X64_INTERRUPT_VECTOR::NMIInterrupt:
+			kernel.Panic("Non-maskable Interrupt\r\n");
+		break;
+		case X64_INTERRUPT_VECTOR::DoubleFault:
+			kernel.Panic("AAHH PANIC AT THE DISCO: Double Fault!\r\n");
+		break;
+		case X64_INTERRUPT_VECTOR::PageFault:
+			Printf("    CR2: 0x%16x\n", __readcr2());
+			if (__readcr2() == 0)
+				kernel.Panic("Null pointer exception\r\n");
+			else
+				kernel.Panic("Page Fault\r\n");
+		break;
+		default:
+			Printf("==== UNHANDLED EXCEPTION ====\r\n\r\n");
+		break;
+		}
+		
 	}
-
-	const auto& it = m_interruptHandlers->find(vector);
-	if (it != m_interruptHandlers->end())
-	{
-		InterruptContext ctx = it->second;
-		ctx.Handler(ctx.Context);
-		EOI();
-		return;
-	}
-
-	if (x64Vector == X64_INTERRUPT_VECTOR::Timer0)
-	{
-		//If timer0 is not registered yet we just ignore it, since it might be triggering before timer is hooked to the interrupt
-		EOI();
-		return;
-	}
+	
+	Printf("==== UNHANDLED INTERRUPT ====\r\n\r\n");
 
 	//Show interrupt context
 	Printf("ISR: 0x%x, Code: %x\n", x64Vector, x64Frame->ErrorCode);
@@ -97,19 +100,12 @@ void HAL::HandleInterrupt(uint8_t vector, INTERRUPT_FRAME* frame)
 	Printf("    CS: 0x%x, SS: 0x%x\n", x64Frame->CS, x64Frame->SS);
 
 
-	switch (x64Vector)
-	{
-	case X64_INTERRUPT_VECTOR::PageFault:
-		Printf("    CR2: 0x%16x\n", __readcr2());
-		if (__readcr2() == 0)
-			Printf("        Null pointer\n");
-	}
 
 	//Build context
-	X64_CONTEXT context = {};
-	context.Rip = x64Frame->RIP;
-	context.Rsp = x64Frame->RSP;
-	context.Rbp = x64Frame->RBP;
+	//X64_CONTEXT context = {};
+	//context.Rip = x64Frame->RIP;
+	//context.Rsp = x64Frame->RSP;
+	//context.Rbp = x64Frame->RBP;
 
 #if 0
 	if (IsValidUserPointer((void*)frame->RIP))
@@ -164,24 +160,62 @@ void HAL::HandleInterrupt(uint8_t vector, INTERRUPT_FRAME* frame)
 	else
 	{
 #endif
-		//this->ShowStack(&context);
+	//this->ShowStack(&context);
 
-		//Bugcheck
-		Fatal("Unhandled exception");
-		//}
+	//Bugcheck
+	Fatal("Unhandled interrupt\r\n");
+		
 }
 
-	void HAL::RegisterInterrupt(uint8_t vector, InterruptContext context)
+
+void HAL::HandleInterrupt(uint8_t vector, INTERRUPT_FRAME* frame)
+{
+	X64_INTERRUPT_FRAME* x64Frame = (X64_INTERRUPT_FRAME*)frame;
+	X64_INTERRUPT_VECTOR x64Vector = (X64_INTERRUPT_VECTOR)vector;
+
+	
+	//Break into kernel debugger if not user code
+	//if (m_debugger.Enabled() && vector == X64_INTERRUPT_VECTOR::Breakpoint)
 	{
-		UnRegisterInterrupt(vector);
-		m_interruptHandlers->insert({ vector, context });
+		//m_debugger.DebuggerEvent(vector, frame);
+		//return;
+	}
+	if (vector > 32) m_APIC.GetLocalAPIC()->NotifyEOIRequired(vector);
+	const auto& it = m_interruptHandlers->find(vector);
+	if (it != m_interruptHandlers->end())
+	{
+		InterruptContext ctx = it->second;
+		ctx.Handler(ctx.Context);
+		EOI(); 
+		return;
 	}
 
-	void HAL::UnRegisterInterrupt(uint8_t vector)
+	if (x64Vector == X64_INTERRUPT_VECTOR::Timer0)
 	{
-		if (m_interruptHandlers->find(vector) != m_interruptHandlers->end())
-			m_interruptHandlers->erase(vector);
+		//If timer0 is not registered yet we just ignore it, since it might be triggering before timer is hooked to the interrupt
+		EOI();
+		return;
 	}
+
+	OnUnhandledInterrupt(x64Frame, x64Vector);
+}
+
+void HAL::RegisterInterrupt(uint8_t vector, InterruptContext context)
+{
+	UnRegisterInterrupt(vector);
+	m_interruptHandlers->insert({ vector, context });
+}
+
+void HAL::UnRegisterInterrupt(uint8_t vector)
+{
+	if (m_interruptHandlers->find(vector) != m_interruptHandlers->end())
+		m_interruptHandlers->erase(vector);
+}
+
+void HAL::SetInterruptStack(void* stack)
+{
+	x64::SetKernelInterruptStack(stack);
+}
 
 void HAL::InitDevices()
 {
@@ -297,6 +331,26 @@ void HAL::SetInterruptRedirect(const interrupt_redirect_t* redirectStruct)
 	m_APIC.GetIOAPIC()->SetRedirection(redirectStruct);
 }
 
+
+size_t HAL::StackReserve()
+{
+	return 32;
+}
+
+int HAL::EOIPending()
+{
+	return m_APIC.GetLocalAPIC()->EOIPending();
+}
+
+void HAL::InitContext(void* context, void* const entry, void* const stack)
+{
+	_x64_init_context(context, entry, stack);
+}
+
+void HAL::SetUserCpuContext(void* teb)
+{
+	_writegsbase_u64((uintptr_t)teb);
+}
 
 void HAL::EOI()
 {

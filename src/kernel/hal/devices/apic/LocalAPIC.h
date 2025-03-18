@@ -16,7 +16,9 @@ public:
 	const void* GetResource(uint32_t type) const override;
 	void DisplayDetails() const override;
 
+	void NotifyEOIRequired(int vector);
 	void SignalEOI();
+	int EOIPending();
 	void ipi(int vector);
 
 	const uint64_t GetAddr() { return m_Addr; }
@@ -38,4 +40,6 @@ private:
 
 	uint32_t Freq;
 	bool x2Apic;
+	int last_interrupt;
+	bool eoi_required;
 };

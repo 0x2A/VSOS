@@ -1,7 +1,7 @@
 #pragma once
 
 #include "kernel/proc/UProc.h"
-#include <kernel\hal\x64\x64.h>
+#include <kernel\hal\HAL.h>
 
 //TODO(tsharpe): Deallocate TEB from proces
 //TODO(tsharpe): Unmap stack
@@ -32,7 +32,7 @@ private:
 	static uint32_t LastId;
 
 	ThreadEnvironmentBlock* m_teb;
-	X64_CONTEXT m_context;
+	CPU_CONTEXT m_context;
 	void* m_stackAllocation;
 	std::list<Message> m_messages;
 

@@ -175,7 +175,7 @@ struct ahci_port {
 	hba_command_table* command_table[32];
 };
 
-#pragma push(pop)
+#pragma pack(pop)
 
 
 

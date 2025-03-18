@@ -16,7 +16,7 @@ _x64_init_context PROC
 	ret
 _x64_init_context ENDP
 
-; void _x64_save_context(void* context)
+; bool _x64_save_context(void* context)
 _x64_save_context PROC
 	; General purpose
 	mov [rcx + CONTEXT._r12], r12

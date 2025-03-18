@@ -2,17 +2,7 @@
 
 #include "kernel/drivers/Driver.h"
 #include <vector>
-
-struct MouseMoveEvent {
-	int8_t x;
-	int8_t y;
-};
-
-struct MouseButtonEvent
-{
-	uint8_t button;
-	bool button_up;
-};
+#include "kernel/os/types.h"
 
 class MouseEventHandler
 {
