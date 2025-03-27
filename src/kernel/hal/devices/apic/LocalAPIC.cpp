@@ -87,7 +87,7 @@ LocalAPIC::LocalAPIC(HAL* hal)
 {
 	Name = "LAPIC";
 	Description = "LocalAPIC";
-	Path = "ACPI/LAPIC";
+	sprintf(Path, "ACPI/LAPIC");
 	Type = DeviceType::System;
 }
 

@@ -7,7 +7,8 @@
 #include <kernel\Kernel.h>
 
 
-const uint32_t msPerTick = 1000 / APIC_TICKS_PER_SEC;
+const milli_t msPerTick = 1000 / APIC_TICKS_PER_SEC;
+const nano_t nsPerTick = Second / APIC_TICKS_PER_SEC;
 
 KThread* Scheduler::GetThread()
 {
@@ -233,6 +234,20 @@ void Scheduler::AddReady(std::shared_ptr<KThread>& thread)
 
 	//Add to threads
 	m_threads.push_back(thread);
+}
+
+void Scheduler::Sleep(const nano_t value)
+{
+	KThread& current = GetCurrentThread();
+
+	//set wakeup
+	const nano_t tscStart = m_HAL->GetClock()->GetTicks();
+	const nano_t deadline = tscStart + (value / nsPerTick);
+
+	current.m_timeout = deadline;
+	current.m_state = ThreadState::Sleeping;
+
+	this->Schedule();
 }
 
 KThread& Scheduler::GetCurrentThread()

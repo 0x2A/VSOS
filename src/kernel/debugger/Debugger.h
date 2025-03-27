@@ -8,7 +8,7 @@
 #include "kdcom/kddll.h"
 #include <map>
 #include "kernel/sched/KThread.h"
-#include "arch\x64\interrupt.h"
+#include "kernel/hal/x64/interrupt.h"
 
 
 //ReactOS::ntoskrnl\kd64\kdapi.c

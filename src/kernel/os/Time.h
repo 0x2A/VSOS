@@ -10,6 +10,6 @@ constexpr nano_t ToNano(const milli_t time)
 {
 	return time * Second / 1000;
 }
-typedef uint64_t nano100_t;//Time in 100 nanoseconds
-static constexpr nano100_t Second100Ns = Second / 100; //# of 100ns segments in a second
+//typedef uint64_t nano100_t;//Time in 100 nanoseconds
+//static constexpr nano100_t Second100Ns = Second / 100; //# of 100ns segments in a second
 

@@ -134,6 +134,7 @@
     <ClCompile Include="..\..\src\kernel\drivers\Driver.cpp" />
     <ClCompile Include="..\..\src\kernel\drivers\DriverManager.cpp" />
     <ClCompile Include="..\..\src\kernel\drivers\io\AHCI.cpp" />
+    <ClCompile Include="..\..\src\kernel\drivers\io\AHCIPort.cpp" />
     <ClCompile Include="..\..\src\kernel\drivers\io\KeyboardDriver.cpp" />
     <ClCompile Include="..\..\src\kernel\drivers\io\MouseDriver.cpp" />
     <ClCompile Include="..\..\src\kernel\drivers\platform\Clock.cpp" />
@@ -152,6 +153,8 @@
     <ClCompile Include="..\..\src\kernel\hal\devices\SMBios.cpp" />
     <ClCompile Include="..\..\src\Kernel\hal\HAL_x64.cpp" />
     <ClCompile Include="..\..\src\kernel\hal\x64\x64.cpp" />
+    <ClCompile Include="..\..\src\kernel\io\disk\Disk.cpp" />
+    <ClCompile Include="..\..\src\kernel\io\disk\Diskmanager.cpp" />
     <ClCompile Include="..\..\src\kernel\io\LoadingScreen.cpp" />
     <ClCompile Include="..\..\src\kernel\io\StringPrinter.cpp" />
     <ClCompile Include="..\..\src\kernel\Kernel.cpp" />
@@ -167,6 +170,7 @@
     <ClCompile Include="..\..\src\kernel\sched\Scheduler.cpp" />
     <ClCompile Include="..\..\src\kernel\sched\UThread.cpp" />
     <ClCompile Include="..\..\src\kernel\types\Bitvector.cpp" />
+    <ClCompile Include="..\..\src\kernel\types\PortableExecutable.cpp" />
     <ClCompile Include="..\..\src\mem\PageTables.cpp" />
     <ClCompile Include="..\..\src\mem\PageTablesPool.cpp" />
     <ClCompile Include="..\..\src\msvc.cpp" />
@@ -182,6 +186,8 @@
     <ClInclude Include="..\..\src\kernel\drivers\Driver.h" />
     <ClInclude Include="..\..\src\kernel\drivers\DriverManager.h" />
     <ClInclude Include="..\..\src\kernel\drivers\io\AHCI.h" />
+    <ClInclude Include="..\..\src\kernel\drivers\io\AHCIPort.h" />
+    <ClInclude Include="..\..\src\kernel\drivers\io\DiskDriver.h" />
     <ClInclude Include="..\..\src\kernel\drivers\io\KeyboardDriver.h" />
     <ClInclude Include="..\..\src\kernel\drivers\io\MouseDriver.h" />
     <ClInclude Include="..\..\src\kernel\drivers\platform\Clock.h" />
@@ -206,6 +212,8 @@
     <ClInclude Include="..\..\src\kernel\hal\x64\ctrlregs.h" />
     <ClInclude Include="..\..\src\kernel\hal\x64\interrupt.h" />
     <ClInclude Include="..\..\src\kernel\hal\x64\x64.h" />
+    <ClInclude Include="..\..\src\kernel\io\disk\Disk.h" />
+    <ClInclude Include="..\..\src\kernel\io\disk\DiskManager.h" />
     <ClInclude Include="..\..\src\kernel\io\LoadingScreen.h" />
     <ClInclude Include="..\..\src\kernel\io\StringPrinter.h" />
     <ClInclude Include="..\..\src\kernel\Kernel.h" />
@@ -229,6 +237,7 @@
     <ClInclude Include="..\..\src\kernel\sched\UThread.h" />
     <ClInclude Include="..\..\src\kernel\time.h" />
     <ClInclude Include="..\..\src\kernel\types\BitVector.h" />
+    <ClInclude Include="..\..\src\kernel\types\PortableExecutable.h" />
     <ClInclude Include="..\..\src\mem\pagetables.h" />
     <ClInclude Include="..\..\src\mem\PageTablesPool.h" />
     <ClInclude Include="..\..\src\os.internal.h" />

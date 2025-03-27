@@ -39,7 +39,7 @@ public:
 	void Display() const;
 
 	std::string Name;
-	std::string Path;
+	char Path[1024];
 	std::string Description;
 	DeviceType Type;
 

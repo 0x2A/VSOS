@@ -9,7 +9,7 @@ IOAPIC::IOAPIC(HAL* hal)
 {
 	Name = "IOAPIC";
 	Description = "I/O APIC";
-	Path = "ACPI/IOAPIC";
+	sprintf(Path, "ACPI/IOAPIC");
 	Type = DeviceType::System;
 	m_override_array_size = 0;
 }

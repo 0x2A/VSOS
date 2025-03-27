@@ -8,6 +8,7 @@
 class DiskDriver
 {
 public:
-	virtual Result OpenFile(KFile& file, const std::string& path, const GenericAccess access) const = 0;
-	virtual size_t ReadFile(const KFile& handle, void* const buffer, const size_t bytesToRead) const = 0;
+	virtual char ReadSector(uint16_t drive, uint64_t sector, uint8_t* buffer) const = 0;
+	virtual char WriteSector(uint16_t drive, uint64_t sector, uint8_t* buffer) const = 0;
+	virtual bool EjectDrive(uint8_t drive) = 0;
 };

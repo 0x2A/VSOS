@@ -69,6 +69,18 @@
     <Filter Include="Quelldateien\sched">
       <UniqueIdentifier>{663188cc-7d28-430e-85e3-2b80b011eb90}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Quelldateien\debugger">
+      <UniqueIdentifier>{e032d8c3-3d67-481a-ae26-9bb356df68ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\debugger\kd64">
+      <UniqueIdentifier>{d67cff4a-2fe4-4808-ae11-7c4c85669410}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\hal\devices\disk">
+      <UniqueIdentifier>{281a8192-846f-481b-a060-1638c0e2f503}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\io\disk">
+      <UniqueIdentifier>{63ed267a-3429-421c-8683-8e8859ad0573}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\kernel\main.cpp">
@@ -205,6 +217,18 @@
     </ClCompile>
     <ClCompile Include="..\..\src\kernel\sched\Scheduler.cpp">
       <Filter>Quelldateien\sched</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\kernel\types\PortableExecutable.cpp">
+      <Filter>Quelldateien\types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\kernel\drivers\io\AHCIPort.cpp">
+      <Filter>Quelldateien\drivers\io</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\kernel\io\disk\Disk.cpp">
+      <Filter>Quelldateien\io\disk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\kernel\io\disk\Diskmanager.cpp">
+      <Filter>Quelldateien\io\disk</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -387,6 +411,21 @@
     </ClInclude>
     <ClInclude Include="..\..\src\kernel\sched\Scheduler.h">
       <Filter>Quelldateien\sched</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\types\PortableExecutable.h">
+      <Filter>Quelldateien\types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\drivers\io\AHCIPort.h">
+      <Filter>Quelldateien\drivers\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\drivers\io\DiskDriver.h">
+      <Filter>Quelldateien\drivers\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\io\disk\Disk.h">
+      <Filter>Quelldateien\io\disk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\io\disk\DiskManager.h">
+      <Filter>Quelldateien\io\disk</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

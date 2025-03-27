@@ -70,6 +70,128 @@ struct BaseAddressRegister {
 #define PCI_DESCR_OFFSET_HEAD_TYPE	0x0E
 #define PCI_DESCR_OFFSET_BAR0		0x10
 
+
+typedef struct 
+{
+	uint8_t classID;
+	uint8_t subclassID;
+	const char* Description;
+
+} ClassCode;
+const ClassCode ClassCodes[] = {
+{ 0x00, 0x00, "Unclassified" },
+{ 0x01, 0x00, "Mass Storage Controller - SCSI Bus Controller"},
+{ 0x01, 0x01, "Mass Storage Controller - IDE Controller"},
+{ 0x01, 0x02, "Mass Storage Controller - Floppy Disk Controller"},
+{ 0x01, 0x03, "Mass Storage Controller - IPI Bus Controller"},
+{ 0x01, 0x04, "Mass Storage Controller - RAID Controller"},
+{ 0x01, 0x05, "Mass Storage Controller - ATA Controller"},
+{ 0x01, 0x06, "Mass Storage Controller - Serial ATA"},
+{ 0x01, 0x07, "Mass Storage Controller - Serial Attached SCSI"},
+{ 0x01, 0x08, "Mass Storage Controller - Non - Volatile Memory Controller"},
+{ 0x01, 0x80, "Mass Storage Controller - Other"},
+{ 0x02, 0x00, "Network Controller - Ethernet Controller"},
+{ 0x02, 0x01, "Network Controller - Token Ring Controller"},
+{ 0x02, 0x02, "Network Controller - FDDI Controller"},
+{ 0x02, 0x03, "Network Controller - ATM Controller"},
+{ 0x02, 0x04, "Network Controller - ISDN Controller"},
+{ 0x02, 0x05, "Network Controller - WorldFip Controller"},
+{ 0x02, 0x06, "Network Controller - PICMG 2.14 Multi Computing"},
+{ 0x02, 0x07, "Network Controller - Infiniband Controller"},
+{ 0x02, 0x08, "Network Controller - Fabric Controller"},
+{ 0x02, 0x80, "Network Controller - Other"},
+{ 0x03, 0x00, "Display Controller - VGA Compatible Controller"},
+{ 0x03, 0x01, "Display Controller - XGA Controller"},
+{ 0x03, 0x02, "Display Controller - 3D Controller(Not VGA - Compatible)"},
+{ 0x03, 0x80, "Display Controller - Other"},
+{ 0x04, 0x00, "Multimedia Controller - Multimedia Video Controller"},
+{ 0x04, 0x01, "Multimedia Controller - Multimedia Audio Controller"},
+{ 0x04, 0x02, "Multimedia Controller - Computer Telephony Device"},
+{ 0x04, 0x03, "Multimedia Controller - Audio Device"},
+{ 0x04, 0x80, "Multimedia Controller - Other"},
+{ 0x05, 0x00, "Memory Controller - RAM Controller"},
+{ 0x05, 0x01, "Memory Controller - Flash Controller"},
+{ 0x05, 0x80, "Memory Controller - Other"},
+{ 0x06, 0x00, "Bridge Device - Host Bridge"},
+{ 0x06, 0x01, "Bridge Device - ISA Bridge"},
+{ 0x06, 0x02, "Bridge Device - EISA Bridge"},
+{ 0x06, 0x03, "Bridge Device - MCA Bridge"},
+{ 0x06, 0x04, "Bridge Device - PCI - to - PCI Bridge"},
+{ 0x06, 0x05, "Bridge Device - PCMCIA Bridge"},
+{ 0x06, 0x06, "Bridge Device - NuBus Bridge"},
+{ 0x06, 0x07, "Bridge Device - CardBus Bridge"},
+{ 0x06, 0x08, "Bridge Device - RACEway Bridge"},
+{ 0x06, 0x09, "Bridge Device - PCI - to - PCI Bridge"},
+{ 0x06, 0x0A, "Bridge Device - InfiniBand - to - PCI Host Bridge"},
+{ 0x06, 0x80, "Bridge Device - Other"},
+{ 0x07, 0x00, "Simple Communication Controller - Serial Controller"},
+{ 0x07, 0x01, "Simple Communication Controller - Parallel Controller"},
+{ 0x07, 0x02, "Simple Communication Controller - Multiport Serial Controller"},
+{ 0x07, 0x03, "Simple Communication Controller - Modem"},
+{ 0x07, 0x04, "Simple Communication Controller - IEEE 488.1 / 2 (GPIB)Controller"},
+{ 0x07, 0x05, "Simple Communication Controller - Smart Card"},
+{ 0x07, 0x80, "Simple Communication Controller - Other"},
+{ 0x08, 0x00, "Base System Peripheral - PIC"},
+{ 0x08, 0x01, "Base System Peripheral - DMA Controller"},
+{ 0x08, 0x02, "Base System Peripheral - Timer"},
+{ 0x08, 0x03, "Base System Peripheral - RTC Controller"},
+{ 0x08, 0x04, "Base System Peripheral - PCI Hot - Plug Controller"},
+{ 0x08, 0x05, "Base System Peripheral - SD Host controller"},
+{ 0x08, 0x06, "Base System Peripheral - IOMMU"},
+{ 0x08, 0x80, "Base System Peripheral - Other"},
+{ 0x09, 0x00, "Input Device Controller - Keyboard Controller"},
+{ 0x09, 0x01, "Input Device Controller - Digitizer Pen"},
+{ 0x09, 0x02, "Input Device Controller - Mouse Controller"},
+{ 0x09, 0x03, "Input Device Controller - Scanner Controller"},
+{ 0x09, 0x04, "Input Device Controller - Gameport Controller"},
+{ 0x09, 0x80, "Input Device Controller - Other"},
+{ 0x0A, 0x00, "Docking Station - Generic"},
+{ 0x0A, 0x80, "Docking Station - Other"},
+{ 0x0B, 0x00, "Processor - 386"},
+{ 0x0B, 0x01, "Processor - 486"},
+{ 0x0B, 0x02, "Processor - Pentium"},
+{ 0x0B, 0x10, "Processor - Alpha"},
+{ 0x0B, 0x20, "Processor - PowerPC"},
+{ 0x0B, 0x30, "Processor - MIPS"},
+{ 0x0B, 0x40, "Processor - Co - Processor"},
+{ 0x0C, 0x00, "Serial Bus Controller - FireWire(IEEE 1394) Controller"},
+{ 0x0C, 0x01, "Serial Bus Controller - ACCESS Bus"},
+{ 0x0C, 0x02, "Serial Bus Controller - SSA"},
+{ 0x0C, 0x03, "Serial Bus Controller - USB Controller"},
+{ 0x0C, 0x04, "Serial Bus Controller - Fibre Channel"},
+{ 0x0C, 0x05, "Serial Bus Controller - SMBus"},
+{ 0x0C, 0x06, "Serial Bus Controller - InfiniBand"},
+{ 0x0C, 0x07, "Serial Bus Controller - IPMI Interface"},
+{ 0x0C, 0x08, "Serial Bus Controller - SERCOS Interface(IEC 61491)"},
+{ 0x0C, 0x09, "Serial Bus Controller - CANbus"},
+{ 0x0D, 0x00, "Wireless Controller - iRDA Compatible Controller"},
+{ 0x0D, 0x01, "Wireless Controller - Consumer IR Controller"},
+{ 0x0D, 0x10, "Wireless Controller - RF Controller"},
+{ 0x0D, 0x11, "Wireless Controller - Bluetooth Controller"},
+{ 0x0D, 0x12, "Wireless Controller - Broadband Controller"},
+{ 0x0D, 0x20, "Wireless Controller - Ethernet Controller(802.1a)"},
+{ 0x0D, 0x21, "Wireless Controller - Ethernet Controller(802.1b)"},
+{ 0x0D, 0x80, "Wireless Controller - Other"},
+{ 0x0E, 0x00, "Intelligent Controller - I20"},
+{ 0x0F, 0x01, "Satellite Communication Controller - Satellite TV Controller"},
+{ 0x0F, 0x02, "Satellite Communication Controller - Satellite Audio Controller"},
+{ 0x0F, 0x03, "Satellite Communication Controller - Satellite Voice Controller"},
+{ 0x0F, 0x04, "Satellite Communication Controller - Satellite Data Controller"},
+{ 0x10, 0x00, "Encryption Controller - Network and Computing Encrpytion / Decryption"},
+{ 0x10, 0x10, "Encryption Controller - Entertainment Encryption / Decryption"},
+{ 0x10, 0x80, "Encryption Controller - Other Encryption / Decryption"},
+{ 0x11, 0x00, "Signal Processing Controller - DPIO Modules"},
+{ 0x11, 0x01, "Signal Processing Controller - Performance Counters"},
+{ 0x11, 0x10, "Signal Processing Controller - Communication Synchronizer"},
+{ 0x11, 0x20, "Signal Processing Controller - Signal Processing Management"},
+{ 0x11, 0x80, "Signal Processing Controller - Other"},
+{ 0x12, 0x00, "Processing Accelerator"},
+{ 0x13, 0x00, "Non - Essential Instrumentation"},
+{ 0x40, 0x00, "Co - Processor"},
+{ 0xFF, 0x00, "Unassigned Class "},
+{ 0x00, 0x00, NULL } };
+
+
 class PCIDeviceDescriptor
 {
 public:
@@ -106,49 +228,17 @@ public:
 
 	const char* GetType() const
 	{
-		switch (class_id)
+		const ClassCode* Info;
+
+
+		for (Info = ClassCodes; Info->Description; Info++)
 		{
-		case 0x00: return (subclass_id == 0x01) ? "VGA" : "Legacy";
-		case 0x01:
-			switch (subclass_id)
+			if (Info->classID == class_id && Info->subclassID == subclass_id)
 			{
-			case 0x01:  return "IDE interface";
-			case 0x06:  return "SATA controller";
-			default:    return "Storage";
+				return (Info->Description);
 			}
-		case 0x02: return "Network";
-		case 0x03: return "Display";
-		case 0x04:
-			switch (subclass_id)
-			{
-			case 0x00:  return "Video";
-			case 0x01:
-			case 0x03:  return "Audio";
-			default:    return "Multimedia";
-			}
-		case 0x06:
-			switch (subclass_id)
-			{
-			case 0x00:  return "Host bridge";
-			case 0x01:  return "ISA bridge";
-			case 0x04:  return "PCI bridge";
-			default:    return "Bridge";
-			}
-		case 0x07:
-			switch (subclass_id)
-			{
-			case 0x00:  return "Serial controller";
-			case 0x80:  return "Communication controller";
-			}
-			break;
-		case 0x0C:
-			switch (subclass_id)
-			{
-			case 0x03:  return "USB";
-			case 0x05:  return "System Management Bus";
-			}
-			break;
 		}
+
 		return "Unknown";
 	}
 } ;

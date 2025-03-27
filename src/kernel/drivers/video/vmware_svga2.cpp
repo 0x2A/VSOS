@@ -17,6 +17,7 @@ VMware_SVGA2::VMware_SVGA2(PCIDevice* device, HAL* hal)
 
 DriverResult VMware_SVGA2::Activate()
 {
+	return DriverResult::NotImplemented;
 	/*
 	* Initialize the command FIFO. The beginning of FIFO memory is
 	* used for an additional set of registers, the "FIFO registers".

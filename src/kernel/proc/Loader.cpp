@@ -1,5 +1,5 @@
 #include "Loader.h"
-#include <kernel\obj\KFile.h>
+#include <kernel\objects\KFile.h>
 #include "Assert.h"
 #include "kernel/Kernel.h"
 #include <kernel\types\PortableExecutable.h>

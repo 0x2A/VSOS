@@ -78,8 +78,8 @@ public:
 	void DisplayDetails() const override;
 
 	// I/O
-	//uint32_t read(uint32_t registeroffset);
-	//void write(uint32_t registeroffset, uint32_t value);
+	uint32_t readBus(uint32_t registeroffset);
+	void writeBus(uint32_t registeroffset, uint32_t value);
 
 	const PCIDeviceDescriptor& GetDeviceDescriptor() const { return m_Descriptor; }
 	const BaseAddressRegister& GetBAR(uint8_t id);

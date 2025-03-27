@@ -12,12 +12,14 @@
 #include <reactos/amd64/ke.h>
 #include <reactos/windbgkd.h>
 #include <coreclr/list.h>
-#include "types\PortableExecutable.h"
+#include "kernel\types\PortableExecutable.h"
+#include "kernel\Kernel.h"
+#include "reactos\ldrtypes.h"
 
 #include "kdCom/kddll.h"
 namespace Kd64
 {
-	#include "kernel/Kd64/kd64.h"
+	#include "kernel/debugger/Kd64/kd64.h"
 	extern "C" KdDll m_dll;
 }
 
@@ -101,7 +103,7 @@ void Debugger::DebuggerEvent(X64_INTERRUPT_VECTOR vector, X64_INTERRUPT_FRAME* f
 	ExceptionRecord.ExceptionCode = STATUS_BREAKPOINT;
 	ExceptionRecord.NumberParameters = 3;
 	ExceptionRecord.ExceptionInformation[0] = BREAKPOINT_BREAK;
-	ExceptionRecord.ExceptionInformation[1] = (ULONG64)(LONG_PTR)&kernel.m_scheduler.GetCurrentThread();
+	ExceptionRecord.ExceptionInformation[1] = (ULONG64)(LONG_PTR)&kernel.KeGetCurrentThread();
 	ExceptionRecord.ExceptionInformation[2] = 0;
 
 	ConvertToContext(frame, &ContextRecord);
@@ -133,7 +135,7 @@ size_t Debugger::ThreadLoop()
 		{
 			__debugbreak();
 		}
-		//kernel.Sleep(50);
+		kernel.Sleep(50);
 	}
 
 	return 0;

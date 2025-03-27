@@ -4,6 +4,7 @@
 #include <intrin.h>
 #include <kernel\hal\x64\interrupt.h>
 #include <Assert.h>
+#include <kernel\os\Time.h>
 
 #define RTC_COMMAND_PORT	0x70
 #define RTC_DATA_PORT		0x71
@@ -11,6 +12,7 @@
 //#define MS_PER_TICK			(1000/APIC_TICKS_PER_SEC)
 
 const uint32_t msPerTick = 1000 / APIC_TICKS_PER_SEC;
+const uint32_t nsPerTick = Second / APIC_TICKS_PER_SEC;
 
 uint32_t OnTimer0Interrupt(void* arg)
 {

@@ -48,6 +48,7 @@ extern "C"
 #include "kernel/drivers/HyperV/HyperVPlatform.h"
 #include "hal\x64\interrupt.h"
 #include "hal\HAL.h"
+#include "io\disk\DiskManager.h"
 
 class Kernel
 {
@@ -122,9 +123,21 @@ public:
 
 	//Threads
 	std::shared_ptr<KThread> KeCreateThread(const ThreadStart start, void* const arg, const std::string& name = "");
+	void KeSleepThread(const nano_t value);
 	void KeExitThread();
+	std::shared_ptr<KThread> CreateThread(UserProcess& process, size_t stackSize, ThreadStart startAddress, void* arg, void* entry);
+
+	//Libraries
+	//KeModule& KeLoadLibrary(const std::string& path);
+
+	KThread& KeGetCurrentThread();
 #pragma endregion
 
+#pragma region System Calls
+	void Sleep(const uint32_t milliseconds);
+#pragma endregion
+
+	DiskManager* GetDiskManager() { return m_DiskManager; }
 
 	LoadingScreen* GetLoadingScreen() { return &m_loadingScreen; }
 
@@ -162,6 +175,7 @@ private:
 	//Copy to kernel heap
 	ConfigTables m_configTables;
 
+	DiskManager* m_DiskManager;
 
 
 	VMM m_virtualMemory;

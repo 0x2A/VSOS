@@ -27,8 +27,8 @@ void AcpiDevice::Initialize(void* context)
 	Assert(ACPI_SUCCESS(status));
 
 	Assert(result.Pointer);
-	Path = (char*)result.Pointer;
-	std::replace(Path.begin(), Path.end(), '.', '\\');
+	memcpy(Path, (char*)result.Pointer, result.Length);
+	//std::replace(Path.begin(), Path.end(), '.', '\\');
 	delete result.Pointer;
 
 	//ACPI_DEVICE_INFO* info;

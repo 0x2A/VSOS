@@ -24,4 +24,5 @@ public:
 	
 	static std::vector<AcpiDevice*> m_ACPIDevices;
 	static std::vector<PCIDevice*> m_PCIDevices;
+	
 };

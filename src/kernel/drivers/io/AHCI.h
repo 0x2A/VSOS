@@ -4,20 +4,25 @@
 
 #include "kernel/drivers/Driver.h"
 #include <kernel\hal\devices\pci\PCIDevice.h>
+#include "DiskDriver.h"
 
 #define SATA_SIG_ATAPI 0xEB140101
 #define SATA_SIG_ATA   0x00000101
 #define SATA_SIG_SEMB  0xC33C0101
 #define SATA_SIG_PM    0x96690101
 
-#define HBA_PxCMD_CR   0x8000
-#define HBA_PxCMD_FRE  0x0010
-#define HBA_PxCMD_FR   0x4000
-#define HBA_PxCMD_ST   0x0001
+#define HBA_PxCMD_CR		0x8000		// Command List Running (DMA active)
+#define HBA_PxCMD_FRE		0x0010		// FIS Receive Enable
+#define HBA_PxCMD_FR		0x4000		// FIS Receive Running
+#define HBA_PxCMD_ST		0x0001		// Start DMA
+#define HBA_PxCMD_ATAPI		(1 << 24)	// Device is ATAPI
+#define HBA_PxCMD_POD		0x0004		// Power on Device
+#define HBA_PxCMD_SUD		0x0002		// Spin-up Device
 
 #define ATA_CMD_READ_DMA_EX 0x25
 #define ATA_CMD_WRITE_DMA_EX 0x35
 #define ATA_CMD_IDENTIFY 0xEC
+#define ATA_CMD_IDENTIFY_PACKET   0xA1
 #define ATA_CMD_PACKET 0xA0
 
 #define ATA_DEV_BUSY 0x80
@@ -38,6 +43,43 @@
 #define ATA_IDENT_COMMANDSETS  164
 #define ATA_IDENT_MAX_LBA_EXT  200
 
+enum {
+	CAP_S64A = (1U << 31),	// Supports 64-bit Addressing
+	CAP_SNCQ = (1 << 30),	// Supports Native Command Queuing
+	CAP_SSNTF = (1 << 29),	// Supports SNotification Register
+	CAP_SMPS = (1 << 28),	// Supports Mechanical Presence Switch
+	CAP_SSS = (1 << 27),	// Supports Staggered Spin-up
+	CAP_SALP = (1 << 26),	// Supports Aggressive Link Power Management
+	CAP_SAL = (1 << 25),	// Supports Activity LED
+	CAP_SCLO = (1 << 24),	// Supports Command List Override
+	CAP_ISS_MASK = 0xf,			// Interface Speed Support
+	CAP_ISS_SHIFT = 20,
+	CAP_SNZO = (1 << 19),	// Supports Non-Zero DMA Offsets
+	CAP_SAM = (1 << 18),	// Supports AHCI mode only
+	CAP_SPM = (1 << 17),	// Supports Port Multiplier
+	CAP_FBSS = (1 << 16),	// FIS-based Switching Supported
+	CAP_PMD = (1 << 15),	// PIO Multiple DRQ Block
+	CAP_SSC = (1 << 14),	// Slumber State Capable
+	CAP_PSC = (1 << 13),	// Partial State Capable
+	CAP_NCS_MASK = 0x1f,			// Number of Command Slots
+	// (zero-based number)
+	CAP_NCS_SHIFT = 8,
+	CAP_CCCS = (1 << 7),		// Command Completion Coalescing Supported
+	CAP_EMS = (1 << 6),		// Enclosure Management Supported
+	CAP_SXS = (1 << 5),		// Supports External SATA
+	CAP_NP_MASK = 0x1f,			// Number of Ports (zero-based number)
+	CAP_NP_SHIFT = 0,
+};
+
+enum {
+	CAP2_DESO = (1 << 5),		// DevSleep Entrance from Slumber Only
+	CAP2_SADM = (1 << 4),		// Supports Aggressive Device Sleep
+	// Management
+	CAP2_SDS = (1 << 3),		// Supports Device Sleep
+	CAP2_APST = (1 << 2),		// Automatic Partial to Slumber Transitions
+	CAP2_NVMP = (1 << 1),		// NVMHCI Present
+	CAP2_BOH = (1 << 0),		// BIOS/OS Handoff
+};
 
 enum port_type {
 	PORT_TYPE_NONE = 0,
@@ -58,7 +100,36 @@ enum fis_type : uint8_t {
 	FIS_TYPE_DEV_BITS = 0xA1
 };
 
+
 #pragma pack(push, 1)
+
+enum {
+	PORT_INT_CPD = (1 << 31),	// Cold Presence Detect Status/Enable
+	PORT_INT_TFE = (1 << 30),	// Task File Error Status/Enable
+	PORT_INT_HBF = (1 << 29),	// Host Bus Fatal Error Status/Enable
+	PORT_INT_HBD = (1 << 28),	// Host Bus Data Error Status/Enable
+	PORT_INT_IF = (1 << 27),	// Interface Fatal Error Status/Enable
+	PORT_INT_INF = (1 << 26),	// Interface Non-fatal Error Status/Enable
+	PORT_INT_OF = (1 << 24),	// Overflow Status/Enable
+	PORT_INT_IPM = (1 << 23),	// Incorrect Port Multiplier Status/Enable
+	PORT_INT_PRC = (1 << 22),	// PhyRdy Change Status/Enable
+	PORT_INT_DI = (1 << 7),		// Device Interlock Status/Enable
+	PORT_INT_PC = (1 << 6),		// Port Change Status/Enable
+	PORT_INT_DP = (1 << 5),		// Descriptor Processed Interrupt
+	PORT_INT_UF = (1 << 4),		// Unknown FIS Interrupt
+	PORT_INT_SDB = (1 << 3),		// Set Device Bits FIS Interrupt
+	PORT_INT_DS = (1 << 2),		// DMA Setup FIS Interrupt
+	PORT_INT_PS = (1 << 1),		// PIO Setup FIS Interrupt
+	PORT_INT_DHR = (1 << 0),		// Device to Host Register FIS Interrupt
+};
+
+#define PORT_INT_ERROR	(PORT_INT_TFE | PORT_INT_HBF | PORT_INT_HBD \
+                                        | PORT_INT_IF | PORT_INT_INF | PORT_INT_OF \
+                                        | PORT_INT_IPM | PORT_INT_PRC | PORT_INT_PC \
+                                        | PORT_INT_UF)
+
+#define PORT_INT_MASK	(PORT_INT_ERROR | PORT_INT_DP | PORT_INT_SDB \
+                                        | PORT_INT_DS | PORT_INT_PS | PORT_INT_DHR)
 
 struct hba_command_fis {
 	uint8_t fis_type;
@@ -165,7 +236,7 @@ struct hba_command_table {
 	struct hba_prdt_entry prdt_entry[32];
 } ;
 
-struct ahci_port {
+/*struct ahci_port {
 	volatile struct hba_port* hba_port;
 	enum port_type port_type;
 	uint8_t* buffer;
@@ -173,15 +244,15 @@ struct ahci_port {
 	uint64_t bufferPhysicalAddr;
 	hba_command_header* command_header; //used to save virtual address of command headers
 	hba_command_table* command_table[32];
-};
+};*/
 
 #pragma pack(pop)
 
 
-
-class AHCIDriver : public Driver
+class AHCIPort;
+class AHCIDriver : public Driver, public DiskDriver
 {
-
+friend class AHCIPort;
 public:
 	AHCIDriver(PCIDevice* device);
 
@@ -194,22 +265,26 @@ public:
 	std::string get_vendor_name() override;
 	std::string get_device_name() override;
 
-	uint8_t read_port(uint8_t port_no, uint64_t sector, uint32_t sector_count);
-
-	uint8_t* get_buffer(uint8_t port_no);
+	AHCIPort* GetPort(uint8_t port_no);
 	uint8_t get_port_count();
-	uint8_t identify(uint8_t);
+
+
+	char ReadSector(uint16_t drive, uint64_t sector, uint8_t* buffer) const override;
+	char WriteSector(uint16_t drive, uint64_t sector, uint8_t* buffer) const override;
+	bool EjectDrive(uint8_t drive) override;
 
 private:
 
-	port_type check_port_type(hba_port* port);
+	uint32_t OnInterrupt();
+	static uint32_t HandleInterrupt(void* context);
+
 	void probe_ports(hba_memory* abar);
-	void configure_port(ahci_port* port);
-	void port_start_command(ahci_port* port);
-	void port_stop_command(ahci_port* port);
-	int8_t find_cmd_slot(struct ahci_port* port);
+	//void configure_port(ahci_port* port);
+	//void port_start_command(ahci_port* port);
+	//void port_stop_command(ahci_port* port);
+	//int8_t find_cmd_slot(AHCIPort* port);
 
 	hba_memory* abar = 0;
-	ahci_port ahci_ports[32];
+	AHCIPort* ahci_ports[32];
 	uint8_t port_count = 0;
 };

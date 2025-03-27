@@ -17,6 +17,7 @@
 #include "drivers\io\MouseDriver.h"
 #include "drivers\io\KeyboardDriver.h"
 #include "drivers\io\AHCI.h"
+#include "drivers\io\AHCIPort.h"
 
 
 class MouseDummyDrawer : public MouseEventHandler
@@ -179,6 +180,7 @@ void Kernel::Initialize()
 	m_runtimeSpace.Initialize();
 	m_windowsSpace.Initialize();
 
+	m_DiskManager = new DiskManager();
 
 	m_HAL.InitDevices();
 
@@ -213,7 +215,7 @@ void Kernel::Initialize()
 	m_scheduler.Enabled = true;
 	
 	Printf("\r\n\r\n ===== For now you should see a black screen with some text. This means we have a SVGA-II display in 1440x900 resolution with mouse and keyboard support!\r\n\r\n");
-	m_HAL.GetVideoDevice()->UpdateRect({ 0,0,m_HAL.GetVideoDevice()->GetScreenWidth(), m_HAL.GetVideoDevice()->GetScreenHeight() });
+	//m_HAL.GetVideoDevice()->UpdateRect({ 0,0,m_HAL.GetVideoDevice()->GetScreenWidth(), m_HAL.GetVideoDevice()->GetScreenHeight() });
 
 
 	m_HAL.GetClock()->delay(3000);
@@ -222,8 +224,10 @@ void Kernel::Initialize()
 	Time time = m_HAL.GetClock()->get_time();
 	Printf("  Date: %02d-%02d-%02d %02d:%02d:%02d UTC\n", time.day, time.month, time.year, time.hour, time.minute, time.second);
 
-	m_HAL.GetVideoDevice()->UpdateRect({0,0,m_HAL.GetVideoDevice()->GetScreenWidth(), m_HAL.GetVideoDevice()->GetScreenHeight()});
+	//m_HAL.GetVideoDevice()->UpdateRect({0,0,m_HAL.GetVideoDevice()->GetScreenWidth(), m_HAL.GetVideoDevice()->GetScreenHeight()});
+
 #if 0
+	uint8_t* buffer = new uint8_t[512];
 	for (auto driver : m_HAL.driverManager->Drivers)
 	{
 		if(driver->get_device_type() == DeviceType::Harddrive)
@@ -232,16 +236,15 @@ void Kernel::Initialize()
 			if(ahci->get_port_count() <= 0) continue;
 
 			Printf("reading first 512 byte of SATA port 0:\r\n");
-			if(!ahci->read_port(0, 0, 1))
+			if(!ahci->ReadSector(0, 0, buffer))
 				Printf("failed to read SATA port\r\n");
-			uint8_t* buffer = ahci->get_buffer(0);
 			HexDump(buffer, 512);
-
 			Printf("\r\n");
 
 			break;
 		}
 	}
+
 #endif
 
 	//m_scheduler.Display();
@@ -337,7 +340,7 @@ void Kernel::Panic(const char* message)
 	if (m_HAL.GetVideoDevice())
 		((Driver*)m_HAL.GetVideoDevice())->Deactivate();
 
-	m_display.FillScreen(gfx::Colors::DarkRed);
+	//m_display.FillScreen(gfx::Colors::DarkRed);
 	m_display.DrawPrintf({ 10,10 }, gfx::Colors::Red, " === KERNEL PANIC === \r\n\r\n");
 	m_display.WriteFrame({ m_display.GetWidth() - 200, 50, 150, 150 }, gfx_panic);
 	m_display.DrawText({ 10,30 }, message, gfx::Colors::Red);
@@ -450,11 +453,35 @@ std::shared_ptr<KThread> Kernel::KeCreateThread(const ThreadStart start, void* c
 	return thread;
 }
 
+void Kernel::KeSleepThread(const nano_t value)
+{
+	m_scheduler.Sleep(value);
+}
+
 void Kernel::KeExitThread()
 {
 	this->Printf("Kernel::KeThreadExit\n");
 
 	m_scheduler.KillCurrentThread();
+}
+
+/*KeModule& Kernel::KeLoadLibrary(const std::string& path)
+{
+	//void* library = Loader::LoadKernelLibrary(path);
+	return KeModule();
+}*/
+
+KThread& Kernel::KeGetCurrentThread()
+{
+	return m_scheduler.GetCurrentThread();
+}
+
+void Kernel::Sleep(const uint32_t milliseconds)
+{
+	if (!milliseconds)
+		return;
+
+	KeSleepThread((nano_t)milliseconds * 1000 * 1000);
 }
 
 void Kernel::HexDump(uint8_t* buffer, size_t size, size_t lineLength /*= 16*/)
