@@ -213,16 +213,17 @@ void Kernel::Initialize()
 		m_loadingScreen.SetFramebuffer(m_HAL.GetVideoDevice()->GetFramebuffer());
 
 
-	m_scheduler.Enabled = true;
-	
-	Printf("\r\n\r\n ===== For now you should see a black screen with some text. This means we have a SVGA-II display in 1440x900 resolution with mouse and keyboard support!\r\n\r\n");
-	//m_HAL.GetVideoDevice()->UpdateRect({ 0,0,m_HAL.GetVideoDevice()->GetScreenWidth(), m_HAL.GetVideoDevice()->GetScreenHeight() });
-
 	Printf("Searching for boot partition\r\n");
-	if(m_VFSManager->SearchBootPartition())
+	if (m_VFSManager->SearchBootPartition())
 	{
 		Printf(" [Found] (%d:)\r\n", m_VFSManager->bootPartitionID);
 	}
+
+
+	m_scheduler.Enabled = true;
+	
+	Printf("\r\n\r\n ===== For now you should see a black screen with some text. This means we have a SVGA-II display in 1440x900 resolution with mouse and keyboard support!\r\n\r\n");
+	m_HAL.GetVideoDevice()->UpdateRect({ 0,0,m_HAL.GetVideoDevice()->GetScreenWidth(), m_HAL.GetVideoDevice()->GetScreenHeight() });
 
 
 	std::list<VFSEntry>* dir = m_VFSManager->DirectoryList("b:\\efi\\boot\\");
@@ -238,36 +239,16 @@ void Kernel::Initialize()
 		Printf("\t\t%d\t\t%d.%d.%d\r\n", entr.size, entr.creationDate.day, entr.creationDate.month, entr.creationDate.year);
 	}
 
-	
+	m_HAL.GetVideoDevice()->UpdateRect({ 0,0,m_HAL.GetVideoDevice()->GetScreenWidth(), m_HAL.GetVideoDevice()->GetScreenHeight() });
 
 	m_HAL.GetClock()->delay(3000);
-	Printf("Hello after 3 sec!\r\n");
+	Printf("\r\n\r\nHello after 3 sec!\r\n");
 
 	Time time = m_HAL.GetClock()->get_time();
 	Printf("  Date: %02d-%02d-%02d %02d:%02d:%02d UTC\n", time.day, time.month, time.year, time.hour, time.minute, time.second);
 
-	//m_HAL.GetVideoDevice()->UpdateRect({0,0,m_HAL.GetVideoDevice()->GetScreenWidth(), m_HAL.GetVideoDevice()->GetScreenHeight()});
+	m_HAL.GetVideoDevice()->UpdateRect({0,0,m_HAL.GetVideoDevice()->GetScreenWidth(), m_HAL.GetVideoDevice()->GetScreenHeight()});
 
-#if 0
-	uint8_t* buffer = new uint8_t[512];
-	for (auto driver : m_HAL.driverManager->Drivers)
-	{
-		if(driver->get_device_type() == DeviceType::Harddrive)
-		{
-			AHCIDriver* ahci = (AHCIDriver*)(driver);
-			if(ahci->get_port_count() <= 0) continue;
-
-			Printf("reading first 512 byte of SATA port 0:\r\n");
-			if(!ahci->ReadSector(0, 0, buffer))
-				Printf("failed to read SATA port\r\n");
-			HexDump(buffer, 512);
-			Printf("\r\n");
-
-			break;
-		}
-	}
-
-#endif
 
 	//m_scheduler.Display();
 
