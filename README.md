@@ -20,6 +20,7 @@ Implemented:
    * PCI (rudimentary)
    * AHCI (rudimentary)
    * PS/2 Keyboard/Mouse
+   * FAT12/16/32 Support
    * very basic VMWare SVGAII support
 
 
@@ -33,4 +34,4 @@ Open up vs/VSOS.sln in Visual studio 2019+ and run compile solution
   Install qemu in "C:\Program Files\qemu\" and run `runqemu.cmd`
 
 ## Info
-heavily based on https://github.com/toddsharpe/MetalOS, https://github.com/TretornESP/bloodmoon and https://github.com/maxtyson123/MaxOS
+heavily based on https://github.com/toddsharpe/MetalOS, https://github.com/TretornESP/bloodmoon, https://github.com/Remco123/CactusOS and https://github.com/maxtyson123/MaxOS
