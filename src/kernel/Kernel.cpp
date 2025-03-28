@@ -181,6 +181,7 @@ void Kernel::Initialize()
 	m_windowsSpace.Initialize();
 
 	m_DiskManager = new DiskManager();
+	m_VFSManager = new VFSManager();
 
 	m_HAL.InitDevices();
 
@@ -217,6 +218,27 @@ void Kernel::Initialize()
 	Printf("\r\n\r\n ===== For now you should see a black screen with some text. This means we have a SVGA-II display in 1440x900 resolution with mouse and keyboard support!\r\n\r\n");
 	//m_HAL.GetVideoDevice()->UpdateRect({ 0,0,m_HAL.GetVideoDevice()->GetScreenWidth(), m_HAL.GetVideoDevice()->GetScreenHeight() });
 
+	Printf("Searching for boot partition\r\n");
+	if(m_VFSManager->SearchBootPartition())
+	{
+		Printf(" [Found] (%d:)\r\n", m_VFSManager->bootPartitionID);
+	}
+
+
+	std::list<VFSEntry>* dir = m_VFSManager->DirectoryList("b:\\efi\\boot\\");
+
+	Printf("Listing folder b:\\efi\\boot\\\r\n\r\n");
+	for(auto &entr : *dir)
+	{
+		int len = strlen(entr.name);
+		for(int i=0; i < len; i++)
+			Printf("%c", entr.name[i]);
+		if(entr.isDir)
+			Printf("/");
+		Printf("\t\t%d\t\t%d.%d.%d\r\n", entr.size, entr.creationDate.day, entr.creationDate.month, entr.creationDate.year);
+	}
+
+	
 
 	m_HAL.GetClock()->delay(3000);
 	Printf("Hello after 3 sec!\r\n");

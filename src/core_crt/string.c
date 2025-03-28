@@ -259,3 +259,105 @@ char* strstr(char* const _String, char const* const _SubString)
 
 	return 0;
 }
+
+
+char* itoa(int value, char* str, int base)
+{
+	char* rc;
+	char* ptr;
+	char* low;
+	// Check for supported base.
+	if (base < 2 || base > 36)
+	{
+		*str = '\0';
+		return str;
+	}
+	rc = ptr = str;
+	// Set '-' for negative decimals.
+	if (value < 0 && base == 10)
+	{
+		*ptr++ = '-';
+	}
+	// Remember where the numbers start.
+	low = ptr;
+	// The actual conversion.
+	do
+	{
+		// Modulo is negative for negative value. This trick makes abs() unnecessary.
+		*ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz"[35 + value % base];
+		value /= base;
+	} while (value);
+	// Terminating the string.
+	*ptr-- = '\0';
+	// Invert the numbers.
+	while (low < ptr)
+	{
+		char tmp = *low;
+		*low++ = *ptr;
+		*ptr-- = tmp;
+	}
+	return rc;
+}
+
+unsigned char isalpha(unsigned char _c)
+{
+	return (_c > 64 && _c < 91) || (_c > 96 && _c < 123);
+}
+
+long
+strtol(const char* s, char** endptr, int base) {
+	int neg = 0;
+	long val = 0;
+
+	// gobble initial whitespace
+	while (*s == ' ' || *s == '\t') {
+		s++;
+	}
+
+	// plus/minus sign
+	if (*s == '+') {
+		s++;
+	}
+	else if (*s == '-') {
+		s++, neg = 1;
+	}
+
+	// hex or octal base prefix
+	if ((base == 0 || base == 16) && (s[0] == '0' && s[1] == 'x')) {
+		s += 2, base = 16;
+	}
+	else if (base == 0 && s[0] == '0') {
+		s++, base = 8;
+	}
+	else if (base == 0) {
+		base = 10;
+	}
+
+	// digits
+	while (1) {
+		int dig;
+
+		if (*s >= '0' && *s <= '9') {
+			dig = *s - '0';
+		}
+		else if (*s >= 'a' && *s <= 'z') {
+			dig = *s - 'a' + 10;
+		}
+		else if (*s >= 'A' && *s <= 'Z') {
+			dig = *s - 'A' + 10;
+		}
+		else {
+			break;
+		}
+		if (dig >= base) {
+			break;
+		}
+		s++, val = (val * base) + dig;
+		// we don't properly detect overflow!
+	}
+
+	if (endptr) {
+		*endptr = (char*)s;
+	}
+	return (neg ? -val : val);
+}

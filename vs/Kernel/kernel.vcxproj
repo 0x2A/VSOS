@@ -171,6 +171,8 @@
     <ClCompile Include="..\..\src\kernel\sched\UThread.cpp" />
     <ClCompile Include="..\..\src\kernel\types\Bitvector.cpp" />
     <ClCompile Include="..\..\src\kernel\types\PortableExecutable.cpp" />
+    <ClCompile Include="..\..\src\kernel\vfs\FAT.cpp" />
+    <ClCompile Include="..\..\src\kernel\vfs\VFSManager.cpp" />
     <ClCompile Include="..\..\src\mem\PageTables.cpp" />
     <ClCompile Include="..\..\src\mem\PageTablesPool.cpp" />
     <ClCompile Include="..\..\src\msvc.cpp" />
@@ -238,6 +240,9 @@
     <ClInclude Include="..\..\src\kernel\time.h" />
     <ClInclude Include="..\..\src\kernel\types\BitVector.h" />
     <ClInclude Include="..\..\src\kernel\types\PortableExecutable.h" />
+    <ClInclude Include="..\..\src\kernel\vfs\FAT.h" />
+    <ClInclude Include="..\..\src\kernel\vfs\VFSManager.h" />
+    <ClInclude Include="..\..\src\kernel\vfs\virtualFileSystem.h" />
     <ClInclude Include="..\..\src\mem\pagetables.h" />
     <ClInclude Include="..\..\src\mem\PageTablesPool.h" />
     <ClInclude Include="..\..\src\os.internal.h" />

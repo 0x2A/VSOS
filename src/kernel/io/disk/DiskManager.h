@@ -49,6 +49,8 @@ public:
 	char ReadSector(uint16_t diskIndex, uint64_t sector, uint8_t* buf);
 	char WriteSector(uint16_t diskIndex, uint64_t sector, uint8_t* buf);
 
+	const std::list<Disk*>* GetDisks(){ return m_Disks; }
+
 private:
 
 	void AssignVFS(PartitionTableEntry partition, Disk* disk);

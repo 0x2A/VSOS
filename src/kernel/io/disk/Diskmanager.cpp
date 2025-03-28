@@ -1,5 +1,6 @@
 #include "DiskManager.h"
 #include "kernel/Kernel.h"
+#include <kernel\vfs\FAT.h>
 
 DiskManager::DiskManager()
 {
@@ -49,7 +50,11 @@ void DiskManager::AssignVFS(PartitionTableEntry partition, Disk* disk)
 	else if (partition.partition_id == 0x0B || partition.partition_id == 0x0C || partition.partition_id == 0x01 || partition.partition_id == 0x04 || partition.partition_id == 0x06)
 	{
 		Printf(" [FAT(12/16/32)]\r\n");
-		//TODO
+		FAT* fatFS = new FAT(disk, partition.start_lba, partition.length);
+		if(fatFS->Initialize())
+			kernel.VFS()->Mount(fatFS); // Mount the filesystem
+		else
+			delete fatFS;
 	}
 }
 

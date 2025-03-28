@@ -49,6 +49,7 @@ extern "C"
 #include "hal\x64\interrupt.h"
 #include "hal\HAL.h"
 #include "io\disk\DiskManager.h"
+#include "vfs\VFSManager.h"
 
 class Kernel
 {
@@ -138,6 +139,7 @@ public:
 #pragma endregion
 
 	DiskManager* GetDiskManager() { return m_DiskManager; }
+	VFSManager* VFS(){ return m_VFSManager; }
 
 	LoadingScreen* GetLoadingScreen() { return &m_loadingScreen; }
 
@@ -176,7 +178,7 @@ private:
 	ConfigTables m_configTables;
 
 	DiskManager* m_DiskManager;
-
+	VFSManager* m_VFSManager;
 
 	VMM m_virtualMemory;
 

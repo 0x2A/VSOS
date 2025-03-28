@@ -81,6 +81,9 @@
     <Filter Include="Quelldateien\io\disk">
       <UniqueIdentifier>{63ed267a-3429-421c-8683-8e8859ad0573}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Quelldateien\vfs">
+      <UniqueIdentifier>{dfcc75a6-3404-44d9-8067-98f0732ce70d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\kernel\main.cpp">
@@ -229,6 +232,12 @@
     </ClCompile>
     <ClCompile Include="..\..\src\kernel\io\disk\Diskmanager.cpp">
       <Filter>Quelldateien\io\disk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\kernel\vfs\VFSManager.cpp">
+      <Filter>Quelldateien\vfs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\kernel\vfs\FAT.cpp">
+      <Filter>Quelldateien\vfs</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -426,6 +435,15 @@
     </ClInclude>
     <ClInclude Include="..\..\src\kernel\io\disk\DiskManager.h">
       <Filter>Quelldateien\io\disk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\vfs\virtualFileSystem.h">
+      <Filter>Quelldateien\vfs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\vfs\VFSManager.h">
+      <Filter>Quelldateien\vfs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kernel\vfs\FAT.h">
+      <Filter>Quelldateien\vfs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
